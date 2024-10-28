@@ -1,0 +1,29 @@
+<?
+$MESS["INTR_CONFIRM_DELETE"] = "Jemputan akan dihapuskan secara tidak boleh ditarik balik.\\n\\nAdakah anda pasti anda mahu menghapuskan pekerja?";
+$MESS["INTR_CONFIRM_FIRE"] = "Pekerja tidak akan dapat log masuk ke portal, tidak akan ditunjukkan dalam struktur syarikat. Walau bagaimanapun, semua data peribadinya (fail, mesej, tugas, dll.) akan tetap dalamkeadaan baik.\\n\\nAdakah anda pasti anda mahu menolak akses kepada pekerja ini?";
+$MESS["INTR_CONFIRM_RESTORE"] = "Pekerja akan dapat log masuk ke portal dan akan ditunjukkan dalam struktur syarikat.\\n\\nAdakah anda pasti anda mahu membenarkan akses untuk pekerja ini?";
+$MESS["INTR_EXTRANET"] = "(ekstranet)";
+$MESS["INTR_ISP_DEACTIVATE_USER"] = "Tolak akses";
+$MESS["INTR_ISP_DELETE_ERROR"] = "Ralat! Pengguna tidak dihapuskan.";
+$MESS["INTR_ISP_DELETE_USER"] = "Hapus";
+$MESS["INTR_ISP_EDIT_USER"] = "Sunting";
+$MESS["INTR_ISP_INVITE"] = "Jemput lagi";
+$MESS["INTR_ISP_INVITE_ACCESS"] = "Jemputan telah dihantar";
+$MESS["INTR_ISP_IS_ABSENT"] = "Di luar pejabat";
+$MESS["INTR_ISP_IS_ONLINE"] = "Dalam talian";
+$MESS["INTR_ISP_PM"] = "Hantar mesej";
+$MESS["INTR_ISP_RESTORE_USER"] = "Benarkan akses";
+$MESS["INTR_ISP_TASK"] = "Tambah tugas";
+$MESS["INTR_ISP_VIDEO_CALL"] = "Panggilan video";
+$MESS["INTR_IS_ADMIN"] = "Pentadbir";
+$MESS["INTR_IS_HEAD"] = "Penyelia";
+$MESS["INTR_STR_UF_HEAD"] = "Ketua jabatan";
+$MESS["INTR_USER_admin"] = "Pentadbir";
+$MESS["INTR_USER_extranet"] = "Extranet";
+$MESS["INTR_USER_fired"] = "Dipecat";
+$MESS["INTR_USER_inactive"] = "Dijemput";
+$MESS["ISL_PERSONAL_BIRTHDAY"] = "Tarikh Lahir";
+$MESS["ISL_PERSONAL_EMAIL"] = "E-mel";
+$MESS["ISL_PERSONAL_PHONE"] = "Telefon";
+$MESS["ISL_PERSONAL_SKYPE"] = "Skype";
+?>

@@ -1,0 +1,5 @@
+<?
+$MESS["BLOG_BLOG_BLOGINFO_CAT"] = "标签";
+$MESS["BLOG_BLOG_BLOGINFO_CAT_VIEW"] = "查看有此标签的所有邮件";
+$MESS["BLOG_BLOG_TAG_CLOUD"] = "标签云";
+?>

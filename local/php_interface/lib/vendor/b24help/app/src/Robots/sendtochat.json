@@ -1,0 +1,54 @@
+{
+    "CODE": "SendToChatSample",
+    "BIZPROC_TARGET": [
+        "activity",
+        "robot"
+    ],
+    "AUTH_USER_ID": "1",
+    "USE_SUBSCRIPTION": "Y",
+    "NAME": {
+        "ru": "Отправить сообщение в групповой чат",
+        "en": "Send message to group chat"
+    },
+    "DESCRIPTION": {
+        "ru": "Действие отправляет сообщение в заданный чат группы",
+        "en": "The action sends a message to the specified group chat"
+    },
+    "PROPERTIES": {
+        "ChatID": {
+            "Name": {
+                "ru": "Чат ID",
+                "en": "Chat ID"
+            },
+            "Description": {
+                "ru": "ID чата (одного). Отправьте в чат команду /getChatId, чтобы его получить",
+                "en": "The ID of the chat (one). Send /getChatId to the chat to get it"
+            },
+            "Type": "string",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "message": {
+            "Name": {
+                "ru": "Текст сообщения",
+                "en": "Message text"
+            },
+            "Type": "text",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": ""
+        }
+    },
+    "RETURN_PROPERTIES": {
+        "outputmessage": {
+            "Name": {
+                "ru": "Текст отправленного в чат сообщения",
+                "en": "Text of the message sent to the chat"
+            },
+            "Type": "text",
+            "Multiple": "Y",
+            "Default": ""
+        }
+    }
+}

@@ -1,0 +1,21 @@
+<?
+$MESS["IM_FULLSCREEN_APPS"] = "Tải về ứng dụng";
+$MESS["IM_FULLSCREEN_BACK"] = "Đóng";
+$MESS["IM_FULLSCREEN_BG_0"] = "Bitrix24";
+$MESS["IM_FULLSCREEN_BG_1"] = "Đá";
+$MESS["IM_FULLSCREEN_BG_10"] = "Paris";
+$MESS["IM_FULLSCREEN_BG_11"] = "Bãi biển ";
+$MESS["IM_FULLSCREEN_BG_12"] = "Bầu trời";
+$MESS["IM_FULLSCREEN_BG_2"] = "Xe";
+$MESS["IM_FULLSCREEN_BG_3"] = "Đường";
+$MESS["IM_FULLSCREEN_BG_4"] = "Cát";
+$MESS["IM_FULLSCREEN_BG_5"] = "Thiên nhiên";
+$MESS["IM_FULLSCREEN_BG_6"] = "Dãy núi";
+$MESS["IM_FULLSCREEN_BG_7"] = "Lá khô";
+$MESS["IM_FULLSCREEN_BG_8"] = "Hồ trên núi";
+$MESS["IM_FULLSCREEN_BG_9"] = "Du thuyền";
+$MESS["IM_FULLSCREEN_BG_NUMBER"] = "#";
+$MESS["IM_FULLSCREEN_BG_TITLE"] = "Nền";
+$MESS["IM_FULLSCREEN_BG_TRANSPARENT"] = "Trong suốt";
+$MESS["IM_FULLSCREEN_COPYRIGHT"] = "&copy; 2001-2016 Bitrix24";
+?>

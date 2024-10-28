@@ -1,0 +1,29 @@
+<?
+$MESS["INTR_CONFIRM_DELETE"] = "आमंत्रण को स्थायी रूप से डिलीट कर दिया जाएगा।\\n\\nक्या आप वाकई कर्मचारी को डिलीट करना चाहते हैं?";
+$MESS["INTR_CONFIRM_FIRE"] = "पोर्टल में कर्मचारी लॉगिन नहीं कर पाएगा, कंपनी संरचना में नहीं दिखेगा। हालाँकि, उसके सभी व्यक्तिगत डेटा (फाइलें, संदेश, टास्क इत्यादि) बरकरार रहेंगे।\\n\\nक्या आप वाकई इस कर्मचारी को एक्सेस (पहुँच) से इनकार करना चाहते हैं?";
+$MESS["INTR_CONFIRM_RESTORE"] = "कर्मचारी पोर्टल में लॉगिन करने में सक्षम होगा और कंपनी की संरचना में दिखाई देगा।\\n\\n क्या आप वाकई इस कर्मचारी के लिए पहुंच की अनुमति देना चाहते हैं?";
+$MESS["INTR_EXTRANET"] = "(एक्स्ट्रानेट)";
+$MESS["INTR_ISP_DEACTIVATE_USER"] = "पहुँच अस्वीकार करें";
+$MESS["INTR_ISP_DELETE_ERROR"] = "त्रुटि! उपयोगकर्ता डिलीट नहीं हुआ।";
+$MESS["INTR_ISP_DELETE_USER"] = "डिलीट करें";
+$MESS["INTR_ISP_EDIT_USER"] = "संपादित करें";
+$MESS["INTR_ISP_INVITE"] = "फिर से आमंत्रित करें";
+$MESS["INTR_ISP_INVITE_ACCESS"] = "आमंत्रण भेजा जा चुका है";
+$MESS["INTR_ISP_IS_ABSENT"] = "कार्यालय से बाहर";
+$MESS["INTR_ISP_IS_ONLINE"] = "ऑनलाइन";
+$MESS["INTR_ISP_PM"] = "संदेश भेजें";
+$MESS["INTR_ISP_RESTORE_USER"] = "एक्सेस की अनुमति दें";
+$MESS["INTR_ISP_TASK"] = "टास्क जोड़ें";
+$MESS["INTR_ISP_VIDEO_CALL"] = "वीडियो कॉल";
+$MESS["INTR_IS_ADMIN"] = "एडमिनिस्ट्रेटर";
+$MESS["INTR_IS_HEAD"] = "सुपरवाइजर";
+$MESS["INTR_STR_UF_HEAD"] = "विभाग-प्रमुख";
+$MESS["INTR_USER_admin"] = "एडमिनिस्ट्रेटर";
+$MESS["INTR_USER_extranet"] = "एक्स्ट्रानेट";
+$MESS["INTR_USER_fired"] = "निकाला";
+$MESS["INTR_USER_inactive"] = "आमंत्रित";
+$MESS["ISL_PERSONAL_BIRTHDAY"] = "जन्म-तिथि";
+$MESS["ISL_PERSONAL_EMAIL"] = "ईमेल";
+$MESS["ISL_PERSONAL_PHONE"] = "फोन";
+$MESS["ISL_PERSONAL_SKYPE"] = "Skype";
+?>

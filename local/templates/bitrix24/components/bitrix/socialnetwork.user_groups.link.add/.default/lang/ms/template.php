@@ -1,0 +1,6 @@
+<?
+$MESS["SONET_C36_T_CREATE"] = "Cipta Kumpulan";
+$MESS["SONET_C36_T_CREATE2"] = "Cipta";
+$MESS["SONET_C36_T_CREATE_PROJECT"] = "Cipta projek";
+$MESS["SONET_C36_T_SEARCH_PLACEHOLDER"] = "Carian";
+?>

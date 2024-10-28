@@ -1,0 +1,29 @@
+<?
+$MESS["SONET_TELEPHONY_HISTORY"] = "ล็อกการโทร";
+$MESS["SONET_UM_ABSENT"] = "(ไม่อยู่ออฟฟิศ)";
+$MESS["SONET_UM_BIRTHDAY"] = "วันนี้เป็นวันเกิดของผู้ใช้งาน";
+$MESS["SONET_UM_BLOG"] = "การสนทนา";
+$MESS["SONET_UM_CALENDAR"] = "ปฏิทิน";
+$MESS["SONET_UM_EDIT_FEATURES"] = "แก้ไขการตั้งค่า";
+$MESS["SONET_UM_EDIT_PROFILE"] = "แก้ไขโปรไฟล์";
+$MESS["SONET_UM_EDIT_SETTINGS"] = "แก้ไขการตั้งค่าความเป็นส่วนตัว";
+$MESS["SONET_UM_EFFICIENCY"] = "ประสิทธิภาพ";
+$MESS["SONET_UM_FILES"] = "ไฟล์";
+$MESS["SONET_UM_FORUM"] = "ฟอรัม";
+$MESS["SONET_UM_FRIENDS"] = "เพื่อน";
+$MESS["SONET_UM_GENERAL"] = "ทั่วไป";
+$MESS["SONET_UM_GROUPS"] = "กลุ่ม";
+$MESS["SONET_UM_HONOUR"] = "ผู้ใช้งานอยู่บน บอร์ดเกียรติยศ";
+$MESS["SONET_UM_LOG"] = "สตรีมกิจกรรม";
+$MESS["SONET_UM_MESSAGES"] = "ข้อความ";
+$MESS["SONET_UM_MESSAGE_HISTORY"] = "ล็อกข้อความ";
+$MESS["SONET_UM_ONLINE"] = "ออนไลน์";
+$MESS["SONET_UM_PHOTO"] = "รูป";
+$MESS["SONET_UM_REPORTS"] = "รายงานการทำงาน";
+$MESS["SONET_UM_REQUESTS"] = "คำเชิญและคำร้องขอ";
+$MESS["SONET_UM_SEND_MESSAGE"] = "ส่งข้อความ";
+$MESS["SONET_UM_SUBSCRIBE"] = "การสมัครสมาชิก";
+$MESS["SONET_UM_TASKS"] = "งาน";
+$MESS["SONET_UM_TIME"] = "เวลาทำงาน";
+$MESS["SONET_UM_VIDEO_CALL"] = "วิดีโอคอล";
+?>

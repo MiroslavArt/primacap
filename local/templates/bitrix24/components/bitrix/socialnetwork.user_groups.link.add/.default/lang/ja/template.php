@@ -1,0 +1,6 @@
+<?
+$MESS["SONET_C36_T_CREATE"] = "グループ作成";
+$MESS["SONET_C36_T_CREATE2"] = "作成";
+$MESS["SONET_C36_T_CREATE_PROJECT"] = "プロジェクトを作成する";
+$MESS["SONET_C36_T_SEARCH_PLACEHOLDER"] = "検索";
+?>

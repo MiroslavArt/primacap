@@ -1,0 +1,16 @@
+{
+  "name": "notamedia/lib",
+  "description": "development notamedia lib",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://bitbucket.org/b24help/app.git"
+    }
+  ],
+  "require": {
+    "b24help/app": "dev-master",
+    "symfony/messenger": "^5.4",
+    "php-amqplib/php-amqplib": ">=3.0"
+  }
+}
+

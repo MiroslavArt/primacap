@@ -1,0 +1,21 @@
+<?php
+$MESS["CT_BST_GLOBAL_SEARCH"] = "Tìm kiếm";
+$MESS["CT_BST_GLOBAL_SEARCH_CALENDAR"] = "Lịch";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM"] = "CRM";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_ACTIVITY"] = "Các hoạt động của tôi";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_COMPANY"] = "Các công ty";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_CONTACT"] = "Các liên lạc";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_DEAL"] = "Các Deal";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_INVOICE"] = "Các hoá đơn";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_LEAD"] = "Đầu mối kinh doanh";
+$MESS["CT_BST_GLOBAL_SEARCH_CRM_QUOTE"] = "Các báo giá";
+$MESS["CT_BST_GLOBAL_SEARCH_DISK"] = "Bitrix24.Drive";
+$MESS["CT_BST_GLOBAL_SEARCH_MORE"] = "Thêm";
+$MESS["CT_BST_GLOBAL_SEARCH_NO_RESULT"] = "Không có mục đã được tìm thấy.";
+$MESS["CT_BST_GLOBAL_SEARCH_PROCESS"] = "Dòng công việc của tôi ";
+$MESS["CT_BST_GLOBAL_SEARCH_SITE"] = "Các site";
+$MESS["CT_BST_GLOBAL_SEARCH_STREAM"] = "Bản tin";
+$MESS["CT_BST_GLOBAL_SEARCH_TASKS"] = "Tác vụ";
+$MESS["CT_BST_SEARCH_BUTTON"] = "Tìm kiếm";
+$MESS["CT_BST_SEARCH_HINT"] = "tìm nhân viên, tài liệu, nội dung khác…";
+$MESS["CT_BST_WAITER_TEXT"] = "Tìm kiếm";

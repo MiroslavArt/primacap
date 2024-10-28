@@ -1,0 +1,22 @@
+<?
+$MESS["IM_FULLSCREEN_APPS"] = "Uygulamaları indir";
+$MESS["IM_FULLSCREEN_BACK"] = "Kapat";
+$MESS["IM_FULLSCREEN_BG_0"] = "Bitrix24";
+$MESS["IM_FULLSCREEN_BG_1"] = "Taşlar";
+$MESS["IM_FULLSCREEN_BG_10"] = "Paris";
+$MESS["IM_FULLSCREEN_BG_11"] = "Plaj";
+$MESS["IM_FULLSCREEN_BG_12"] = "Gökyüzü";
+$MESS["IM_FULLSCREEN_BG_2"] = "Araba";
+$MESS["IM_FULLSCREEN_BG_3"] = "Yol";
+$MESS["IM_FULLSCREEN_BG_4"] = "Kum";
+$MESS["IM_FULLSCREEN_BG_5"] = "Doğa";
+$MESS["IM_FULLSCREEN_BG_6"] = "Dağlar";
+$MESS["IM_FULLSCREEN_BG_7"] = "Kuru çim";
+$MESS["IM_FULLSCREEN_BG_8"] = "Dağ gölü";
+$MESS["IM_FULLSCREEN_BG_9"] = "Yat";
+$MESS["IM_FULLSCREEN_BG_NUMBER"] = "#";
+$MESS["IM_FULLSCREEN_BG_TITLE"] = "Arka plan";
+$MESS["IM_FULLSCREEN_BG_TRANSPARENT"] = "Şeffaf";
+$MESS["IM_FULLSCREEN_COPYRIGHT"] = "&copy; 2001-2017 Bitrix24";
+$MESS["IM_FULLSCREEN_DOWN_ITS"] = "https://itunes.apple.com/app/bitrix24/id561683423";
+?>

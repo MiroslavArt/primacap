@@ -1,0 +1,37 @@
+<?
+$MESS["INTR_ISL_TPL_GENDER_F"] = "महिला";
+$MESS["INTR_ISL_TPL_GENDER_M"] = "पुरुष";
+$MESS["ISL_ADMIN_NOTES"] = "एडमिनिस्ट्रेटर नोट्स";
+$MESS["ISL_DATE_REGISTER"] = "को रजिस्टर्ड:";
+$MESS["ISL_EMAIL"] = "ई-मेल";
+$MESS["ISL_FULL_NAME"] = "पूरा नाम";
+$MESS["ISL_ID"] = "आईडी";
+$MESS["ISL_LAST_NAME"] = "अंतिम नाम";
+$MESS["ISL_LOGIN"] = "लॉगिन";
+$MESS["ISL_NAME"] = "प्रथम नाम";
+$MESS["ISL_PERSONAL_BIRTHDAY"] = "जन्म-तिथि";
+$MESS["ISL_PERSONAL_CITY"] = "शहर";
+$MESS["ISL_PERSONAL_COUNTRY"] = "देश";
+$MESS["ISL_PERSONAL_FAX"] = "फैक्स";
+$MESS["ISL_PERSONAL_GENDER"] = "लिंग";
+$MESS["ISL_PERSONAL_ICQ"] = "ICQ";
+$MESS["ISL_PERSONAL_MAILBOX"] = "पोस्ट बॉक्स";
+$MESS["ISL_PERSONAL_MOBILE"] = "मोबाइल";
+$MESS["ISL_PERSONAL_NOTES"] = "नोट्स";
+$MESS["ISL_PERSONAL_PAGER"] = "पेजर";
+$MESS["ISL_PERSONAL_PHONE"] = "फोन";
+$MESS["ISL_PERSONAL_PHONES"] = "फोन";
+$MESS["ISL_PERSONAL_PHOTO"] = "फोटो";
+$MESS["ISL_PERSONAL_POST_ADDRESS"] = "डाक पता";
+$MESS["ISL_PERSONAL_PROFESSION"] = "जॉब का नाम";
+$MESS["ISL_PERSONAL_STATE"] = "क्षेत्र/राज्य";
+$MESS["ISL_PERSONAL_STREET"] = "गली का पता";
+$MESS["ISL_PERSONAL_WWW"] = "वेबसाइट";
+$MESS["ISL_PERSONAL_ZIP"] = "पोस्टल कोड";
+$MESS["ISL_SECOND_NAME"] = "मध्य नाम";
+$MESS["ISL_TPL_NOTE_NULL"] = "आपकी खोज किसी कर्मचारी से मेल नहीं खाती।";
+$MESS["ISL_TPL_NOTE_UNFILTERED"] = "खोज के मानदंड निर्दिष्ट करें।";
+$MESS["ISL_WORK_PHONE"] = "वर्क फोन";
+$MESS["ISL_WORK_POSITION"] = "पोजीशन";
+$MESS["ISL_XML_ID"] = "बाहरी आईडी";
+?>

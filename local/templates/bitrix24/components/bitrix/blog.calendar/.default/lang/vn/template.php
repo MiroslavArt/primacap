@@ -1,0 +1,24 @@
+<?
+$MESS["BLOG_BLOG_CLNDR_D_1"] = "M";
+$MESS["BLOG_BLOG_CLNDR_D_2"] = "T";
+$MESS["BLOG_BLOG_CLNDR_D_3"] = "W";
+$MESS["BLOG_BLOG_CLNDR_D_4"] = "T";
+$MESS["BLOG_BLOG_CLNDR_D_5"] = "F";
+$MESS["BLOG_BLOG_CLNDR_D_6"] = "S";
+$MESS["BLOG_BLOG_CLNDR_D_7"] = "S";
+$MESS["BLOG_BLOG_CLNDR_M_1"] = "Tháng 1";
+$MESS["BLOG_BLOG_CLNDR_M_10"] = "Tháng 10";
+$MESS["BLOG_BLOG_CLNDR_M_11"] = "Tháng 11";
+$MESS["BLOG_BLOG_CLNDR_M_12"] = "Tháng 12";
+$MESS["BLOG_BLOG_CLNDR_M_2"] = "Tháng 2";
+$MESS["BLOG_BLOG_CLNDR_M_3"] = "Tháng 3";
+$MESS["BLOG_BLOG_CLNDR_M_4"] = "Tháng 4";
+$MESS["BLOG_BLOG_CLNDR_M_5"] = "Tháng 5";
+$MESS["BLOG_BLOG_CLNDR_M_6"] = "Tháng 6";
+$MESS["BLOG_BLOG_CLNDR_M_7"] = "Tháng 7";
+$MESS["BLOG_BLOG_CLNDR_M_8"] = "Tháng 8";
+$MESS["BLOG_BLOG_CLNDR_M_9"] = "Tháng 9";
+$MESS["BLOG_BLOG_CLNDR_N_M"] = "Tháng sau";
+$MESS["BLOG_BLOG_CLNDR_P_M"] = "Tháng trước";
+$MESS["BLOG_BLOG_CLNDR_TITLE"] = "Lưu trữ";
+?>

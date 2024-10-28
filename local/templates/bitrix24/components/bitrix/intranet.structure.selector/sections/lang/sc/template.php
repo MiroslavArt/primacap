@@ -1,0 +1,4 @@
+<?
+$MESS["INTR_STR_ABOUT_DEPARTMENT"] = "关于部门";
+$MESS["INTR_STR_HEAD_DEPARTMENT"] = "上级部门";
+?>

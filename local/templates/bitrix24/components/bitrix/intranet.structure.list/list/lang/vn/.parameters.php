@@ -1,0 +1,35 @@
+<?
+$MESS["INTR_ISL_TPL_PARAM_PM_URL"] = "Trang Tin nhắn cá nhân";
+$MESS["INTR_ISL_TPL_PARAM_USER_PROPERTY"] = "Các trường khác";
+$MESS["ISL_ADMIN_NOTES"] = "Các ghi chú của Quản trị viên";
+$MESS["ISL_DATE_REGISTER"] = "Đã đăng ký trên:";
+$MESS["ISL_EMAIL"] = "E-Mail";
+$MESS["ISL_FULL_NAME"] = "Họ và Tên";
+$MESS["ISL_ID"] = "ID";
+$MESS["ISL_LAST_NAME"] = "Họ";
+$MESS["ISL_LOGIN"] = "Tên đăng nhập";
+$MESS["ISL_NAME"] = "Tên";
+$MESS["ISL_PERSONAL_BIRTHDAY"] = "Ngày sinh";
+$MESS["ISL_PERSONAL_CITY"] = "Thành phố";
+$MESS["ISL_PERSONAL_COUNTRY"] = "Nước";
+$MESS["ISL_PERSONAL_FAX"] = "Fax";
+$MESS["ISL_PERSONAL_GENDER"] = "Giới tính";
+$MESS["ISL_PERSONAL_ICQ"] = "ICQ";
+$MESS["ISL_PERSONAL_MAILBOX"] = "Hộp thư Bưu điện";
+$MESS["ISL_PERSONAL_MOBILE"] = "Di động";
+$MESS["ISL_PERSONAL_NOTES"] = "Các ghi chú";
+$MESS["ISL_PERSONAL_PAGER"] = "Máy nhắn tin";
+$MESS["ISL_PERSONAL_PHONE"] = "Điện thoại";
+$MESS["ISL_PERSONAL_PHONES"] = "Điên thoại";
+$MESS["ISL_PERSONAL_PHOTO"] = "Ảnh";
+$MESS["ISL_PERSONAL_POST_ADDRESS"] = "Địa chỉ Gửi thư";
+$MESS["ISL_PERSONAL_PROFESSION"] = "Chức vụ";
+$MESS["ISL_PERSONAL_STATE"] = "Vùng/Bang";
+$MESS["ISL_PERSONAL_STREET"] = "Địa chỉ";
+$MESS["ISL_PERSONAL_WWW"] = "Web Site";
+$MESS["ISL_PERSONAL_ZIP"] = "Zip";
+$MESS["ISL_SECOND_NAME"] = "Chữ lót";
+$MESS["ISL_WORK_PHONE"] = "Điện thoại cơ quan";
+$MESS["ISL_WORK_POSITION"] = "Vị trí";
+$MESS["ISL_XML_ID"] = "ID Bên ngoài";
+?>

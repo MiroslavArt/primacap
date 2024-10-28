@@ -1,0 +1,36 @@
+<?
+$MESS["CT_BSP_ADVANCED_SEARCH"] = "進階搜尋";
+$MESS["CT_BSP_ALL"] = "（所有）";
+$MESS["CT_BSP_AND"] = "和";
+$MESS["CT_BSP_AND_ALT"] = "意味運算子<i>邏輯和</i>，並可以省略：查詢「連絡人資訊」是完全等同「連絡人和資訊」。";
+$MESS["CT_BSP_BRACKETS_ALT"] = "<i>圓括號</i>定義邏輯運算子優先順序。";
+$MESS["CT_BSP_CORRECT_AND_CONTINUE"] = "請修正搜尋片語並再試一次。";
+$MESS["CT_BSP_DATES_ALL"] = "所有";
+$MESS["CT_BSP_DATES_FROM"] = "從 #FROM#";
+$MESS["CT_BSP_DATES_FROM_TO"] = "從 #FROM# 到 #TO#";
+$MESS["CT_BSP_DATES_TO"] = "到 #TO#";
+$MESS["CT_BSP_DATE_CHANGE"] = "已修改";
+$MESS["CT_BSP_DESCRIPTION"] = "描述";
+$MESS["CT_BSP_ERROR"] = "搜尋片語時，發生錯誤：";
+$MESS["CT_BSP_EVERYWHERE"] = "所有";
+$MESS["CT_BSP_FOUND"] = "已找到";
+$MESS["CT_BSP_GO"] = "搜尋";
+$MESS["CT_BSP_ITEM_TAGS"] = "標籤";
+$MESS["CT_BSP_KEYBOARD_WARNING"] = "已為 \"#query#\" 變更查詢輸入語言。";
+$MESS["CT_BSP_LOGIC"] = "邏輯運算子：";
+$MESS["CT_BSP_NOT"] = "非";
+$MESS["CT_BSP_NOTHING_TO_FOUND"] = "很抱歉，您的搜尋與任何文件不符。";
+$MESS["CT_BSP_NOT_ALT"] = "運算子<i>邏輯非</i>將搜尋限制在不包含運算元的頁面。";
+$MESS["CT_BSP_OPERATOR"] = "運算子";
+$MESS["CT_BSP_OR"] = "或";
+$MESS["CT_BSP_ORDER"] = "排序方式";
+$MESS["CT_BSP_ORDER_BY_DATE"] = "日期";
+$MESS["CT_BSP_ORDER_BY_RANK"] = "相關性";
+$MESS["CT_BSP_OR_ALT"] = "運算子<i>邏輯或</i>允許搜尋包含至少一個運算元的項目。";
+$MESS["CT_BSP_SINTAX"] = "<b>搜尋查詢語法：</b><br /><br />一般查詢查詢是一或兩個字組，範例：<br /><i>連絡人資訊</i><br />本查詢將查找包含兩組查詢字組的頁面。<br /><br />邏輯運算子允許建立更複雜的查詢，範例：<br /><i>連絡人資訊或電話</i><br />本查詢將查找包含「連絡人」和「資訊」或「電話」字組的頁面。<br /><br /> <i>連絡人資訊，非電話</i><br />本查詢將查找包含「連絡人」和「資訊」、但不包含「電話」字組的頁面。<br />您可以使用括弧來建立更複雜的查詢。<br />";
+$MESS["CT_BSP_SYNONIM"] = " 同義字";
+$MESS["CT_BSP_TAGS"] = "標籤";
+$MESS["CT_BSP_WHEN"] = "日期";
+$MESS["CT_BSP_WHERE"] = "目錄";
+$MESS["CT_BSP_WHERE_LABEL"] = "地點";
+?>

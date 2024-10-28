@@ -1,0 +1,36 @@
+<?
+$MESS["CT_BSP_ADVANCED_SEARCH"] = "Pencarian Lanjutan";
+$MESS["CT_BSP_ALL"] = "(semua)";
+$MESS["CT_BSP_AND"] = "dan";
+$MESS["CT_BSP_AND_ALT"] = "Operator <i>logika dan</i> tersirat dan dapat dihilangkan: permintaan &quot;informasi kontak&quot; sepenuhnya ekuivalen dengan &quot;kontak dan informasi&quot;.";
+$MESS["CT_BSP_BRACKETS_ALT"] = "<i>Tanda kurung</i> menentukan preseden operator logika.";
+$MESS["CT_BSP_CORRECT_AND_CONTINUE"] = "Perbaiki frasa pencarian dan coba lagi.";
+$MESS["CT_BSP_DATES_ALL"] = "semua";
+$MESS["CT_BSP_DATES_FROM"] = "dari #FROM#";
+$MESS["CT_BSP_DATES_FROM_TO"] = "dari #FROM# ke #TO#";
+$MESS["CT_BSP_DATES_TO"] = "ke #TO#";
+$MESS["CT_BSP_DATE_CHANGE"] = "Dimodifikasi";
+$MESS["CT_BSP_DESCRIPTION"] = "Deskripsi";
+$MESS["CT_BSP_ERROR"] = "Kesalahan dalam frasa pencarian:";
+$MESS["CT_BSP_EVERYWHERE"] = "semua";
+$MESS["CT_BSP_FOUND"] = "Ditemukan";
+$MESS["CT_BSP_GO"] = "Cari";
+$MESS["CT_BSP_ITEM_TAGS"] = "Tag";
+$MESS["CT_BSP_KEYBOARD_WARNING"] = "Bahasa input permintaan diubah untuk \"#query#\".";
+$MESS["CT_BSP_LOGIC"] = "Operator logika:";
+$MESS["CT_BSP_NOT"] = "tidak";
+$MESS["CT_BSP_NOTHING_TO_FOUND"] = "Sayangnya, pencarian Anda tidak sesuai dengan dokumen apa pun.";
+$MESS["CT_BSP_NOT_ALT"] = "Operator <i>logika tidak</i> membatasi pencarian ke halaman yang tidak berisi operan.";
+$MESS["CT_BSP_OPERATOR"] = "Operator";
+$MESS["CT_BSP_OR"] = "atau";
+$MESS["CT_BSP_ORDER"] = "Disortir menurut";
+$MESS["CT_BSP_ORDER_BY_DATE"] = "tanggal";
+$MESS["CT_BSP_ORDER_BY_RANK"] = "relevansi";
+$MESS["CT_BSP_OR_ALT"] = "Operator <i>logika atau</i> memungkinkan pencarian untuk entitas yang berisi sedikitnya satu operan.";
+$MESS["CT_BSP_SINTAX"] = "<b>Sintaksis permintaan pencarian:</b><br /><br />Permintaan pencarian umum adalah satu atau lebih kata, contohnya: <br /><i>informasi kontak</i><br />Permintaan ini akan menemukan halaman yang berisi kedua kata permintaan.<br /><br />Operator logika memungkinkan membangun permintaan yang lebih kompleks, contohnya: <br /><i>informasi kontak atau telepon</i><br />Permintaan ini akan menemukan halaman yang berisi kata-kata &quot;kontak&quot; dan &quot;informasi&quot; atau &quot;telepon&quot;.<br /><br /> <i>informasi kontak bukan telepon</i><br /> Permintaan ini akan menemukan halaman yang berisi kata-kata &quot;kontak&quot; dan &quot;informasi&quot; tetapi bukan &quot;telepon&quot;.<br /> Anda dapat menggunakan tanda kurung untuk membangun lebih banyak permintaan yang kompleks.<br />";
+$MESS["CT_BSP_SYNONIM"] = " Sinonim";
+$MESS["CT_BSP_TAGS"] = "tag";
+$MESS["CT_BSP_WHEN"] = "tanggal";
+$MESS["CT_BSP_WHERE"] = "bagian";
+$MESS["CT_BSP_WHERE_LABEL"] = "Di mana";
+?>

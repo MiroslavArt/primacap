@@ -1,0 +1,7 @@
+<?
+$MESS["LEFT_MENU_PRESET_ERROR"] = "選取工具時，發生錯誤。";
+$MESS["LEFT_MENU_SELF_ITEM_DUBLICATE_ERROR"] = "此頁面已經新增至「我的最愛」。";
+$MESS["LEFT_MENU_SELF_ITEM_EMPTY_ERROR"] = "一些欄位遺失。";
+$MESS["LEFT_MENU_SELF_ITEM_LINK_ERROR"] = "頁面位址不正確。";
+$MESS["LEFT_MENU_SELF_ITEM_UNKNOWN_ERROR"] = "這是錯誤。";
+?>

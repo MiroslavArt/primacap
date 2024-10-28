@@ -1,0 +1,4 @@
+<?
+$MESS["MARKETPLACE_CATEGORY_ROWS_DEINSTALL"] = "डिस्कनेक्ट करें";
+$MESS["MARKETPLACE_CATEGORY_ROWS_INSTALL"] = "कनेक्ट करें";
+?>

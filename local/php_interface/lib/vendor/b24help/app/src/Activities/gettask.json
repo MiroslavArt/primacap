@@ -1,0 +1,86 @@
+{
+    "CODE": "gettaskactivity",
+    "AUTH_USER_ID": 1,
+    "USE_SUBSCRIPTION": "Y",
+    "NAME": {
+        "ru": "Получение данных задачи",
+        "en": "Get task data"
+    },
+    "PROPERTIES": {
+        "InputTaskID": {
+            "Name": {
+                "ru": "ID задачи",
+                "en": "Task ID"
+            },
+            "Type": "int",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": ""
+        }
+    },
+    "RETURN_PROPERTIES": {
+        "OutputAssigned": {
+            "Name": {
+                "ru": "Ответственный",
+                "en": "Responsible"
+            },
+            "Type": "user",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "OutputCreated": {
+            "Name": {
+                "ru": "Дата/время создания",
+                "en": "Creation date"
+            },
+            "Type": "datetime",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "OutputDeadline": {
+            "Name": {
+                "ru": "Крайний срок",
+                "en": "Deadline"
+            },
+            "Type": "datetime",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "OutputClosedDate": {
+            "Name": {
+                "ru": "Дата завершения",
+                "en": "Completion date"
+            },
+            "Type": "datetime",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "OutputClosedBy": {
+            "Name": {
+                "ru": "Кто завершил задачу",
+                "en": "Who completed the task"
+            },
+            "Type": "user",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "OutputClosed": {
+            "Name": {
+                "ru": "Закрыта?",
+                "en": "Closed?"
+            },
+            "Type": "bool",
+            "Multiple": "N",
+            "Default": "N"
+        },
+        "OutputIsDeadline": {
+            "Name": {
+                "ru": "Просрочена?",
+                "en": "Overdue?"
+            },
+            "Type": "bool",
+            "Multiple": "N",
+            "Default": "N"
+        }
+    }
+}

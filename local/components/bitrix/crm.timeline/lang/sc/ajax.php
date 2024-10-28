@@ -1,0 +1,7 @@
+<?
+$MESS["CRM_PERMISSION_DENIED"] = "访问被拒绝";
+$MESS["CRM_TIMELINE_DOCUMENT_DELETED"] = "文档已删除";
+$MESS["CRM_WAIT_ACTION_INVALID_BEFORE_PARAMS"] = "等待结束日期需超出当前日期。您输入的日期可能位于过去或位于太远的将来。";
+$MESS["CRM_WAIT_ACTION_INVALID_REQUEST_DATA"] = "请求包含不正确的参数。";
+$MESS["CRM_WAIT_ACTION_ITEM_NOT_FOUND"] = "找不到项目。";
+?>

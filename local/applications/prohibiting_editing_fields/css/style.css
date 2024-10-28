@@ -1,0 +1,118 @@
+@font-face {
+	font-family: Tahoma;
+	src: url("font/tahoma.ttf");
+}
+.wrapper_control_file_extensions {
+	display: flex;
+	font-family: Tahoma;
+	color: #57616c;
+	flex-direction: column;
+	max-width:1200px;
+	min-height:700px;
+}
+.wrapper_control_file_extensions h2 {
+	text-align: center;
+}
+.control_file_extensions_error {
+    color: red;
+    margin-top: 80px;
+    width: 100%;
+}
+.button_ok {
+	width:137px;
+	height:40px;
+	margin-top:30px;
+	border: none;
+	cursor: pointer;
+	background-color:#3bc8f5;
+	color:#fff;
+	font: 20px "OpenSans-Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    	transition: 160ms linear background-color,
+				160ms linear color,
+				160ms linear opacity,
+				160ms linear box-shadow,
+				160ms linear border-color;
+}
+.button_ok:hover {
+	background-color:#fff;
+	color:#3bc8f5;
+	border: 1px solid #3bc8f5;
+}
+.control_file_extensions_fields_row {
+	display: flex;
+    width: 100%;
+	margin-top: 5px;
+}
+.control_file_extensions_field_title {
+	display: flex;
+    width: 350px;
+    margin-right: 5px;
+    margin-left: 20px;
+}
+.control_file_extensions_field_input {
+	display: flex;
+    width: 350px;
+    justify-content: flex-start;
+    margin-left: 20px;
+}
+.extensions_field_input {
+	padding: 3px;
+    width: 60%;
+}
+.control_file_extensions_description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: black;
+    font-size: 15px;
+    font-weight: 600;
+}
+.control_file_extensions_description p {
+	margin: 5px 0;
+	text-align: center;
+}
+.control_file_extensions_buttons {
+	display: flex;
+    justify-content: center;
+}
+.control_access_fields_option {
+	display: flex;
+}
+.control_access_fields_option_column {
+	display: flex;
+    flex-direction: column;
+	margin-left: 20px;
+}
+.btn-primary, .btn-primary:active, .btn-primary:hover{
+    color: #000;
+    background-color: #acd0ef;
+    border-color: #94bcdf;
+}
+.bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: 350px;
+}
+.button_access {
+    width: 100px;
+    height: 35px;
+    background-color: #afd1ef;
+    border-color: #94bcdf;
+    border-radius: 5px;
+    align-self: end;
+    margin-left: 20px;
+	color:#000;
+}
+.button_access:hover {
+	background-color: white;
+}
+.control_file_extensions_fields {
+	margin-top: 20px;
+    font-size: 16px;
+    color: black;
+}
+.control_file_extensions_field_delete {
+	margin-left: 20px;
+	cursor:pointer;
+}
+.control_file_extensions_field_delete:hover {
+	color:red;
+}

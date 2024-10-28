@@ -1,0 +1,22 @@
+<?
+$MESS["SONET_C38_TP_NO_PERMS"] = "您没有权限来查看该用户的配置文件。";
+$MESS["SONET_C38_T_BIRTHDAY"] = "生日";
+$MESS["SONET_C38_T_HONOURED"] = "荣誉";
+$MESS["SONET_C38_T_ONLINE"] = "联机";
+$MESS["SONET_C39_ABSENT"] = "外出";
+$MESS["SONET_C39_CONTACT_TITLE"] = "联系信息";
+$MESS["SONET_C39_CONTACT_UNAVAIL"] = "联系人信息不可用。";
+$MESS["SONET_C39_EDIT_FEATURES"] = "编辑设置";
+$MESS["SONET_C39_EDIT_PROFILE"] = "编辑配置文件";
+$MESS["SONET_C39_EDIT_SETTINGS"] = "编辑隐私设置";
+$MESS["SONET_C39_FR_ADD"] = "加为好友";
+$MESS["SONET_C39_FR_DEL"] = "取消好友关系";
+$MESS["SONET_C39_INV_GROUP"] = "邀请到组";
+$MESS["SONET_C39_PERSONAL_TITLE"] = "个人详情";
+$MESS["SONET_C39_PERSONAL_UNAVAIL"] = "个人信息不可用。";
+$MESS["SONET_C39_SEND_MESSAGE"] = "发送消息";
+$MESS["SONET_C39_SHOW_MESSAGES"] = "查看消息日志";
+$MESS["SONET_C39_VIDEO_CALL"] = "视频通话";
+$MESS["SONET_P_USER_BIRTHDAY"] = "生日：";
+$MESS["SONET_P_USER_SEX"] = "性别：";
+?>

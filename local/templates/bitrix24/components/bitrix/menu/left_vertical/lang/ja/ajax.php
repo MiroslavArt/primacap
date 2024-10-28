@@ -1,0 +1,7 @@
+<?
+$MESS["LEFT_MENU_PRESET_ERROR"] = "ツール選択エラー";
+$MESS["LEFT_MENU_SELF_ITEM_DUBLICATE_ERROR"] = "このページはすでにお気に入りです";
+$MESS["LEFT_MENU_SELF_ITEM_EMPTY_ERROR"] = "いくつかのフィールドがありません";
+$MESS["LEFT_MENU_SELF_ITEM_LINK_ERROR"] = "誤ったページのアドレスです";
+$MESS["LEFT_MENU_SELF_ITEM_UNKNOWN_ERROR"] = "エラーです";
+?>

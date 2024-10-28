@@ -1,0 +1,36 @@
+<?
+$MESS["CT_BSP_ADVANCED_SEARCH"] = "Gelişmiş Arama";
+$MESS["CT_BSP_ALL"] = "(Tümü)";
+$MESS["CT_BSP_AND"] = "VE";
+$MESS["CT_BSP_AND_ALT"] = "<i>logical and</i> operatörü içeriliyor ve atlanabilir: &quot;iletişim bilgisi&quot;, &quot;iletişim ve bilgi&quot; ile tamamen eşdeğer.";
+$MESS["CT_BSP_BRACKETS_ALT"] = "<i>Parantezler</i> mantıksal operatör önceliğini tanımlar.";
+$MESS["CT_BSP_CORRECT_AND_CONTINUE"] = "Lütfen arama ifadesini düzelt ve yeniden dene.";
+$MESS["CT_BSP_DATES_ALL"] = "Tüm";
+$MESS["CT_BSP_DATES_FROM"] = "#FROM# 'dan";
+$MESS["CT_BSP_DATES_FROM_TO"] = "#FROM# 'dan #TO# 'ya";
+$MESS["CT_BSP_DATES_TO"] = "#TO# kişisine";
+$MESS["CT_BSP_DATE_CHANGE"] = "Değiştirilme";
+$MESS["CT_BSP_DESCRIPTION"] = "Açıklama";
+$MESS["CT_BSP_ERROR"] = "Arama teriminde hata:";
+$MESS["CT_BSP_EVERYWHERE"] = "Tüm";
+$MESS["CT_BSP_FOUND"] = "Bulundu";
+$MESS["CT_BSP_GO"] = "Ara";
+$MESS["CT_BSP_ITEM_TAGS"] = "Etiketler";
+$MESS["CT_BSP_KEYBOARD_WARNING"] = "\"#query#\" sorgusu için sorgu giriş dili değiştirildi.";
+$MESS["CT_BSP_LOGIC"] = "Mantıksal operatörler:";
+$MESS["CT_BSP_NOT"] = "değil";
+$MESS["CT_BSP_NOTHING_TO_FOUND"] = "Maalesef, araman hiçbir belgeyle eşleşmedi.";
+$MESS["CT_BSP_NOT_ALT"] = "<i>logical not</i> operatörü işlenenleri içermeyen sayfalara aramayı kısıtlıyor.";
+$MESS["CT_BSP_OPERATOR"] = "Operatör";
+$MESS["CT_BSP_OR"] = "VEYA";
+$MESS["CT_BSP_ORDER"] = "Şuna göre sıralandı:";
+$MESS["CT_BSP_ORDER_BY_DATE"] = "Tarih";
+$MESS["CT_BSP_ORDER_BY_RANK"] = "Uygunluk";
+$MESS["CT_BSP_OR_ALT"] = "<i>logical or</i> operatörü en az bir işlenen içeren varlıkları aramaya izin veriyor.";
+$MESS["CT_BSP_SINTAX"] = "<b>Arama sorgusu sözdizimi:</b><br /><br />Yaygın bir arama sorgusu bir veya daha fazla kelimeden oluşur, örneğin: <br /><i>iletişim bilgisi</i><br />Bu sorgu her iki sorgu kelimesinin geçtiği sayfaları bulur. <br /><br />Mantıksal operatörler daha karmaşık sorgular oluşturmaya izin verir, örneğin: <br /><i>iletişim bilgileri or telefon</i><br />Bu sorgu &quot;iletişim&quot; ve &quot;bilgileri&quot; ya da &quot;telefon&quot; geçen tüm sayfaları bulur.<br /><br /> <i>iletişim bilgileri not telefon</i><br />Bu sorgu &quot;iletişim&quot; ve &quot;bilgileri&quot; geçen ama &quot;telefon&quot; geçmeyen tüm sayfaları bulur. <br />Köşeli parantez kullanarak daha karmaşık sorgular oluşturabilirsin.<br />";
+$MESS["CT_BSP_SYNONIM"] = " Eş anlamlılar";
+$MESS["CT_BSP_TAGS"] = "Etiketler";
+$MESS["CT_BSP_WHEN"] = "Tarih";
+$MESS["CT_BSP_WHERE"] = "Bölüm";
+$MESS["CT_BSP_WHERE_LABEL"] = "Nerede";
+?>

@@ -1,0 +1,96 @@
+{
+    "CODE": "getquotesactivity",
+    "AUTH_USER_ID": 1,
+    "USE_SUBSCRIPTION": "Y",
+    "NAME": {
+        "ru": "Получить предложения",
+        "en": "Get quotes"
+    },
+    "DESCRIPTION": {
+        "ru": "Возвращает массив идентификаторов коммерческих предложений",
+        "en": "Returns an array of identifiers of commercial proposals"
+    },
+    "PROPERTIES": {
+        "InputDealID": {
+            "Name": {
+                "ru": "Сделка",
+                "en": "Deal"
+            },
+            "Description": {
+                "ru": "ID сделки, для которой выбираются предложения",
+                "en": "ID of the deal"
+            },
+            "Type": "string",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": "{=Document:ID}"
+        },
+        "InputStatusID": {
+            "Name": {
+                "ru": "Статус",
+                "en": "Status"
+            },
+            "Description": {
+                "ru": "",
+                "en": ""
+            },
+            "Type": "select",
+            "Required": "Y",
+            "Multiple": "Y",
+            "Options": {}
+        },
+        "InputDateInsert": {
+            "Name": {
+                "ru": "Дата выставления",
+                "en": "Quote date"
+            },
+            "Description": {
+                "ru": "Учитываются предложения, выставленные ранее указанной даты (включительно). Если не указана, дата игнорируется",
+                "en": "Offers placed earlier than the specified date (inclusive) are taken into account. If not specified, the date is ignored"
+            },
+            "Type": "datetime",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "InputDatePayBefore": {
+            "Name": {
+                "ru": "Срок действия",
+                "en": "Term of validity"
+            },
+            "Description": {
+                "ru": "Учитываются предложения, истекшие по сроку действия. Если не указан, дата игнорируется",
+                "en": "Taken into qoutes the suggestions past the expiration date. If not specified, the date is ignored"
+            },
+            "Type": "datetime",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "InputPrice": {
+            "Name": {
+                "ru": "Сумма",
+                "en": ""
+            },
+            "Description": {
+                "ru": "Учитываются предложения, с суммой большей или равной указанной. Если не указана, сумма игнорируется",
+                "en": "Offers with an amount greater than or equal to the specified are taken into account. If not specified, the amount is ignored"
+            },
+            "Type": "double",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        }
+    },
+    "RETURN_PROPERTIES": {
+        "OutputList": {
+            "Name": {
+                "ru": "Список ID предложений",
+                "en": "Array of quotes IDs"
+            },
+            "Type": "int",
+            "Multiple": "Y",
+            "Default": ""
+        }
+    }
+}

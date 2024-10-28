@@ -1,0 +1,96 @@
+{
+    "CODE": "getinvoicesactivity",
+    "AUTH_USER_ID": 1,
+    "USE_SUBSCRIPTION": "Y",
+    "NAME": {
+        "ru": "Получить счета",
+        "en": "Get invoices"
+    },
+    "DESCRIPTION": {
+        "ru": "Возвращает массив идентификаторов счетов",
+        "en": "Returns an array of invoices IDs"
+    },
+    "PROPERTIES": {
+        "InputDealID": {
+            "Name": {
+                "ru": "Сделка",
+                "en": "Deal"
+            },
+            "Description": {
+                "ru": "ID сделки, для которой выбираются счета",
+                "en": "ID of the deal"
+            },
+            "Type": "string",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": "{=Document:ID}"
+        },
+        "InputStatusID": {
+            "Name": {
+                "ru": "Статус",
+                "en": "Status"
+            },
+            "Description": {
+                "ru": "",
+                "en": ""
+            },
+            "Type": "select",
+            "Required": "Y",
+            "Multiple": "Y",
+            "Options": {}
+        },
+        "InputDateInsert": {
+            "Name": {
+                "ru": "Дата выставления",
+                "en": "Invoice date"
+            },
+            "Description": {
+                "ru": "Учитываются счета, выставленные ранее указанной даты (включительно). Если не указана, дата игнорируется",
+                "en": "Invoices issued before the specified date (inclusive) are taken into account. If not specified, the date is ignored"
+            },
+            "Type": "datetime",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "InputDatePayBefore": {
+            "Name": {
+                "ru": "Срок оплаты (плановый)",
+                "en": "Payment term (planned)"
+            },
+            "Description": {
+                "ru": "Учитываются счета, просроченные по сроку оплату. Если не указан, дата игнорируется",
+                "en": "Invoices overdue for payment are taken into account. If not specified, the date is ignored"
+            },
+            "Type": "datetime",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "InputPrice": {
+            "Name": {
+                "ru": "Сумма",
+                "en": "Total"
+            },
+            "Description": {
+                "ru": "Учитываются счета, с суммой большей или равной указанной. Если не указана, сумма игнорируется",
+                "en": "Invoices with an total greater than or equal to the specified amount are taken into account. If not specified, the amount is ignored"
+            },
+            "Type": "double",
+            "Required": "N",
+            "Multiple": "N",
+            "Default": ""
+        }
+    },
+    "RETURN_PROPERTIES": {
+        "OutputInvoiceList": {
+            "Name": {
+                "ru": "Список ID счетов",
+                "en": "Array of invoices IDs"
+            },
+            "Type": "int",
+            "Multiple": "Y",
+            "Default": ""
+        }
+    }
+}

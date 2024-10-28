@@ -1,0 +1,42 @@
+{
+    "CODE": "subtaskactivity",
+    "AUTH_USER_ID": 1,
+    "USE_SUBSCRIPTION": "Y",
+    "NAME": {
+        "ru": "Добавить подзадачи к задаче",
+        "en": "Add subtasks to a task"
+    },
+    "PROPERTIES": {
+        "InputTaskID": {
+            "Name": {
+                "ru": "ID задачи",
+                "en": "Task ID"
+            },
+            "Type": "int",
+            "Required": "Y",
+            "Multiple": "N",
+            "Default": ""
+        },
+        "InputSubTasks": {
+            "Name": {
+                "ru": "Список ID подзадач",
+                "en": "Subtask ID list"
+            },
+            "Type": "int",
+            "Required": "Y",
+            "Multiple": "Y",
+            "Default": ""
+        }
+    },
+    "RETURN_PROPERTIES": {
+        "OutputResult": {
+            "Name": {
+                "ru": "Резульат",
+                "en": "Success"
+            },
+            "Type": "bool",
+            "Multiple": "N",
+            "Default": "Y"
+        }
+    }
+}

@@ -1,0 +1,8 @@
+<?
+$MESS["BPTLWGT_MODULE_DISK"] = "雲碟";
+$MESS["BPTLWGT_MODULE_IBLOCK"] = "清單";
+$MESS["BPTLWGT_MODULE_LISTS"] = "管理工作流程";
+$MESS["BPTLWGT_MY_PROCESSES"] = "我的請求";
+$MESS["BPTLWGT_RUNNING"] = "擱置中";
+$MESS["BPTLWGT_TITLE"] = "工作流程";
+?>

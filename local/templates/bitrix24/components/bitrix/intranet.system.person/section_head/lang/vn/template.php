@@ -1,0 +1,29 @@
+<?
+$MESS["INTR_CONFIRM_DELETE"] = "Lời mời sẽ bị xoá vĩnh viễn.\\n\\nAre you sure you want to delete the employee?";
+$MESS["INTR_CONFIRM_FIRE"] = "Các nhân viên sẽ không thể đăng nhập vào các portal, sẽ không được hiển thị trong cơ cấu tổ chức. Tuy nhiên, tất cả các dữ liệu cá nhân của mình (các tập tin, tin nhắn, nhiệm vụ, vv) sẽ vẫn còn nguyên vẹn.\\n\\nBạn có chắc bạn muốn từ chối truy cập cho nhân viên này?";
+$MESS["INTR_CONFIRM_RESTORE"] = "Các nhân viên sẽ có thể đăng nhập vào portal và sẽ được hiển thị trong cơ cấu tổ chức.\\n\\nBạn có chắc bạn muốn cho phép truy cập cho các nhân viên này?";
+$MESS["INTR_EXTRANET"] = "(extranet)";
+$MESS["INTR_ISP_DEACTIVATE_USER"] = "Từ chối truy cập";
+$MESS["INTR_ISP_DELETE_ERROR"] = "Lỗi! Người dùng đã không được xóa.";
+$MESS["INTR_ISP_DELETE_USER"] = "Xoá";
+$MESS["INTR_ISP_EDIT_USER"] = "Sửa";
+$MESS["INTR_ISP_INVITE"] = "Mời lại";
+$MESS["INTR_ISP_INVITE_ACCESS"] = "Lời mời đã được gửi đi";
+$MESS["INTR_ISP_IS_ABSENT"] = "Vắng mặt";
+$MESS["INTR_ISP_IS_ONLINE"] = "Trực tuyến";
+$MESS["INTR_ISP_PM"] = "Gửi tin nhắn";
+$MESS["INTR_ISP_RESTORE_USER"] = "Cho phép truy cập";
+$MESS["INTR_ISP_TASK"] = "Thêm công việc";
+$MESS["INTR_ISP_VIDEO_CALL"] = "Gọi trực tuyến";
+$MESS["INTR_IS_ADMIN"] = "Quản trị viên";
+$MESS["INTR_IS_HEAD"] = "Người giám sát";
+$MESS["INTR_STR_UF_HEAD"] = "Trưởng phòng";
+$MESS["INTR_USER_admin"] = "Quản trị viên";
+$MESS["INTR_USER_extranet"] = "Extranet";
+$MESS["INTR_USER_fired"] = "Bị sa thải";
+$MESS["INTR_USER_inactive"] = "Đã mời";
+$MESS["ISL_PERSONAL_BIRTHDAY"] = "Ngày sinh";
+$MESS["ISL_PERSONAL_EMAIL"] = "Email";
+$MESS["ISL_PERSONAL_PHONE"] = "Điện thoại";
+$MESS["ISL_PERSONAL_SKYPE"] = "Skype";
+?>

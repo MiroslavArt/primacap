@@ -1,0 +1,4 @@
+<?php
+$MESS['WEBMATRIK_INTEGRATIONS_MODULE_NAME'] = 'Webmatrik integrations';
+$MESS['WEBMATRIK__INTEGRATIONS_PARTNER_NAME'] = 'Webmatrik';
+$MESS['NOTAMEDIA_INTEGRATIONS_PARTNER_URI'] = 'https://webmatrik.com/';

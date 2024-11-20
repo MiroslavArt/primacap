@@ -1,5 +1,4 @@
 <?php
-
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 {
 	die();
@@ -80,7 +79,7 @@ $CurDateTime = $CurDateTime->format("m/d/Y h:i:s a");
         <li>3. Agents who consistently close a high number of deals will be granted access to exclusive campaigns for a designated period, rewarding their performance with increased lead opportunities.</li>
         <li>4. Criteria for Boost Button, Stages & Eligibility are as follows:
             <ul>
-				<li><strong style="background-color:green;color:white;padding:0px 5px;">Green Stage Criteria:</strong> Agents adhering to scheduled activities, providing comprehensive feedback on leads, and closing more than 3 deals per month will receive the highest volume of leads.</li>
+				<li><strong style="background-color:green;color:white;padding:0px 5px;">Green Stage Criteria:</strong> Agents adhering to scheduled activities, providing comprehensive feedback on leads, and closing 3 to 4 deals per month will receive the highest volume of leads.</li>
 				<li><strong style="background-color:yellow;color:whitepadding:0px 5px;">Yellow Stage Criteria:</strong> Agents closing 1 or 2 deals within a 3-month period will receive a minimal allocation of leads. Failure to provide feedback on leads or not engage in scheduled activities may adversely affect their scoring report and leads quantity.</li>
 				<li><strong style="background-color:red;color:whitepadding:0px 5px;">Red Stage Criteria:</strong> Agents who have not closed any deals are eligible only for reshuffled leads.</li>
             </ul>
@@ -111,7 +110,19 @@ $CurDateTime = $CurDateTime->format("m/d/Y h:i:s a");
 		</div>
 		<?php
 	?></div>
+	<script>
+	function onClickButton()
+	{
+		window.location.href = '/crm/deal/kanban/category/1/';
 
+	}
+	</script>
+	<?
+	$requestUri = $_SERVER['REQUEST_URI'];
+	if(strpos($requestUri,"crm/lead")!= false)
+    { ?>
+	    <button class='ui-btn' onclick="onClickButton()">Secondary Market Leads</button>
+	<? } ?>
 	<?php
 
 	if($afterTitleButtons <> ''):
@@ -131,12 +142,11 @@ $CurDateTime = $CurDateTime->format("m/d/Y h:i:s a");
 			<div class="ui-toolbar-filter-buttons"><?= $filterButtons ?></div><?php
 		endif
 		?></div>
+	<?
 
-	<? 
- $requestUri = $_SERVER['REQUEST_URI'];
 if(strpos($requestUri,"crm/lead") != false)
 {
-$metrics = calculateAgentMetrics($USER_ID);
+
 
 	if($metrics['lead_conversion']>='3'){?>
 	<a class="ui-btn css_popup" style ="background:green;" title="Boost">Boost</a>
@@ -159,6 +169,7 @@ $metrics = calculateAgentMetrics($USER_ID);
 ?></div>
 
 <script>
+
 	BX.message({
 		UI_TOOLBAR_ADD_PAGE_TO_LEFT_MENU: '<?= GetMessageJS('UI_TOOLBAR_ADD_PAGE_TO_LEFT_MENU') ?>',
 		UI_TOOLBAR_DELETE_PAGE_FROM_LEFT_MENU: '<?= GetMessageJS('UI_TOOLBAR_DELETE_PAGE_FROM_LEFT_MENU') ?>',

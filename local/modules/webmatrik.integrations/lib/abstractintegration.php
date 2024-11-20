@@ -17,10 +17,19 @@ abstract class AbstractIntegration implements Integration
     protected $gmt = 0;
     protected $token;
     protected $subscribed = false;
+    protected $assigned;
+    protected $proplinkuf;
+    protected $proprefuf;
+    protected $contactlinkuf;
+
 
     public function __construct()
     {
         \Bitrix\Main\Loader::includeModule('crm');
+        $this->assigned = static::getModuleOption('main_Lead_AssignedTo', '');
+        $this->proplinkuf = static::getModuleOption('main_Bayut_Property_Link_UF', '');
+        $this->proprefuf = static::getModuleOption('main_Bayut_Property_Ref_UF', '');
+        $this->contactlinkuf = static::getModuleOption('main_Bayut_Contact_Link_UF', '');
     }
 
     protected function isSubscribed()
@@ -67,10 +76,12 @@ abstract class AbstractIntegration implements Integration
         $arFields = array(
             "TITLE" => $this->title,
             "SOURCE_ID" => $this->source,
+            "NAME" => $this->name,
             "STATUS_ID" => 'NEW',
             'ASSIGNED_BY_ID' => $this->assigned,
             $this->proplinkuf => $this->proplinkufval,
             $this->proprefuf => $this->proprefufval,
+            $this->contactlinkuf => $this->contactlinkval,
             "FM" => Array(
                 'PHONE' => array(
                     'n0' => array(
@@ -87,6 +98,92 @@ abstract class AbstractIntegration implements Integration
         }
     }
 
+
+    public function createDeal() {
+        if($contacts = $this->returnContactByPhone()) {
+            $targetcontact = $contacts[0]['ID'];
+        } else {
+            $targetcontact = $this->addContact();
+        }
+        $entityFields = [
+            'TITLE'    => $this->title,
+            'STAGE_ID' => "C2:NEW",
+            'CATEGORY_ID' => 2,
+            'CLOSED' => 'N',
+            'TYPE_ID' => 'SALE',
+            'CONTACT_IDS' => [
+                $targetcontact
+            ],
+            'OPENED' => 'Y',
+            'ASSIGNED_BY_ID' => 1,
+            'SOURCE_ID' =>  $this->source,
+            $this->proplinkuf => $this->proplinkufval,
+            $this->proprefuf => $this->proprefufval,
+            $this->contactlinkuf => $this->contactlinkval,
+        ];
+        var_dump($entityFields);
+        $entityObject = new \CCrmDeal(false);
+        $entityId = $entityObject->Add(
+            $entityFields
+        );
+        var_dump($entityFields);
+        if($entityId) {
+            print_r($entityId."<br>\n");
+        } else {
+            print_r($entityObject->LAST_ERROR);
+        }
+
+        //print_r($targetcontact);
+    }
+
+    protected function returnContactByPhone() {
+        $searchCondition = '%VALUE';
+        $arFilter = array(
+            'FM' => array(
+                array(
+                    'TYPE_ID' => 'phone',
+                    $searchCondition => $this->phone
+                )
+            ),
+            'CHECK_PERMISSIONS' => 'N'
+        );
+        $obCompany = \CCrmContact::GetListEx(
+            array('ID' => 'ASC'),
+            $arFilter,
+            false,
+            false,
+            array('ID')
+        );
+        $arResult = [];
+        while($arCompany = $obCompany->Fetch()){
+            $arResult[] = $arCompany;
+        }
+        return $arResult;
+    }
+
+
+    protected function addContact() {
+        $contactFields = [
+            'NAME'=> $this->name,
+            "FM"  => [
+                "PHONE" => [
+                    "n0" => [
+                        "VALUE"      => $this->phone,
+                        "VALUE_TYPE" => "WORK",
+                    ]
+                ],
+            ],
+            "OPENED" => "Y", // "Доступен для всех" = Да
+            "ASSIGNED_BY_ID" => $this->assigned,
+            "SOURCE_ID" => $this->source
+        ];
+        $contactEntity = new \CCrmContact(false);
+        $contactId = $contactEntity->Add(
+            $contactFields
+        );
+
+        return isset($contactId) ? $contactId : false;
+    }
     /**
      * @param $yourdate
      * @return void

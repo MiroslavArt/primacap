@@ -33,15 +33,27 @@ $arAllOptions = [
             ['text', 15]
         ],
         [
+            'main_Dubizzle_Source',
+            Loc::getMessage($MODULE_ID.'_Dubizzle_Source'),
+            Option::get($MODULE_ID, '_Dubizzle_Source'),
+            ['text', 15]
+        ],
+        [
             'main_Bayut_Property_Link_UF',
             Loc::getMessage($MODULE_ID.'_Bayut_Property_Link_UF'),
             Option::get($MODULE_ID, '_Bayut_Property_Link_UF'),
-            ['text', 15]
+            ['text', 30]
         ],
         [
             'main_Bayut_Property_Ref_UF',
             Loc::getMessage($MODULE_ID.'_Bayut_Property_Ref_UF'),
             Option::get($MODULE_ID, '_Bayut_Property_Ref_UF'),
+            ['text', 30]
+        ],
+        [
+            'main_Bayut_Contact_Link_UF',
+            Loc::getMessage($MODULE_ID.'_Bayut_Contact_Link_UF'),
+            Option::get($MODULE_ID, '_Bayut_Contact_Link_UF'),
             ['text', 30]
         ],
     ],

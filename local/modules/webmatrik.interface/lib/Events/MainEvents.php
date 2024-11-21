@@ -28,6 +28,18 @@ class MainEvents
             [MainEvents::class,'onEpilog']
         );
 
+        $eventManager->addEventHandler(
+            'tasks',
+            'OnTaskAdd',
+            [TaskEvents::class,'onTaskAdd']
+        );
+
+        $eventManager->addEventHandler(
+            'socialnetwork',
+            'onSocNetGroupAdd',
+            [TaskEvents::class,'onSocNetGroupAdd']
+        );
+
 
         \CJSCore::RegisterExt('webmatrik_interface_leads', [
             "js" => "/local/js/webmatrik.interface/crm/leads/script.js",

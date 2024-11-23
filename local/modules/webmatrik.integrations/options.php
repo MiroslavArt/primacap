@@ -56,6 +56,18 @@ $arAllOptions = [
             Option::get($MODULE_ID, '_Bayut_Contact_Link_UF'),
             ['text', 30]
         ],
+        [
+            'main_Bayut_Start_Deal_WF',
+            Loc::getMessage($MODULE_ID.'_Bayut_Start_Deal_WF'),
+            Option::get($MODULE_ID, '_Bayut_Start_Deal_WF'),
+            ['checkbox']
+        ],
+        [
+            'main_Bayut_Start_Deal_WF_ID',
+            Loc::getMessage($MODULE_ID.'_Bayut_Start_Deal_WF_ID'),
+            Option::get($MODULE_ID, '_Bayut_Start_Deal_WF_ID'),
+            ['text', 5]
+        ],
     ],
 ];
 

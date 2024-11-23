@@ -21,15 +21,19 @@ abstract class AbstractIntegration implements Integration
     protected $proplinkuf;
     protected $proprefuf;
     protected $contactlinkuf;
+    protected $startwf;
+    protected $wfid;
 
 
     public function __construct()
     {
         \Bitrix\Main\Loader::includeModule('crm');
+        \Bitrix\Main\Loader::includeModule('bizproc');
         $this->assigned = static::getModuleOption('main_Lead_AssignedTo', '');
         $this->proplinkuf = static::getModuleOption('main_Bayut_Property_Link_UF', '');
         $this->proprefuf = static::getModuleOption('main_Bayut_Property_Ref_UF', '');
-        $this->contactlinkuf = static::getModuleOption('main_Bayut_Contact_Link_UF', '');
+        $this->startwf = static::getModuleOption('main_Bayut_Start_Deal_WF', '');
+        $this->wfid = static::getModuleOption('main_Bayut_Start_Deal_WF_ID', '');
     }
 
     protected function isSubscribed()
@@ -121,14 +125,24 @@ abstract class AbstractIntegration implements Integration
             $this->proprefuf => $this->proprefufval,
             $this->contactlinkuf => $this->contactlinkval,
         ];
-        var_dump($entityFields);
+
         $entityObject = new \CCrmDeal(false);
         $entityId = $entityObject->Add(
             $entityFields
         );
-        var_dump($entityFields);
+
         if($entityId) {
-            print_r($entityId."<br>\n");
+            if($this->startwf == 'Y' and $this->wfid) {
+                $deal = 'DEAL_'.$entityId;
+                $arWorkflowParameters = [];
+                $arErrorsTmp = [];
+                $wfId = \CBPDocument::StartWorkflow(
+                    $this->wfid, // константа шаблона БП
+                    array("crm","CCrmDocumentDeal", $deal),
+                    $arWorkflowParameters,
+                    $arErrorsTmp
+                );
+            }
         } else {
             print_r($entityObject->LAST_ERROR);
         }

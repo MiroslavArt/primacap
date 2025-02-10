@@ -57,6 +57,24 @@ $arAllOptions = [
             ['text', 30]
         ],
         [
+            'main_Bayut_API_URL',
+            Loc::getMessage($MODULE_ID.'_Bayut_API_URL'),
+            Option::get($MODULE_ID, '_Bayut_API_URL'),
+            ['text', 30]
+        ],
+        [
+            'main_Dubizzle_API_URL',
+            Loc::getMessage($MODULE_ID.'_Dubizzle_API_URL'),
+            Option::get($MODULE_ID, '_Dubizzle_API_URL'),
+            ['text', 30]
+        ],
+        [
+            'main_BayutDubizzle_API_KEY',
+            Loc::getMessage($MODULE_ID.'_BayutDubizzle_API_KEY'),
+            Option::get($MODULE_ID, '_BayutDubizzle_API_KEY'),
+            ['text', 30]
+        ],
+        [
             'main_Bayut_Start_Deal_WF',
             Loc::getMessage($MODULE_ID.'_Bayut_Start_Deal_WF'),
             Option::get($MODULE_ID, '_Bayut_Start_Deal_WF'),

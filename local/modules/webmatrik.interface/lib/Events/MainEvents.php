@@ -40,6 +40,12 @@ class MainEvents
             [TaskEvents::class,'onSocNetGroupAdd']
         );
 
+        $eventManager->addEventHandler(
+            'crm',
+            'OnAfterCrmControlPanelBuild',
+            [CrmEvents::class,'onMenuBuild']
+        );
+
 
         \CJSCore::RegisterExt('webmatrik_interface_leads', [
             "js" => "/local/js/webmatrik.interface/crm/leads/script.js",

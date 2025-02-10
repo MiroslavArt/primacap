@@ -173,3 +173,60 @@ if (
 		}
 	}
 }
+
+// exclude menu items
+global $USER;
+
+$userid = $USER->GetID();
+
+$usergroup = \CUser::GetUserGroup(
+    $userid
+);
+
+if(!in_array(1, $usergroup)) {
+    $arFilter = ['IBLOCK_ID' => 53];
+
+    $arSelect = ['ID', 'IBLOCK_ID', 'NAME', 'ACTIVE', 'PROPERTY_AVAILABLE_FOR_GROUP'];
+
+    $elementsList = \CIBlockElement::GetList([], $arFilter, false, false, $arSelect);
+
+    $propexcl = [];
+
+    while ($el = $elementsList->Fetch()) {
+        $propexcl[$el['NAME']] = $el['PROPERTY_AVAILABLE_FOR_GROUP_VALUE'];
+    }
+
+
+
+    //$arResult['ITEMS']['show'] = cleanitems($arResult['ITEMS']['show'],$propexcl,$usergroup);
+    //$arResult['ITEMS']['hide'] = cleanitems($arResult['ITEMS']['hide'],$propexcl,$usergroup);
+    $leftshow = cleanitems($arResult['ITEMS']['show'],$propexcl,$usergroup);
+    //Bitrix\Main\Diag\Debug::writeToFile($leftshow,"lv show", '__miros.log');
+    $arResult['ITEMS']['show'] = $leftshow;
+
+
+    $lefthide = cleanitems($arResult['ITEMS']['hide'],$propexcl,$usergroup);
+    //\Bitrix\Main\Diag\Debug::writeToFile($lefthide,"lv hide", '__miros.log');
+    $arResult['ITEMS']['hide'] = $lefthide;
+
+    //\Bitrix\Main\Diag\Debug::writeToFile($arResult,"arres", '__miros.log');
+
+}
+
+function cleanitems($checkitems, $propexcl, $usergroup) {
+    $retitems = [];
+    foreach ($checkitems as $item) {
+        if(array_key_exists($item['LINK'],$propexcl)) {
+            if(in_array($propexcl[$item['LINK']],$usergroup)) {
+                $retitems[] = $item;
+            }
+        } else {
+            $retitems[] = $item;
+        }
+    }
+    return $retitems;
+}
+
+
+
+

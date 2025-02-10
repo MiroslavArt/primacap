@@ -7,6 +7,10 @@ $MESS[$MODULE_ID.'_Dubizzle_Source'] = 'Dubizzle deal source';
 $MESS[$MODULE_ID.'_Bayut_Property_Link_UF'] = 'Bayut/Dubizzle Property Link UF in a deal';
 $MESS[$MODULE_ID.'_Bayut_Property_Ref_UF'] = 'Bayut/Dubizzle Property Reference UF in a deal';
 $MESS[$MODULE_ID.'_Bayut_Contact_Link_UF'] = 'Bayut/Dubizzle Contact Link UF in a deal';
+$MESS[$MODULE_ID.'_Bayut_Contact_Link_UF'] = 'Bayut/Dubizzle Contact Link UF in a deal';
+$MESS[$MODULE_ID.'_Bayut_API_URL'] = 'Bayut API URL';
+$MESS[$MODULE_ID.'_Dubizzle_API_URL'] = 'Dubizzle API URL';
+$MESS[$MODULE_ID.'_BayutDubizzle_API_KEY'] = 'Bayut/Dubizzle API KEY';
 $MESS[$MODULE_ID.'_Bayut_Start_Deal_WF'] = 'Bayut/Dubizzle Start deal WF';
 $MESS[$MODULE_ID.'_Bayut_Start_Deal_WF_ID'] = 'Bayut/Dubizzle Start deal WF ID';
 //

@@ -23,6 +23,7 @@ abstract class AbstractIntegration implements Integration
     protected $contactlinkuf;
     protected $startwf;
     protected $wfid;
+    protected $apikey;
 
 
     public function __construct()
@@ -32,8 +33,10 @@ abstract class AbstractIntegration implements Integration
         $this->assigned = static::getModuleOption('main_Lead_AssignedTo', '');
         $this->proplinkuf = static::getModuleOption('main_Bayut_Property_Link_UF', '');
         $this->proprefuf = static::getModuleOption('main_Bayut_Property_Ref_UF', '');
+        $this->contactlinkuf = static::getModuleOption('main_Bayut_Contact_Link_UF', '');
         $this->startwf = static::getModuleOption('main_Bayut_Start_Deal_WF', '');
         $this->wfid = static::getModuleOption('main_Bayut_Start_Deal_WF_ID', '');
+        $this->apikey = static::getModuleOption('main_BayutDubizzle_API_KEY', '');
     }
 
     protected function isSubscribed()
@@ -103,28 +106,65 @@ abstract class AbstractIntegration implements Integration
     }
 
 
-    public function createDeal() {
-        if($contacts = $this->returnContactByPhone()) {
+    public function createDeal(string $type = 'WA') {
+        if($type == 'WA' || $type == 'phone') {
+            $search = 'phone';
+        } else {
+            $search = 'email';
+        }
+        if($contacts = $this->returnContact($search)) {
             $targetcontact = $contacts[0]['ID'];
         } else {
-            $targetcontact = $this->addContact();
+            $targetcontact = $this->addContact($search);
         }
-        $entityFields = [
-            'TITLE'    => $this->title,
-            'STAGE_ID' => "C2:NEW",
-            'CATEGORY_ID' => 2,
-            'CLOSED' => 'N',
-            'TYPE_ID' => 'SALE',
-            'CONTACT_IDS' => [
-                $targetcontact
-            ],
-            'OPENED' => 'Y',
-            'ASSIGNED_BY_ID' => 1,
-            'SOURCE_ID' =>  $this->source,
-            $this->proplinkuf => $this->proplinkufval,
-            $this->proprefuf => $this->proprefufval,
-            $this->contactlinkuf => $this->contactlinkval,
-        ];
+        if($type == 'WA') {
+            $entityFields = [
+                'TITLE'    => $this->title,
+                'STAGE_ID' => "C2:NEW",
+                'CATEGORY_ID' => 2,
+                'CLOSED' => 'N',
+                'TYPE_ID' => 'SALE',
+                'CONTACT_IDS' => [
+                    $targetcontact
+                ],
+                'OPENED' => 'Y',
+                'ASSIGNED_BY_ID' => 1,
+                'SOURCE_ID' =>  $this->source,
+                $this->proplinkuf => $this->proplinkufval,
+                $this->proprefuf => $this->proprefufval,
+                $this->contactlinkuf => $this->contactlinkval,
+            ];
+        } elseif($type == 'email') {
+            $entityFields = [
+                'TITLE'    => $this->title,
+                'STAGE_ID' => "C2:NEW",
+                'CATEGORY_ID' => 2,
+                'CLOSED' => 'N',
+                'TYPE_ID' => 'SALE',
+                'CONTACT_IDS' => [
+                    $targetcontact
+                ],
+                'OPENED' => 'Y',
+                'ASSIGNED_BY_ID' => 1,
+                'SOURCE_ID' =>  $this->source,
+                $this->proprefuf => $this->proprefufval,
+            ];
+        } elseif($type == 'phone') {
+            $entityFields = [
+                'TITLE'    => $this->title,
+                'STAGE_ID' => "C2:NEW",
+                'CATEGORY_ID' => 2,
+                'CLOSED' => 'N',
+                'TYPE_ID' => 'SALE',
+                'CONTACT_IDS' => [
+                    $targetcontact
+                ],
+                'OPENED' => 'Y',
+                'ASSIGNED_BY_ID' => 1,
+                'SOURCE_ID' =>  $this->source,
+                $this->proprefuf => $this->proprefufval,
+            ];
+        }
 
         $entityObject = new \CCrmDeal(false);
         $entityId = $entityObject->Add(
@@ -143,6 +183,16 @@ abstract class AbstractIntegration implements Integration
                     $arErrorsTmp
                 );
             }
+            if($type == 'email' || $type == 'phone') {
+                if($this->comment) {
+                    $entryId = \Bitrix\Crm\Timeline\CommentEntry::create([
+                        'TEXT' => $this->comment,
+                        'SETTINGS' => ['HAS_FILES' => 'N'],
+                        'AUTHOR_ID' => 1,
+                        'BINDINGS' => [['ENTITY_TYPE_ID' => \CCrmOwnerType::Deal, 'ENTITY_ID' => $entityId]]
+                    ]);
+                }
+            }
         } else {
             print_r($entityObject->LAST_ERROR);
         }
@@ -150,17 +200,30 @@ abstract class AbstractIntegration implements Integration
         //print_r($targetcontact);
     }
 
-    protected function returnContactByPhone() {
+    protected function returnContact($type) {
         $searchCondition = '%VALUE';
-        $arFilter = array(
-            'FM' => array(
-                array(
-                    'TYPE_ID' => 'phone',
-                    $searchCondition => $this->phone
-                )
-            ),
-            'CHECK_PERMISSIONS' => 'N'
-        );
+        if($type=='phone') {
+            $arFilter = array(
+                'FM' => array(
+                    array(
+                        'TYPE_ID' => 'phone',
+                        $searchCondition => $this->phone
+                    )
+                ),
+                'CHECK_PERMISSIONS' => 'N'
+            );
+        } else {
+            $arFilter = array(
+                'FM' => array(
+                    array(
+                        'TYPE_ID' => 'email',
+                        $searchCondition => $this->email
+                    )
+                ),
+                'CHECK_PERMISSIONS' => 'N'
+            );
+        }
+
         $obCompany = \CCrmContact::GetListEx(
             array('ID' => 'ASC'),
             $arFilter,
@@ -176,17 +239,35 @@ abstract class AbstractIntegration implements Integration
     }
 
 
-    protected function addContact() {
-        $contactFields = [
-            'NAME'=> $this->name,
-            "FM"  => [
+    protected function addContact($type) {
+        if($type = 'email') {
+            $fm = [
                 "PHONE" => [
                     "n0" => [
                         "VALUE"      => $this->phone,
                         "VALUE_TYPE" => "WORK",
                     ]
                 ],
-            ],
+                "EMAIL" => [
+                    "n0" => [
+                        "VALUE"      => $this->email,
+                        "VALUE_TYPE" => "WORK",
+                    ]
+                ],
+            ];
+        } else {
+            $fm = [
+                "PHONE" => [
+                    "n0" => [
+                        "VALUE"      => $this->phone,
+                        "VALUE_TYPE" => "WORK",
+                    ]
+                ]
+            ];
+        }
+        $contactFields = [
+            'NAME'=> $this->name,
+            "FM"  => $fm,
             "OPENED" => "Y", // "Доступен для всех" = Да
             "ASSIGNED_BY_ID" => $this->assigned,
             "SOURCE_ID" => $this->source
@@ -223,15 +304,40 @@ abstract class AbstractIntegration implements Integration
     }
 
     /**
-     * @param $method
-     * @param $data
-     * @return void
+     * @param $type
+     * @param $url
+     * @return array
      */
     protected function sendCurlRequest(
-        $method,
-        $data = []
+        $type,
+        $url
     )
-    { }
+    {
+        $date = date('Y-m-d H:i:s', strtotime('-1 minute'));
+        $url = $url.'?'.http_build_query([
+                'type' =>  $type,
+                'timestamp' => $date
+            ]);
+        $curl = curl_init();
+        $options = [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer " . $this->apikey,
+            ],
+        ];
+        curl_setopt_array($curl, $options);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $response = json_decode($response, true);
+
+        return $response;
+    }
 
     /**
      * logging. TODO: monologging

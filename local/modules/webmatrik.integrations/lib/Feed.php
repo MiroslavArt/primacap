@@ -9,6 +9,51 @@ use Bitrix\Main\Loader;
 class Feed
 {
 
+    public static function makeAuth() {
+
+        // API endpoint
+        $url = 'https://atlas.propertyfinder.com/v1/auth/token';
+
+// Request data
+        $data = [
+            'apiKey' => 'boiwg.tekX8XcyUxXhtbthDxbBS1w72N4hVWZiRy',
+            'apiSecret' => 'LtMBgdx0AWY1rvwTeID0pXAnmlqeNNJ7'
+        ];
+
+// Initialize cURL
+        $ch = curl_init($url);
+
+// Set cURL options
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json'
+        ]);
+
+// Execute and get response
+        $response = curl_exec($ch);
+
+// Check for errors
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        } else {
+            // Process the response
+            $responseData = json_decode($response, true);
+            print_r($responseData);
+        }
+
+// Close cURL
+        curl_close($ch);
+
+
+
+
+
+    }
+
+
+
     public static function makeFeeds() {
         Loader::includeModule("crm");
         $entityTypeId = '1036';

@@ -46,6 +46,16 @@ class MainEvents
             [CrmEvents::class,'onMenuBuild']
         );
 
+        $eventManager->addEventHandler(
+            'main',
+            'OnUserTypeBuildList',
+            ['\Webmatrik\Interface\Property\UFLocations','GetUserTypeDescription']
+        );
+
+        \CJSCore::RegisterExt('select2', [
+            "js" => "/local/js/select2/script.js",
+            "css" => "/local/css/select2/style.css"
+        ]);
 
         \CJSCore::RegisterExt('webmatrik_interface_leads', [
             "js" => "/local/js/webmatrik.interface/crm/leads/script.js",
@@ -76,6 +86,7 @@ class MainEvents
             }
         }
         \CJSCore::init('jquery3');
+        \CJSCore::init('select2');
 
         if($type =='leadkanban' || $type =='leadlist') {
             \CJSCore::init(['webmatrik_interface_leads']);

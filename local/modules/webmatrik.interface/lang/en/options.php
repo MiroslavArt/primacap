@@ -2,3 +2,7 @@
 $MODULE_ID = 'webmatrik.interface';
 $MESS[$MODULE_ID.'_main'] = 'Main';
 $MESS[$MODULE_ID.'_save'] = 'Save';
+$MESS[$MODULE_ID.'_IBLOCK_CITY'] = 'CITY Iblock';
+$MESS[$MODULE_ID.'_IBLOCK_COMMUNITY'] = 'COMMUNITY Iblock';
+$MESS[$MODULE_ID.'_IBLOCK_SUB_COMMUNITY'] = 'SUB_COMMUNITY Iblock';
+$MESS[$MODULE_ID.'_IBLOCK_TOWER_NAME'] = 'TOWER_NAME Iblock';

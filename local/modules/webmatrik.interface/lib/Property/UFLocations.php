@@ -55,12 +55,13 @@ class UFLocations extends TypeBase
 
         if($arUserField["VALUE"]) {
             $arValues = json_decode($arUserField["VALUE"], 1);
+            //\Bitrix\Main\Diag\Debug::writeToFile($arValues, "bayutcall ".date('Y-m-d H:i:s'), "test3.log");
         } else {
             $arValues = [
-                'CITY'=> 'dubai',
-                'COMMUNITY' => 'downtown_dubai',
-                'SUB_COMMUNITY' => 'mohammad_bin_rashid_boulevard',
-                'TOWER_NAME' => '118_downtown'
+                'CITY'=> '',
+                'COMMUNITY' => '',
+                'SUB_COMMUNITY' => '',
+                'TOWER_NAME' => ''
             ];
         }
 
@@ -173,7 +174,7 @@ class UFLocations extends TypeBase
         </script>
         <div class="crm-entity-widget-resourcebook-container">
             <input type="hidden" name="<?= htmlspecialcharsbx($arUserField["FIELD_NAME"]) ?>"
-                   value='<?= json_encode($arUserField["VALUE"]) ?>'
+                   value='<?= json_encode($arValues) ?>'
                    id="<?= $arUserField["FIELD_NAME"] ?>">
             <div>
                 <div class="name">City:</div>

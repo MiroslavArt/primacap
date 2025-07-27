@@ -166,10 +166,22 @@ class UFLocations extends TypeBase
                     SetLocation(_idCity, _idCommunity, _idSubCommunity, _idTowerName);
                 });
                 BX.onCustomEvent(window, 'onCrmEntityEditorUserFieldExternalChanged', ['<?= $arUserField["FIELD_NAME"] ?>']);
-                $(_idCity).select2();
-                $(_idCommunity).select2();
-                $(_idSubCommunity).select2();
-                $(_idTowerName).select2();
+                $(_idCity).select2(
+                    {
+                        width: '100%'
+                    });
+                $(_idCommunity).select2(
+                    {
+                        width: '100%'
+                    });
+                $(_idSubCommunity).select2(
+                    {
+                        width: '100%'
+                    });
+                $(_idTowerName).select2(
+                    {
+                        width: '100%'
+                    });
             });
         </script>
         <div class="crm-entity-widget-resourcebook-container">

@@ -60,6 +60,11 @@ class MainEvents
         \CJSCore::RegisterExt('webmatrik_interface_leads', [
             "js" => "/local/js/webmatrik.interface/crm/leads/script.js",
         ]);
+
+        \CJSCore::RegisterExt('webmatrik_interface_type', [
+            "js" => "/local/js/webmatrik.interface/crm/type/script.js",
+            "css" => "/local/css/webmatrik.interface/crm/type/style.css"
+        ]);
     }
 
     public static function onEpilog()
@@ -69,6 +74,7 @@ class MainEvents
         $urlTemplates = [
             'lead_kanban' => ltrim(Option::get('crm', 'path_to_lead_kanban', '', SITE_ID), '/'),
             'lead_list' => ltrim(Option::get('crm', 'path_to_lead_list', '', SITE_ID), '/'),
+            'type_detail_propertty' => 'crm/type/1036/details/#type_id#/',
         ];
         \Bitrix\Main\UI\Extension::load("ui.buttons");
         $asset = Asset::getInstance();
@@ -83,6 +89,9 @@ class MainEvents
                 case 'lead_list':
                     $type = 'leadlist';
                     break;
+                case 'type_detail_propertty':
+                    $type = 'detailprop';
+                    break;
             }
         }
         \CJSCore::init('jquery3');
@@ -92,7 +101,10 @@ class MainEvents
             \CJSCore::init(['webmatrik_interface_leads']);
             $asset->addString('<script>BX.ready(function () {BX.Webmatrik.Interface.Crm.Leads.init
                 ();});</script>');
-
+        } elseif($type == 'detailprop') {
+            \CJSCore::init(['webmatrik_interface_type']);
+            /*$asset->addString('<script>BX.ready(function () {BX.Webmatrik.Interface.Crm.Type.init
+                ();});</script>');*/
         }
     }
 }

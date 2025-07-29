@@ -103,6 +103,7 @@ class MainEvents
                 ();});</script>');
         } elseif($type == 'detailprop') {
             \CJSCore::init(['webmatrik_interface_type']);
+            $asset->addString('<link href="/local/css/crm/type/style.css" rel="stylesheet"></link>');
             /*$asset->addString('<script>BX.ready(function () {BX.Webmatrik.Interface.Crm.Type.init
                 ();});</script>');*/
         }

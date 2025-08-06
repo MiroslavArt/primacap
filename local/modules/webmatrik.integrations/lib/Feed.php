@@ -51,6 +51,205 @@ class Feed
         }
     }
 
+    private static function getCurLocations($factory, $city) {
+        $params = [
+            'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+            'filter' => [
+                '%TITLE'=>$city
+            ],
+            'order' => ['ID' => 'ASC'],
+        ];
+
+        $items = $factory->getItemsFilteredByPermissions($params);
+
+        $result = [];
+
+        foreach ($items as $item) {
+            $data = $item->getData();
+            $result[$data['UF_CRM_9_1753773914']][] = $data['ID'];
+        }
+
+        return $result;
+    }
+
+    private static function getPfLocations($city) {
+        $httpClient = new HttpClient([
+            "socketTimeout" => 10,
+            "streamTimeout" => 15
+        ]);
+        $httpClient->setHeader('Content-Type', 'application/json', true);
+        $httpClient->setHeader('Accept', 'application/json', true);
+        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true); // mimic real browser
+        $httpClient->setHeader('Authorization', 'Bearer '.self::makeAuth(), true);
+        $url = 'https://atlas.propertyfinder.com/v1/locations'; // Adjust endpoint as needed
+
+        $queryParams = [
+            'search' => $city,
+            'page' => 1, // Example additional parameter,
+            'perPage' => 100
+        ];
+
+        $fullUrl = $url . '?' . http_build_query($queryParams);
+
+        $response = $httpClient->get(
+            $fullUrl
+        );
+
+        $status = $httpClient->getStatus();
+
+        $pflocations = [];
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            //print_r($responseData);
+            //self::processLocations($responseData['data'], $factory);
+            //return $responseData['accessToken'];
+            //echo '✅ Token: ' . $responseData['accessToken'];
+            $pages = $responseData['pagination']['totalPages'];
+            foreach ($responseData['data'] as $item) {
+                $pflocations[$item['id']] = $item['tree'];
+            }
+            $startpage = 2;
+            if($pages>1) {
+                while($startpage<=$pages) {
+                    $queryParams = [
+                        'search' => $city,
+                        'page' => $startpage, // Example additional parameter,
+                        'perPage' => 100
+                    ];
+                    $startpage++;
+                    $fullUrl = $url . '?' . http_build_query($queryParams);
+
+                    $response = $httpClient->get(
+                        $fullUrl
+                    );
+
+                    $status = $httpClient->getStatus();
+
+                    if ($status == 200) {
+                        $responseData = json_decode($response, true);
+                        foreach ($responseData['data'] as $item) {
+                            $pflocations[$item['id']] = $item['tree'];
+                        }
+                    }
+                }
+            }
+        } else {
+            echo "❌ HTTP Error: $status\n";
+            echo "Response Body: " . $response . "\n";
+        }
+
+        return $pflocations;
+    }
+
+    public function getPfUsers() {
+        $httpClient = new HttpClient([
+            "socketTimeout" => 10,
+            "streamTimeout" => 15
+        ]);
+        $httpClient->setHeader('Content-Type', 'application/json', true);
+        $httpClient->setHeader('Accept', 'application/json', true);
+        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true); // mimic real browser
+        $httpClient->setHeader('Authorization', 'Bearer '.self::makeAuth(), true);
+        $url = 'https://atlas.propertyfinder.com/v1/users/'; // Adjust endpoint as needed
+
+        $queryParams = [
+            'status' => 'active',
+            'page' => 1, // Example additional parameter,
+            'perPage' => 100
+        ];
+
+        $fullUrl = $url . '?' . http_build_query($queryParams);
+
+        $response = $httpClient->get(
+            $fullUrl
+        );
+
+        $status = $httpClient->getStatus();
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            //print_r($responseData);
+            $res = [];
+            $data = $responseData['data'];
+
+            foreach ($data as $item) {
+                $res[mb_strtolower($item['email'])] = $item['id'];
+            }
+
+            $emails = array_keys($res);
+
+            print_r($res);
+
+            $user = \Bitrix\Main\UserTable::getList(array(
+                'filter' => array(
+                    '@EMAIL' => $emails,
+                    'UF_PFID' => false
+                ),
+                'select'=>array('ID', 'EMAIL','UF_PFID'),
+            ))->fetchAll();
+
+            print_r($user);
+
+            $usero = new \CUser;
+            foreach ($user as $us) {
+                $update = false;
+                $email = mb_strtolower($us['EMAIL']);
+                echo "<pre>";
+                print_r($res[$email]);
+                echo "</pre>";
+
+                if($us['UF_PFID'] != $res[$email]) {
+                    $update = true;
+                }
+                if($update) {
+                    $fields = Array(
+                        "UF_PFID" => $res[$email]
+                    );
+                    $usero->Update($us['ID'], $fields);
+                }
+            }
+        }
+    }
+
+    public function syncLocations($city) {
+        $factory = Service\Container::getInstance()->getFactory(1054);
+        $curloc = static::getCurLocations($factory, $city);
+        $pfloc = static::getPfLocations($city);
+        print_r($pfloc);
+        print_r(count($pfloc));
+        foreach($pfloc as $key=>$item) {
+            if(!array_key_exists($key, $curloc)) {
+                $newtree = array_reverse($item, true);
+                $titles = [];
+                foreach ($newtree as $item) {
+                    $titles[] = $item['name'];
+                }
+                $title = implode(',', $titles);
+                $item = $factory->createItem(['TITLE'=>$title, 'ASSIGNED_BY_ID'=>1013,
+                    'UF_CRM_9_1753773914'=>$key]);
+                $operation = $factory->getAddOperation($item);
+                $operation
+                    ->disableCheckFields()
+                    ->disableBizProc()
+                    ->disableCheckAccess()
+                ;
+                $addResult = $operation->launch();
+
+                $errorMessages = $addResult->getErrorMessages();
+
+                if ($addResult->isSuccess())
+                {
+                    // получаем ID новой записи СП
+                    $newId = $item->getId();
+                    //echo $newId;
+
+                }
+            }
+        }
+
+    }
+
     public function setLocations()
     {
         //$token = self::makeAuth();
@@ -194,6 +393,83 @@ class Feed
             }
         }
 
+    }
+
+    public function makedraftPfFeed($id) {
+        $entityTypeId = '1036';
+        $locentityTypeId = '1054';
+        $enums = static::getEnumVal();
+        print_r($enums);
+        $container = Container::getInstance();
+
+        $factory = $container->getFactory($entityTypeId);
+        $rellocfactory = $container->getFactory($locentityTypeId);
+
+        if (!$factory) {
+            throw new Exception('Factory not found');
+        }
+
+        /*$entityClass = $factory->getDataClass();
+        $result = $entityClass::query()
+            ->setSelect(['*', 'UF_*'])
+            ->where('ID', $id)
+            ->fetch();
+
+        print_r($result);*/
+// Подготовка параметров запроса
+        $params = [
+            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+            'filter' => [
+                'ID' => $id,
+            ],
+            'order' => ['ID' => 'ASC']
+            //'limit' => 100,
+        ];
+
+        // Получаем элементы
+        $items = $factory->getItems($params);
+
+        foreach ($items as $item) {
+            $data = $item->getData();
+            print_r($data);
+        }
+    }
+
+    public static function getUser() {
+
+        $user = \Bitrix\Main\UserTable::getList(array(
+            'filter' => array(
+                '!UF_PFID' => false,
+            ),
+
+            //'limit'=>1,
+
+            'select'=>array('*','UF_*'),
+
+        ))->fetchAll();
+
+        print_r($user);
+    }
+
+
+    public static function getEnumVal() {
+        $rsUserFields = \Bitrix\Main\UserFieldTable::getList(array(
+            'filter'=>array('ENTITY_ID'=> 'CRM_5', 'USER_TYPE_ID'=>'enumeration'),
+        ));
+
+        $resval = [];
+
+        while($arUserField=$rsUserFields->fetch())
+        {
+            $enumList = \CUserFieldEnum::getList([], [
+                'USER_FIELD_ID' => $arUserField['ID'],
+            ]);
+            $resval[$arUserField['FIELD_NAME']] = [];
+            while ($enumValue = $enumList->fetch()) {
+                $resval[$arUserField['FIELD_NAME']][$enumValue['ID']] = $enumValue['VALUE'];
+            }
+        }
+        return $resval;
     }
 
     public static function makeFeeds() {

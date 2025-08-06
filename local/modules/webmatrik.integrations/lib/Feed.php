@@ -8,6 +8,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Web\HttpClient;
 use Bitrix\Main\Config\Option;
 use Bitrix\Crm\Service;
+use Bitrix\Main\Application;
 
 class Feed
 {
@@ -394,6 +395,38 @@ class Feed
         }
 
     }
+
+    public static function makeBayutFeed() {
+        $server = Application::getInstance()->getContext()::getCurrent()->getServer();
+        define('PATH', $server->getDocumentRoot().'/pub/feed');
+        self::cleanDir(PATH);
+
+        $inputUTF8 = <<<INPUT
+            <?xml version="1.0" encoding="UTF-8"?>
+            <Properties>
+            </Properties>    
+            INPUT;
+
+        $root = simplexml_load_string($inputUTF8);
+
+        $root->asXML(PATH."/bayutdubizzle.xml");
+
+    }
+
+    protected static function cleanDir($dir) {
+        $files = glob($dir."/*");
+        $c = count($files);
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+
+
 
     public function makedraftPfFeed($id) {
         $entityTypeId = '1036';

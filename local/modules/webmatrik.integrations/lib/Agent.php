@@ -14,4 +14,14 @@ class Agent
 
         return '\\' . __METHOD__ . '();';
     }
+
+    public static function makeBayutXML()
+    {
+        $feed = new Feed();
+
+        $feed->makeBayutFeed();
+
+        return '\\' . __METHOD__ . '();';
+    }
+
 }

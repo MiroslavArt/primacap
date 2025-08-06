@@ -396,21 +396,33 @@ class Feed
 
     }
 
-    public static function makeBayutFeed() {
+    public function makeBayutFeed() {
         $server = Application::getInstance()->getContext()::getCurrent()->getServer();
         define('PATH', $server->getDocumentRoot().'/pub/feed');
         self::cleanDir(PATH);
 
+        $data = [
+            ['ref' => 111],
+            ['ref' => 222]
+        ];
+        self::packtoXML($data);
+
+        return '\Webmatrik\Integrations\Feed::makeBayutFeed();';
+    }
+
+    protected static function packtoXML($data) {
         $inputUTF8 = <<<INPUT
             <?xml version="1.0" encoding="UTF-8"?>
             <Properties>
             </Properties>    
             INPUT;
-
         $root = simplexml_load_string($inputUTF8);
+        foreach ($data as $key => $item) {
+            $property = $root->addChild('Property');
+            $property->Property_Ref_No = '<![CDATA['.$item['ref'].']]';
 
+        }
         $root->asXML(PATH."/bayutdubizzle.xml");
-
     }
 
     protected static function cleanDir($dir) {

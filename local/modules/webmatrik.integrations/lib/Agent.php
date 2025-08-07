@@ -17,7 +17,7 @@ class Agent
 
     public static function makeBayutXML()
     {
-        $feed = new Feed();
+        $feed = new FeedBayut();
 
         $feed->makeBayutFeed();
 

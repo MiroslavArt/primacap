@@ -19,7 +19,7 @@ class Agent
     {
         $feed = new FeedBayut();
 
-        $feed->makeBayutFeed();
+        $feed->makeNewFeed();
 
         return '\\' . __METHOD__ . '();';
     }

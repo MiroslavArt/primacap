@@ -24,12 +24,11 @@ abstract class Feed
         static::$locentityTypeId = 1054;
         static::$photoentityTypeId = 1040;
         static::$videoentityTypeId = 1044;
-
     }
 
     protected function retrieveDate(array $filter, array $mask, string $mode ='Pf') {
         $enums = static::getEnumVal();
-        print_r($enums);
+        //print_r($enums);
         $container = Container::getInstance();
 
         $factory = $container->getFactory(static::$entityTypeId);
@@ -41,18 +40,40 @@ abstract class Feed
 
         $params = [
             'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
-            'filter' => [
-                $filter,
-            ],
+            'filter' => $filter,
             'order' => ['ID' => 'ASC']
         ];
 
         // Получаем элементы
         $items = $factory->getItems($params);
-
+        $result = [];
+        $locations = [];
         foreach ($items as $item) {
+            $res = [];
             $data = $item->getData();
             print_r($data);
+            $lisid = $data['ID'];
+            $locations[] = $data['PARENT_ID_1054'];
+            $res['LOCATION'] = $data['PARENT_ID_1054'];
+            $res['CREATED_BY'] = $data['CREATED_BY'];
+            $res['ASSIGNED_BY_ID'] = $data['ASSIGNED_BY_ID'];
+            $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
+            // sale amount
+
+            foreach ($mask as $key => $item) {
+                if($data[$key]) {
+                    if(is_array($data[$key])) {
+
+                    } else {
+                        //$res
+                    }
+                }
+            }
+            if($mode='bayut') {
+                $res['Property_Status'] = 'Live';
+            }
+            $result[$lisid] = $res;
+
         }
     }
 
@@ -77,9 +98,7 @@ abstract class Feed
         $rsUserFields = \Bitrix\Main\UserFieldTable::getList(array(
             'filter'=>array('ENTITY_ID'=> 'CRM_5', 'USER_TYPE_ID'=>'enumeration'),
         ));
-
         $resval = [];
-
         while($arUserField=$rsUserFields->fetch())
         {
             $enumList = \CUserFieldEnum::getList([], [

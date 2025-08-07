@@ -26,13 +26,15 @@ abstract class Feed
         static::$videoentityTypeId = 1044;
     }
 
-    protected function retrieveDate(array $filter, array $mask, string $mode ='Pf') {
+    protected function retrieveDate(array $filter, string $mode ='Pf') {
         $enums = static::getEnumVal();
         print_r($enums);
         $container = Container::getInstance();
 
         $factory = $container->getFactory(static::$entityTypeId);
         $rellocfactory = $container->getFactory(static::$locentityTypeId);
+        $relphotofactory = $container->getFactory(static::$photoentityTypeId);
+        $relvideofactory = $container->getFactory(static::$videoentityTypeId);
 
         if (!$factory) {
             throw new Exception('Factory not found');
@@ -50,19 +52,24 @@ abstract class Feed
         $items = $factory->getItems($params);
         $result = [];
         $locations = [];
+        $users = [];
         foreach ($items as $item) {
             $res = [];
             $data = $item->getData();
             print_r($data);
             $lisid = $data['ID'];
             $locations[] = $data['PARENT_ID_1054'];
-            $res['LOCATION'] = $data['PARENT_ID_1054'];
-            $res['CREATED_BY'] = $data['CREATED_BY'];
-            $res['ASSIGNED_BY_ID'] = $data['ASSIGNED_BY_ID'];
+            if($mode = 'Pf') {
+                $users[] = $data['CREATED_BY'];
+            }
+            $users[] = $data['ASSIGNED_BY_ID'];
+            $res['Location'] = $data['PARENT_ID_1054'];
+            $res['Created'] = $data['CREATED_BY'];
+            $res['Assigned'] = $data['ASSIGNED_BY_ID'];
             $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
             // sale amount
-
-            foreach ($mask as $key => $item) {
+            // get main info
+            foreach (static::$mask as $key => $item) {
                 if(array_key_exists($key, $data)) {
                     if(is_array($data[$key])) {
                         if(array_key_exists($key, $enums)) {
@@ -74,7 +81,6 @@ abstract class Feed
 
                             $res[$item] = $arr2;
                         }
-
                     } else {
                         if($data[$key]) {
                             if(array_key_exists($key, $enums)) {
@@ -91,11 +97,128 @@ abstract class Feed
             if($mode='bayut') {
                 $res['Property_Status'] = 'Live';
             }
-
             print_r($res);
             $result[$lisid] = $res;
 
         }
+        // get locations
+        $locations = array_unique($locations);
+
+        $params = [
+            'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+            'filter' => [
+                '@ID'=>$locations
+            ],
+            'order' => ['ID' => 'ASC'],
+        ];
+
+        $locobj = $rellocfactory->getItems($params);
+
+        $locresult = [];
+
+        foreach ($locobj as $item) {
+            $data = $item->getData();
+            if($mode='bayut') {
+                $titles = array_reverse(explode(",", $data['TITLE']));
+                $locresult[$data['ID']] = [
+                    'City' => $titles[0],
+                    'Locality' => $titles[1],
+                    'Sub_Locality' => $titles[2],
+                    'Tower_Name' => $titles[3]
+                ];
+            } elseif($mode='Pf') {
+
+            }
+        }
+        // get users
+        $users = array_unique($users);
+        if($mode='bayut') {
+            $select = ['ID', 'NAME', 'LAST_NAME', 'WORK_PHONE', 'EMAIL'];
+        } elseif($mode='Pf') {
+            $select = ['ID', 'UF_PFID'];
+        }
+
+        $userlist = \Bitrix\Main\UserTable::getList(array(
+            'filter' => array(
+                '@ID' => $users,
+                ),
+            'select'=>$select
+        ))->fetchAll();
+
+        $userresult = [];
+
+        foreach ($userlist as $item) {
+            if($mode='bayut') {
+                $userresult[$item['ID']] = [
+                    'Listing_Agent' => $item['NAME'].' '.$item['LAST_NAME'],
+                    'Listing_Agent_Phone' => $item['WORK_PHONE'],
+                    'Listing_Agent_Email' => $item['EMAIL']
+                ];
+            } elseif($mode='Pf') {
+
+            }
+        }
+        // get photos
+        $params = [
+            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+            'filter' => [
+                '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+            ],
+            'order' => ['ID' => 'ASC'],
+            //'limit' => 100,
+        ];
+
+        // Получаем элементы
+        $photoobj = $relphotofactory->getItems($params);
+        $photoresult = [];
+        foreach ($photoobj as $item) {
+            $data = $item->getData();
+            if($mode='bayut') {
+                if($item['UF_CRM_6_1752590335']) {
+                    $videoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
+                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+                        'https://primocapitalcrm.ae/'.$videoarr['SRC'];
+                }
+            } elseif($mode='Pf') {
+
+            }
+        }
+
+        // get videos
+        $params = [
+            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+            'filter' => [
+                '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+            ],
+            'order' => ['ID' => 'ASC'],
+            //'limit' => 100,
+        ];
+
+        // Получаем элементы
+        $videoobj = $relvideofactory->getItems($params);
+        $videoresult = [];
+        foreach ($videoobj as $item) {
+            $data = $item->getData();
+            if($mode='bayut') {
+                if($item['UF_CRM_7_1752575795']) {
+                    $videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+                        $item['UF_CRM_7_1752575795'];
+                }
+            } elseif($mode='Pf') {
+
+            }
+        }
+        //print_r($locresult);
+
+        foreach ($result as $key=>&$item) {
+            $item['Location'] = $locresult[$item['Location']];
+            $item['Assigned'] = $userresult[$item['Assigned']];
+            $item['Photos'] = $photoresult[$key];
+            $item['Videos'] = $videoresult[$key];
+        }
+
+        //print_r($result);
+
         return $result;
     }
 

@@ -14,6 +14,7 @@ class FeedBayut extends Feed
 {
     protected static $root;
     protected static $mask;
+    protected static $typemap;
 
     public function __construct()
     {
@@ -24,7 +25,7 @@ class FeedBayut extends Feed
             'UF_CRM_5_1752571265' => 'Property_Ref_No',
             'UF_CRM_5_1752755510' => 'Permit_Number',
             'UF_CRM_5_1752755567' => 'Property_purpose',
-            'UF_CRM_5_1752571572' => 'Property_Type',
+            'UF_CRM_5_1754561389' => 'Property_Type',
             'UF_CRM_5_1752571276' => 'Property_Size',
             'UF_CRM_5_1752755685' => 'Property_Size_Unit',
             'UF_CRM_5_1752569108' => 'plotArea',
@@ -37,7 +38,7 @@ class FeedBayut extends Feed
             'UF_CRM_5_1752571489' => 'Property_Title_AR',
             'UF_CRM_5_1752508464' => 'Property_Description_AR',
             'UF_CRM_5_1752569908' => 'Rent_Frequency',
-            'UF_CRM_5_1752570167' => 'Price',
+            'UF_CRM_5_1754555234' => 'Price',
             'UF_CRM_5_1752508563' => 'Furnished',
             'UF_CRM_5_1752755788' => 'offplanDetails_saleType',
             'UF_CRM_5_1752755825' => 'offplanDetails_dldWaiver',

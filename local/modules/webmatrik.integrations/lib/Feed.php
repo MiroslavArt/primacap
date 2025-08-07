@@ -28,7 +28,7 @@ abstract class Feed
 
     protected function retrieveDate(array $filter, array $mask, string $mode ='Pf') {
         $enums = static::getEnumVal();
-        //print_r($enums);
+        print_r($enums);
         $container = Container::getInstance();
 
         $factory = $container->getFactory(static::$entityTypeId);
@@ -39,7 +39,9 @@ abstract class Feed
         }
 
         $params = [
-            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+            'select' => ['ID', 'TITLE', 'UPDATED_TIME',
+                'PARENT_ID_1054', 'CREATED_BY',
+                'ASSIGNED_BY_ID', 'UF_*'], // Все поля, включая пользовательские
             'filter' => $filter,
             'order' => ['ID' => 'ASC']
         ];
@@ -61,21 +63,43 @@ abstract class Feed
             // sale amount
 
             foreach ($mask as $key => $item) {
-                if($data[$key]) {
+                if(array_key_exists($key, $data)) {
                     if(is_array($data[$key])) {
+                        if(array_key_exists($key, $enums)) {
+                            $arr1 = $enums[$key];
+                            $arr2 = $data[$key];
+                            $arr2 = array_map(function($key) use ($arr1) {
+                                return $arr1[$key] ?? $key; // Если ключа нет в $arr1, оставляем исходное значение
+                            }, $arr2);
+
+                            $res[$item] = $arr2;
+                        }
 
                     } else {
-                        //$res
+                        if($data[$key]) {
+                            if(array_key_exists($key, $enums)) {
+                                $res[$item] = $enums[$key][$data[$key]];
+                            } else {
+                                $res[$item] = $data[$key];
+                            }
+                        } else {
+                            $res[$item] = '';
+                        }
                     }
                 }
             }
             if($mode='bayut') {
                 $res['Property_Status'] = 'Live';
             }
+
+            print_r($res);
             $result[$lisid] = $res;
 
         }
+        return $result;
     }
+
+
 
     public static function getUser() {
 

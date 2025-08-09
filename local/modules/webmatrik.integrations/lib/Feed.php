@@ -222,9 +222,7 @@ abstract class Feed
         return $result;
     }
 
-
-
-    public static function getUser() {
+    /*public static function getUser() {
 
         $user = \Bitrix\Main\UserTable::getList(array(
             'filter' => array(
@@ -238,7 +236,7 @@ abstract class Feed
         ))->fetchAll();
 
         print_r($user);
-    }
+    }*/
 
 
     public static function getEnumVal() {
@@ -259,7 +257,7 @@ abstract class Feed
         return $resval;
     }
 
-    public static function makeFeeds() {
+    /*public static function makeFeeds() {
         Loader::includeModule("crm");
         $entityTypeId = '1036';
 // Получаем фабрику для работы с сущностью videos
@@ -377,6 +375,6 @@ abstract class Feed
 
 
 
-    }
+    }*/
 
 }

@@ -79,19 +79,29 @@ abstract class Feed
                                 return $arr1[$key] ?? $key; // Если ключа нет в $arr1, оставляем исходное значение
                             }, $arr2);
 
-                            $res[$item] = $arr2;
+                            $val = $arr2;
                         }
                     } else {
                         if($data[$key]) {
                             if(array_key_exists($key, $enums)) {
-                                $res[$item] = $enums[$key][$data[$key]];
+                                $val = $enums[$key][$data[$key]];
                             } else {
-                                $res[$item] = $data[$key];
+                                $val = $data[$key];
                             }
                         } else {
-                            $res[$item] = '';
+                            $val = '';
                         }
                     }
+                    $itemarr = explode( ',', $item);
+                    if(count($itemarr)==1) {
+                        $res[$itemarr[0]] = $val;
+                    } else {
+                        $itemtemp = $itemarr;
+                        $itemtemp0 = array_shift($itemtemp);
+                        $res[$itemtemp0] = self::arrayToNestedKeys($itemtemp, $val);
+                    }
+
+
                 }
             }
             if($mode='bayut') {
@@ -218,6 +228,23 @@ abstract class Feed
         }
 
         //print_r($result);
+
+        return $result;
+    }
+
+    private function arrayToNestedKeys(array $keys, $value = null) {
+        $result = [];
+        $current = &$result;
+
+        foreach ($keys as $key) {
+            $current[$key] = [];
+            $current = &$current[$key];
+        }
+
+        // Если нужно установить значение в последний ключ
+        if (func_num_args() > 1) {
+            $current = $value;
+        }
 
         return $result;
     }

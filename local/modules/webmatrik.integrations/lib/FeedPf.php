@@ -13,10 +13,44 @@ use Bitrix\Main\Application;
 class FeedPf extends Feed
 {
     protected static $token;
+    protected static $mask;
 
     public function __construct()
     {
         static::$token = self::makeAuth();
+        static::$mask = [
+            'TITLE' => 'Property_Title',
+            'UF_CRM_5_1752506832' => 'age',
+            'UF_CRM_5_1752506857' => 'amenities',
+            'UF_CRM_5_1752508051' => 'bedrooms',
+            'UF_CRM_5_1752507949' => 'bathrooms',
+            'UF_CRM_5_1752508146' => 'category',
+            'UF_CRM_5_1752509816' => 'uaeEmirate',
+            'UF_CRM_5_1752508197' => 'compliance,advertisementLicenseIssuanceDate',
+            'UF_CRM_5_1752508269' => 'compliance,listingAdvertisementNumber',
+            'UF_CRM_5_1752570656' => 'compliance,type',
+            'UF_CRM_5_1752508386' => 'compliance,userConfirmedDataIsCorrect',
+            'UF_CRM_5_1752508408' => 'descriptionen',
+            'UF_CRM_5_1752508464' => 'descriptionar',
+            'UF_CRM_5_1752508545' => 'developer',
+            'UF_CRM_5_1752577914' => 'finishingType',
+            'UF_CRM_5_1752508563' => 'furnishingType',
+            'UF_CRM_5_1752508720' => 'floorNumber',
+            'UF_CRM_5_1752508637' => 'hasGarden',
+            'UF_CRM_5_1752508654' => 'hasKitchen',
+            'UF_CRM_5_1752578322' => 'hasParkingOnSite',
+            'UF_CRM_5_1752508685' => 'landNumber',
+            'UF_CRM_5_1752568955' => 'mojDeedLocationDescription',
+            'UF_CRM_5_1752568971' => 'numberOfFloors',
+            'UF_CRM_5_1752569001' => 'ownerName',
+            'UF_CRM_5_1752569021' => 'parkingSlots',
+            'UF_CRM_5_1752569049' => 'plotNumber',
+            'UF_CRM_5_1752569108' => 'plotSize',
+            'UF_CRM_5_1752579686' => 'price,obligation,obligationenabled',
+            'UF_CRM_5_1752569649' => 'price,obligation,obligationcomment',
+            // tbc
+
+        ];
         parent::__construct();
     }
 
@@ -359,6 +393,14 @@ class FeedPf extends Feed
             }
         }
 
+    }
+
+    public function sendListingDraft($lisId) {
+        $filter = [
+            'ID' => $lisId,
+            '@UF_CRM_5_1752569141' => [1297]
+        ];
+        $data = static::retrieveDate($filter, 'Pf');
     }
 
     /*public function setLocations()

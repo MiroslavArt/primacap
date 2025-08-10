@@ -60,10 +60,10 @@ class FeedBayut extends Feed
 
         $filter = [
             'STAGE_ID' => 'DT1036_8:SUCCESS',
-            '@UF_CRM_5_1752569141' => [1297, 1298]
+            '@UF_CRM_5_1752569141' => [1298, 1299]
         ];
 
-        $data = static::retrieveDate($filter, static::$mask, 'bayut');
+        $data = static::retrieveDate($filter,  'bayut');
 
         if($data) {
             self::packtoXML($data);

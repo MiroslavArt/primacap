@@ -41,7 +41,7 @@ print_r($res);
 echo "</pre>";
 
 $fileUrl = current($res['items'][0]['ufCrm8_1754670291']);
-
+// получаем имя файла
 $headers = get_headers($fileUrl['urlMachine'], true);
 if (isset($headers['Content-Disposition'])) {
     if (preg_match('/filename="([^"]+)"/i', $headers['Content-Disposition'], $matches)) {
@@ -49,8 +49,8 @@ if (isset($headers['Content-Disposition'])) {
     }
 }
 
-// Путь для сохранения на сервере
-$savePath = __DIR__ . '/spafile/' . $fileName; // сохраняем в папку downloads
+// Формируем путь для сохранения
+$savePath = __DIR__ . '/spafile/' . $fileName;
 
 // Проверяем, существует ли папка, если нет - создаем
 if (!file_exists(dirname($savePath))) {
@@ -63,6 +63,7 @@ $fileContent = file_get_contents($fileUrl['urlMachine']);
 if ($fileContent !== false) {
     // Сохраняем файл
     file_put_contents($savePath, $fileContent);
+    // Если у вас БУС, то сохраняем в папку upload
     $file = \CFile::MakeFileArray(
         $savePath,
         false,

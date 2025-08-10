@@ -52,6 +52,11 @@ class MainEvents
             ['\Webmatrik\Interface\Property\UFLocations','GetUserTypeDescription']
         );
 
+        /*\CJSCore::RegisterExt('selecterize', [
+            "js" => "/local/js/selecterize/selectize.js",
+            "css" => "/local/css/selecterize/selectize.default.css"
+        ]);*/
+
         \CJSCore::RegisterExt('select2', [
             "js" => "/local/js/select2/script.js",
             "css" => "/local/css/select2/style.css"
@@ -63,7 +68,7 @@ class MainEvents
 
         \CJSCore::RegisterExt('webmatrik_interface_type', [
             "js" => "/local/js/webmatrik.interface/crm/type/script.js",
-            "css" => "/local/css/webmatrik.interface/crm/type/style.css"
+            //"css" => "/local/css/webmatrik.interface/crm/type/style.css"
         ]);
     }
 

@@ -68,7 +68,11 @@ abstract class Feed
             $res['location'] = $data['PARENT_ID_1054'];
             $res['createdBy'] = $data['CREATED_BY'];
             $res['assignedTo'] = $data['ASSIGNED_BY_ID'];
-            $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
+            if($mode=='bayut') {
+                $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
+            } elseif($mode=='Pf' && $data['BEGINDATE']) {
+                $res['availableFrom'] = $data['BEGINDATE']->format("Y-m-d");;
+            }
             // sale amount
             // get main info
             foreach (static::$mask as $key => $item) {
@@ -89,6 +93,8 @@ abstract class Feed
                                 $val = $enums[$key][$data[$key]];
                             } elseif (in_array($key,$bool)) {
                                 $val = 'true';
+                            } elseif ($key=='UF_CRM_5_1752508197') {
+                                $val = $data[$key]->format(\DateTime::ATOM);
                             } else {
                                 $val = $data[$key];
                             }
@@ -106,9 +112,6 @@ abstract class Feed
                         $res[$itemarr[0]] = $val;
                     } elseif(count($itemarr)==2) {
                         $res[$itemarr[0]][$itemarr[1]] = $val;
-                        $itemtemp = $itemarr;
-                        $itemtemp0 = array_shift($itemtemp);
-                        $res[$itemtemp0] = self::arrayToNestedKeys($itemtemp, $val);
                     } elseif(count($itemarr)==3) {
                         $res[$itemarr[0]][$itemarr[1]][$itemarr[2]] = $val;
                     }*/

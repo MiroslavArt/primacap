@@ -43,7 +43,7 @@ abstract class Feed
         }
 
         $params = [
-            'select' => ['ID', 'TITLE', 'UPDATED_TIME',
+            'select' => ['ID', 'TITLE', 'BEGINDATE', 'UPDATED_TIME',
                 'PARENT_ID_1054', 'CREATED_BY',
                 'ASSIGNED_BY_ID', 'UF_*'], // Все поля, включая пользовательские
             'filter' => $filter,

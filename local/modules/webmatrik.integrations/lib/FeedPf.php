@@ -14,9 +14,11 @@ class FeedPf extends Feed
 {
     protected static $token;
     protected static $mask;
+    protected static $offplan;
 
-    public function __construct(bool $gettoken = true)
+    public function __construct(bool $gettoken = true, bool $offPlan = false)
     {
+        static::$offplan = $offPlan;
         if($gettoken) {
             static::$token = self::makeAuth();
         }
@@ -77,11 +79,18 @@ class FeedPf extends Feed
         parent::__construct();
     }
 
-    public static function makeAuth() {
-        $data = [
-            'apiKey' => 'ZbtqB.S9LtCW4yuloB7HLOp9P12wr3YzponeZIaC',
-            'apiSecret' => '5qWrfodfthVtL2e0YG2r9WvRPXKWAk5U'
-        ];
+    protected function makeAuth() {
+        if(static::$offplan) {
+            $data = [
+                'apiKey' => 'ZbtqB.S9LtCW4yuloB7HLOp9P12wr3YzponeZIaC',
+                'apiSecret' => '5qWrfodfthVtL2e0YG2r9WvRPXKWAk5U'
+            ];
+        } else {
+            $data = [
+                'apiKey' => 'BlDyE.Fmy2YImN9zFqLgqEr3QTobXDxXHtGUUGPk',
+                'apiSecret' => 'CoI2eARQkVfLYxz50q0b2NzVe0bULDZT'
+            ];
+        }
 
         $httpClient = new HttpClient([
             "socketTimeout" => 10,
@@ -114,6 +123,7 @@ class FeedPf extends Feed
             echo "Response Body: " . $response . "\n";
 
         }
+        return 'xx';
     }
 
     private static function getCurLocations($factory, $city) {

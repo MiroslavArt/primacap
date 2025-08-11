@@ -83,10 +83,10 @@ class FeedBayut extends Feed
             $property->Property_purpose = '<![CDATA['.$item['Property_purpose'].']]>';
             $property->Property_Type = '<![CDATA['.$item['Property_Type'].']]>';
             $property->Property_Status = '<![CDATA['.$item['Property_Status'].']]>';
-            $property->City = '<![CDATA['.$item['Location']['City'].']]>';
-            $property->Locality = '<![CDATA['.$item['Location']['Locality'].']]>';
-            $property->Sub_Locality = '<![CDATA['.$item['Location']['Sub_Locality'].']]>';
-            $property->Tower_Name = '<![CDATA['.$item['Location']['Tower_Name'].']]>';
+            $property->City = '<![CDATA['.$item['location']['City'].']]>';
+            $property->Locality = '<![CDATA['.$item['location']['Locality'].']]>';
+            $property->Sub_Locality = '<![CDATA['.$item['location']['Sub_Locality'].']]>';
+            $property->Tower_Name = '<![CDATA['.$item['location']['Tower_Name'].']]>';
             $property->Property_Title = '<![CDATA['.$item['Property_Title'].']]>';
             $property->Property_Title_AR = '<![CDATA['.$item['Property_Title_AR'].']]>';
             $property->Property_Description = '<![CDATA['.$item['Property_Description'].']]>';
@@ -97,9 +97,9 @@ class FeedBayut extends Feed
             $property->Bedrooms = '<![CDATA['.$item['Bedrooms'].']]>';
             $property->Bathroom = '<![CDATA['.$item['Bathrooms'].']]>';
             $property->Price = '<![CDATA['.$item['Price'].']]>';
-            $property->Listing_Agent = '<![CDATA['.$item['Assigned']['Listing_Agent'].']]>';
-            $property->Listing_Agent_Phone = '<![CDATA['.$item['Assigned']['Listing_Agent_Phone'].']]>';
-            $property->Listing_Agent_Email = '<![CDATA['.$item['Assigned']['Listing_Agent_Email'].']]>';
+            $property->Listing_Agent = '<![CDATA['.$item['assignedTo']['Listing_Agent'].']]>';
+            $property->Listing_Agent_Phone = '<![CDATA['.$item['assignedTo']['Listing_Agent_Phone'].']]>';
+            $property->Listing_Agent_Email = '<![CDATA['.$item['assignedTo']['Listing_Agent_Email'].']]>';
             $features = $property->addChild('Features');
             foreach($item['Features'] as $key => $val) {
                 $features->Feature[$key] = '<![CDATA['.$val.']]>';

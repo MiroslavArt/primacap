@@ -15,23 +15,23 @@ class FeedPf extends Feed
     protected static $token;
     protected static $mask;
 
-    public function __construct()
+    public function __construct(bool $gettoken = true)
     {
-        static::$token = self::makeAuth();
+        if($gettoken) {
+            static::$token = self::makeAuth();
+        }
         static::$mask = [
-            'TITLE' => 'Property_Title',
             'UF_CRM_5_1752506832' => 'age',
             'UF_CRM_5_1752506857' => 'amenities',
             'UF_CRM_5_1752508051' => 'bedrooms',
             'UF_CRM_5_1752507949' => 'bathrooms',
             'UF_CRM_5_1752508146' => 'category',
-            'UF_CRM_5_1752509816' => 'uaeEmirate',
             'UF_CRM_5_1752508197' => 'compliance,advertisementLicenseIssuanceDate',
             'UF_CRM_5_1752508269' => 'compliance,listingAdvertisementNumber',
             'UF_CRM_5_1752570656' => 'compliance,type',
             'UF_CRM_5_1752508386' => 'compliance,userConfirmedDataIsCorrect',
-            'UF_CRM_5_1752508408' => 'descriptionen',
-            'UF_CRM_5_1752508464' => 'descriptionar',
+            'UF_CRM_5_1752508408' => 'description,en',
+            'UF_CRM_5_1752508464' => 'description,ar',
             'UF_CRM_5_1752508545' => 'developer',
             'UF_CRM_5_1752577914' => 'finishingType',
             'UF_CRM_5_1752508563' => 'furnishingType',
@@ -46,10 +46,33 @@ class FeedPf extends Feed
             'UF_CRM_5_1752569021' => 'parkingSlots',
             'UF_CRM_5_1752569049' => 'plotNumber',
             'UF_CRM_5_1752569108' => 'plotSize',
+            // to be changed
+            'UF_CRM_5_1754555234' => 'price,amounts,sum',
+            //
+            'UF_CRM_5_1754891719' => 'price,downpayment',
+            'UF_CRM_5_1752569355' => 'price,minimalRentalPeriod',
+            'UF_CRM_5_1752569384' => 'price,mortgage,comment',
+            'UF_CRM_5_1752579812' => 'price,mortgage,enabled',
+            'UF_CRM_5_1752569413' => 'price,numberOfCheques',
+            'UF_CRM_5_1752569581' => 'price,numberOfMortgageYears',
             'UF_CRM_5_1752579686' => 'price,obligation,obligationenabled',
             'UF_CRM_5_1752569649' => 'price,obligation,obligationcomment',
-            // tbc
-
+            'UF_CRM_5_1752569673' => 'price,onRequest',
+            'UF_CRM_5_1754893298' => 'price,paymentMethods',
+            'UF_CRM_5_1752569908' => 'price,type',
+            'UF_CRM_5_1752569772' => 'price,utilitiesInclusive',
+            'UF_CRM_5_1752570481' => 'price,valueAffected,comment',
+            'UF_CRM_5_1752570503' => 'price,valueAffected,enabled',
+            'UF_CRM_5_1752571194' => 'projectStatus',
+            'UF_CRM_5_1752571265' => 'reference',
+            'UF_CRM_5_1752571276' => 'size',
+            'UF_CRM_5_1752571294' => 'street,direction',
+            'UF_CRM_5_1752571434' => 'street,width',
+            'UF_CRM_5_1752571489' => 'title,ar',
+            'TITLE' => 'title,en',
+            'UF_CRM_5_1752571572' => 'type',
+            'UF_CRM_5_1752509816' => 'uaeEmirate',
+            'UF_CRM_5_1752571865' => 'unitNumber'
         ];
         parent::__construct();
     }

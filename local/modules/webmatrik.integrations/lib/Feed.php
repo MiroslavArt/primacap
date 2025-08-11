@@ -27,7 +27,9 @@ abstract class Feed
     }
 
     protected function retrieveDate(array $filter, string $mode ='Pf') {
-        $enums = static::getEnumVal();
+        $uf = static::getEnumVal();
+        $enums = $uf['enum'];
+        $bool = $uf['bool'];
         print_r($enums);
         $container = Container::getInstance();
 
@@ -59,13 +61,13 @@ abstract class Feed
             print_r($data);
             $lisid = $data['ID'];
             $locations[] = $data['PARENT_ID_1054'];
-            if($mode = 'Pf') {
+            if($mode == 'Pf') {
                 $users[] = $data['CREATED_BY'];
             }
             $users[] = $data['ASSIGNED_BY_ID'];
-            $res['Location'] = $data['PARENT_ID_1054'];
-            $res['Created'] = $data['CREATED_BY'];
-            $res['Assigned'] = $data['ASSIGNED_BY_ID'];
+            $res['location'] = $data['PARENT_ID_1054'];
+            $res['createdBy'] = $data['CREATED_BY'];
+            $res['assignedTo'] = $data['ASSIGNED_BY_ID'];
             $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
             // sale amount
             // get main info
@@ -85,26 +87,34 @@ abstract class Feed
                         if($data[$key]) {
                             if(array_key_exists($key, $enums)) {
                                 $val = $enums[$key][$data[$key]];
+                            } elseif (in_array($key,$bool)) {
+                                $val = 'true';
                             } else {
                                 $val = $data[$key];
                             }
                         } else {
-                            $val = '';
+                            if (in_array($key,$bool)) {
+                                $val = 'false';
+                            } else {
+                                $val = '';
+                            }
                         }
                     }
                     $itemarr = explode( ',', $item);
-                    if(count($itemarr)==1) {
+                    $res = self::arrayToNestedKeys($itemarr, $res, $val);
+                    /*if(count($itemarr)==1) {
                         $res[$itemarr[0]] = $val;
-                    } else {
+                    } elseif(count($itemarr)==2) {
+                        $res[$itemarr[0]][$itemarr[1]] = $val;
                         $itemtemp = $itemarr;
                         $itemtemp0 = array_shift($itemtemp);
                         $res[$itemtemp0] = self::arrayToNestedKeys($itemtemp, $val);
-                    }
-
-
+                    } elseif(count($itemarr)==3) {
+                        $res[$itemarr[0]][$itemarr[1]][$itemarr[2]] = $val;
+                    }*/
                 }
             }
-            if($mode='bayut') {
+            if($mode=='bayut') {
                 $res['Property_Status'] = 'Live';
             }
             print_r($res);
@@ -128,7 +138,7 @@ abstract class Feed
 
         foreach ($locobj as $item) {
             $data = $item->getData();
-            if($mode='bayut') {
+            if($mode=='bayut') {
                 $titles = array_reverse(explode(",", $data['TITLE']));
                 $locresult[$data['ID']] = [
                     'City' => $titles[0],
@@ -136,15 +146,15 @@ abstract class Feed
                     'Sub_Locality' => $titles[2],
                     'Tower_Name' => $titles[3]
                 ];
-            } elseif($mode='Pf') {
-
+            } elseif($mode=='Pf') {
+                $locresult[$data['ID']] = $data['UF_CRM_9_1753773914'];
             }
         }
         // get users
         $users = array_unique($users);
-        if($mode='bayut') {
+        if($mode=='bayut') {
             $select = ['ID', 'NAME', 'LAST_NAME', 'WORK_PHONE', 'EMAIL'];
-        } elseif($mode='Pf') {
+        } elseif($mode=='Pf') {
             $select = ['ID', 'UF_PFID'];
         }
 
@@ -158,13 +168,13 @@ abstract class Feed
         $userresult = [];
 
         foreach ($userlist as $item) {
-            if($mode='bayut') {
+            if($mode=='bayut') {
                 $userresult[$item['ID']] = [
                     'Listing_Agent' => $item['NAME'].' '.$item['LAST_NAME'],
                     'Listing_Agent_Phone' => $item['WORK_PHONE'],
                     'Listing_Agent_Email' => $item['EMAIL']
                 ];
-            } elseif($mode='Pf') {
+            } elseif($mode=='Pf') {
 
             }
         }
@@ -183,13 +193,13 @@ abstract class Feed
         $photoresult = [];
         foreach ($photoobj as $item) {
             $data = $item->getData();
-            if($mode='bayut') {
+            if($mode=='bayut') {
                 if($item['UF_CRM_6_1752590335']) {
                     $videoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
                     $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
                         'https://primocapitalcrm.ae/'.$videoarr['SRC'];
                 }
-            } elseif($mode='Pf') {
+            } elseif($mode=='Pf') {
 
             }
         }
@@ -209,22 +219,24 @@ abstract class Feed
         $videoresult = [];
         foreach ($videoobj as $item) {
             $data = $item->getData();
-            if($mode='bayut') {
+            if($mode=='bayut') {
                 if($item['UF_CRM_7_1752575795']) {
                     $videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
                         $item['UF_CRM_7_1752575795'];
                 }
-            } elseif($mode='Pf') {
+            } elseif($mode=='Pf') {
 
             }
         }
         //print_r($locresult);
 
         foreach ($result as $key=>&$item) {
-            $item['Location'] = $locresult[$item['Location']];
-            $item['Assigned'] = $userresult[$item['Assigned']];
-            $item['Photos'] = $photoresult[$key];
-            $item['Videos'] = $videoresult[$key];
+            $item['location'] = $locresult[$item['location']];
+            $item['assignedTo'] = $userresult[$item['assignedTo']];
+            if($mode=='bayut') {
+                $item['Photos'] = $photoresult[$key];
+                $item['Videos'] = $videoresult[$key];
+            }
         }
 
         //print_r($result);
@@ -232,21 +244,22 @@ abstract class Feed
         return $result;
     }
 
-    private function arrayToNestedKeys(array $keys, $value = null) {
-        $result = [];
-        $current = &$result;
+    function arrayToNestedKeys(array $keys, &$targetArray = [], $value = null) {
+        $current = &$targetArray;
 
         foreach ($keys as $key) {
-            $current[$key] = [];
+            if (!isset($current[$key]) || !is_array($current[$key])) {
+                $current[$key] = [];
+            }
             $current = &$current[$key];
         }
 
-        // Если нужно установить значение в последний ключ
-        if (func_num_args() > 1) {
+        // Если передано значение, устанавливаем его в последний ключ
+        if (func_num_args() > 2) {
             $current = $value;
         }
 
-        return $result;
+        return $targetArray;
     }
 
     /*public static function getUser() {
@@ -268,17 +281,25 @@ abstract class Feed
 
     public static function getEnumVal() {
         $rsUserFields = \Bitrix\Main\UserFieldTable::getList(array(
-            'filter'=>array('ENTITY_ID'=> 'CRM_5', 'USER_TYPE_ID'=>'enumeration'),
+            'filter'=>array('ENTITY_ID'=> 'CRM_5', '@USER_TYPE_ID'=>['enumeration', 'boolean']),
         ));
-        $resval = [];
+        $resval = [
+            'enum' => [],
+            'bool' => []
+        ];
+
         while($arUserField=$rsUserFields->fetch())
         {
-            $enumList = \CUserFieldEnum::getList([], [
-                'USER_FIELD_ID' => $arUserField['ID'],
-            ]);
-            $resval[$arUserField['FIELD_NAME']] = [];
-            while ($enumValue = $enumList->fetch()) {
-                $resval[$arUserField['FIELD_NAME']][$enumValue['ID']] = $enumValue['VALUE'];
+            if($arUserField['USER_TYPE_ID']=='enumeration') {
+                $enumList = \CUserFieldEnum::getList([], [
+                    'USER_FIELD_ID' => $arUserField['ID']
+                ]);
+                $resval['enum'][$arUserField['FIELD_NAME']] = [];
+                while ($enumValue = $enumList->fetch()) {
+                    $resval['enum'][$arUserField['FIELD_NAME']][$enumValue['ID']] = $enumValue['VALUE'];
+                }
+            } else {
+                $resval['bool'][] = $arUserField['FIELD_NAME'];
             }
         }
         return $resval;

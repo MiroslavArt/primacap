@@ -23,7 +23,7 @@ class FeedBayut extends Feed
         static::$mask = [
             'TITLE' => 'Property_Title',
             'UF_CRM_5_1752571265' => 'Property_Ref_No',
-            'UF_CRM_5_1752755510' => 'Permit_Number',
+            'UF_CRM_5_1752508269' => 'Permit_Number',
             'UF_CRM_5_1752755567' => 'Property_purpose',
             'UF_CRM_5_1754561389' => 'Property_Type',
             'UF_CRM_5_1752571276' => 'Property_Size',

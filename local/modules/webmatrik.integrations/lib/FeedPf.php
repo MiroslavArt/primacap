@@ -121,9 +121,9 @@ class FeedPf extends Feed
         } else {
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
+            throw new \Exception('no token');
 
         }
-        return 'xx';
     }
 
     private static function getCurLocations($factory, $city) {
@@ -437,7 +437,85 @@ class FeedPf extends Feed
         if(!$data) {
             throw new \Exception('No data for export. Please check portals field');
         } else {
-            print_r($data);
+            $data = self::prepareListing(current($data));
+        }
+    }
+
+    protected function prepareListing(array $data) {
+        $reserr = [];
+        if(!$data['price']['amounts']['sum']) {
+            $reserr[] = 'price in AED';
+        } else {
+            $sum = $data['price']['amounts']['sum'];
+            unset($data['price']['amounts']['sum']);
+            switch ($data['price']['type']) {
+                case 'sale':
+                    $data['price']['amounts']['sale'] = $sum;
+                    break;
+                case 'daily':
+                    $data['price']['amounts']['daily'] = $sum;
+                    break;
+                case 'monthly':
+                    $data['price']['amounts']['monthly'] = $sum;
+                    break;
+                case 'weekly':
+                    $data['price']['amounts']['weekly'] = $sum;
+                    break;
+                case 'yearly':
+                    $data['price']['amounts']['yearly'] = $sum;
+                    break;
+            }
+        }
+        if($data['price']['amounts']['type']=='sale') {
+            if(!$data['price']['downpayment']) {
+                $reserr[] = 'downpayment';
+            }
+        }
+        if(!$data['uaeEmirate']) {
+            $reserr[] = 'uaeEmirate';
+        } else {
+            if($data['uaeEmirate'] == 'dubai' || $data['uaeEmirate'] == 'abu_dhabi') {
+                if(!$data['compliance']['listingAdvertisementNumber']) {
+                    $reserr[] = 'listingAdvertisementNumber';
+                }
+                if(!$data['compliance']['type']) {
+                    $reserr[] = 'compliance type';
+                } else {
+                    if($data['uaeEmirate'] == 'dubai') {
+                        if(!in_array($data['compliance']['type'], ['rera','dtcm'])) {
+                            $reserr[] = 'compliance type';
+                        }
+                    } elseif ($data['uaeEmirate'] == 'abu_dhabi') {
+                        if(!in_array($data['compliance']['type'], ['adrec'])) {
+                            $reserr[] = 'compliance type';
+                        }
+                    }
+                }
+            }
+        }
+        if(!$data['type']) {
+            $reserr[] = 'type';
+        } else {
+            if($data['type'] != 'farm' || $data['type'] != 'land') {
+                if(!$data['bedrooms']) {
+                    $reserr[] = 'bedrooms';
+                }
+                if(!$data['bathrooms']) {
+                    $reserr[] = 'bathrooms';
+                }
+            }
+            if($data['type'] == 'co-working-space') {
+                if(!$data['hasParkingOnSite']) {
+                    $reserr[] = 'hasParkingOnSite';
+                }
+            }
+        }
+        if(!empty($reserr)) {
+            throw new \Exception('Errors in fields '.implode(",", $reserr).
+                '!');
+        } else {
+            $data = ksort($data);
+            return $data;
         }
     }
 

@@ -113,7 +113,7 @@ class FeedPf extends Feed
             //print_r($responseData);
             $token = $responseData['accessToken'];
             if(!$token) {
-                throw new Exception('no token');
+                throw new \Exception('no token');
             } else {
                 return $token;
             }
@@ -372,7 +372,7 @@ class FeedPf extends Feed
         $factory = $container->getFactory($entityTypeId);
 
         if (!$factory) {
-            throw new Exception('Factory not found');
+            throw new \Exception('Factory not found');
         }
 
 
@@ -434,6 +434,11 @@ class FeedPf extends Feed
             '@UF_CRM_5_1752569141' => [1297]
         ];
         $data = static::retrieveDate($filter, 'Pf');
+        if(!$data) {
+            throw new \Exception('No data for export. Please check portals field');
+        } else {
+            print_r($data);
+        }
     }
 
     /*public function setLocations()

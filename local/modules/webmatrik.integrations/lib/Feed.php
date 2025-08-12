@@ -30,7 +30,7 @@ abstract class Feed
         $uf = static::getEnumVal();
         $enums = $uf['enum'];
         $bool = $uf['bool'];
-        print_r($enums);
+        //print_r($enums);
         $container = Container::getInstance();
 
         $factory = $container->getFactory(static::$entityTypeId);
@@ -58,7 +58,7 @@ abstract class Feed
         foreach ($items as $item) {
             $res = [];
             $data = $item->getData();
-            print_r($data);
+            //print_r($data);
             $lisid = $data['ID'];
             $locations[] = $data['PARENT_ID_1054'];
             if($mode == 'Pf') {
@@ -122,186 +122,187 @@ abstract class Feed
             if($mode=='bayut') {
                 $res['Property_Status'] = 'Live';
             }
-            print_r($res);
+            //print_r($res);
             $result[$lisid] = $res;
 
         }
-        // get locations
-        $locations = array_unique($locations);
+        if($result) {
+            // get locations
+            $locations = array_unique($locations);
 
-        $params = [
-            'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
-            'filter' => [
-                '@ID'=>$locations
-            ],
-            'order' => ['ID' => 'ASC'],
-        ];
+            $params = [
+                'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+                'filter' => [
+                    '@ID'=>$locations
+                ],
+                'order' => ['ID' => 'ASC'],
+            ];
 
-        $locobj = $rellocfactory->getItems($params);
+            $locobj = $rellocfactory->getItems($params);
 
-        $locresult = [];
+            $locresult = [];
 
-        foreach ($locobj as $item) {
-            $data = $item->getData();
-            if($mode=='bayut') {
-                $titles = array_reverse(explode(",", $data['TITLE']));
-                $locresult[$data['ID']] = [
-                    'City' => $titles[0],
-                    'Locality' => $titles[1],
-                    'Sub_Locality' => $titles[2],
-                    'Tower_Name' => $titles[3]
-                ];
-            } elseif($mode=='Pf') {
-                $locresult[$data['ID']] = $data['UF_CRM_9_1753773914'];
+            foreach ($locobj as $item) {
+                $data = $item->getData();
+                if($mode=='bayut') {
+                    $titles = array_reverse(explode(",", $data['TITLE']));
+                    $locresult[$data['ID']] = [
+                        'City' => $titles[0],
+                        'Locality' => $titles[1],
+                        'Sub_Locality' => $titles[2],
+                        'Tower_Name' => $titles[3]
+                    ];
+                } elseif($mode=='Pf') {
+                    $locresult[$data['ID']] = $data['UF_CRM_9_1753773914'];
+                }
             }
-        }
-        // get users
-        $users = array_unique($users);
-        if($mode=='bayut') {
-            $select = ['ID', 'NAME', 'LAST_NAME', 'WORK_PHONE', 'EMAIL'];
-        } elseif($mode=='Pf') {
-            $select = ['ID', 'UF_PFID'];
-        }
+            // get users
+            $users = array_unique($users);
+            if($mode=='bayut') {
+                $select = ['ID', 'NAME', 'LAST_NAME', 'WORK_PHONE', 'EMAIL'];
+            } elseif($mode=='Pf') {
+                $select = ['ID', 'UF_PFID'];
+            }
 
-        $userlist = \Bitrix\Main\UserTable::getList(array(
-            'filter' => array(
-                '@ID' => $users,
+            $userlist = \Bitrix\Main\UserTable::getList(array(
+                'filter' => array(
+                    '@ID' => $users,
                 ),
-            'select'=>$select
-        ))->fetchAll();
+                'select'=>$select
+            ))->fetchAll();
 
-        $userresult = [];
+            $userresult = [];
 
-        foreach ($userlist as $item) {
-            if($mode=='bayut') {
-                $userresult[$item['ID']] = [
-                    'Listing_Agent' => $item['NAME'].' '.$item['LAST_NAME'],
-                    'Listing_Agent_Phone' => $item['WORK_PHONE'],
-                    'Listing_Agent_Email' => $item['EMAIL']
-                ];
-            } elseif($mode=='Pf') {
-                $userresult[$item['ID']] = $item['UF_PFID'];
-            }
-        }
-        // get photos
-        $params = [
-            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
-            'filter' => [
-                '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
-            ],
-            'order' => ['ID' => 'ASC'],
-            //'limit' => 100,
-        ];
-
-        // Получаем элементы
-        $photoobj = $relphotofactory->getItems($params);
-        $photoresult = [];
-        foreach ($photoobj as $key=>$item) {
-            $data = $item->getData();
-            if($mode=='bayut') {
-                if($item['UF_CRM_6_1752590366']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
-                        'https://primocapitalcrm.ae/'.$photoarr['SRC'];
-                }
-            } elseif($mode=='Pf') {
-                if($item['UF_CRM_6_1752590335']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['large'] =
-                        [
-                            'height' => $photoarr['HEIGHT'],
-                            'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                            'width' => $photoarr['WIDTH'],
-                        ];
-                }
-                if($item['UF_CRM_6_1752590350']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590350']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['medium'] =
-                        [
-                            'height' => $photoarr['HEIGHT'],
-                            'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                            'width' => $photoarr['WIDTH'],
-                        ];
-                }
-                if($item['UF_CRM_6_1752590366']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['original'] =
-                        [
-                            'height' => $photoarr['HEIGHT'],
-                            'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                            'width' => $photoarr['WIDTH'],
-                        ];
-                }
-                if($item['UF_CRM_6_1752590507']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590507']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['thumbnail'] =
-                        [
-                            'height' => $photoarr['HEIGHT'],
-                            'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                            'width' => $photoarr['WIDTH'],
-                        ];
-                }
-                if($item['UF_CRM_6_1752590519']) {
-                    $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590519']);
-                    $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['watermarked'] =
-                        [
-                            'height' => $photoarr['HEIGHT'],
-                            'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                            'width' => $photoarr['WIDTH'],
-                        ];
+            foreach ($userlist as $item) {
+                if($mode=='bayut') {
+                    $userresult[$item['ID']] = [
+                        'Listing_Agent' => $item['NAME'].' '.$item['LAST_NAME'],
+                        'Listing_Agent_Phone' => $item['WORK_PHONE'],
+                        'Listing_Agent_Email' => $item['EMAIL']
+                    ];
+                } elseif($mode=='Pf') {
+                    $userresult[$item['ID']] = $item['UF_PFID'];
                 }
             }
-        }
+            // get photos
+            $params = [
+                'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+                'filter' => [
+                    '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+                ],
+                'order' => ['ID' => 'ASC'],
+                //'limit' => 100,
+            ];
 
-        // get videos
-        $params = [
-            'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
-            'filter' => [
-                '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
-            ],
-            'order' => ['ID' => 'ASC'],
-            //'limit' => 100,
-        ];
-
-        // Получаем элементы
-        $videoobj = $relvideofactory->getItems($params);
-        $videoresult = [];
-        foreach ($videoobj as $item) {
-            $data = $item->getData();
-            if($mode=='bayut') {
-                if($item['UF_CRM_7_1752575795']) {
-                    $videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
-                        $item['UF_CRM_7_1752575795'];
-                }
-            } elseif($mode=='Pf') {
-                if($item['UF_CRM_7_1752575795']) {
-                    $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['default'] =
-                        $item['UF_CRM_7_1752575795'];
-                }
-                if($item['UF_CRM_7_1752575817']) {
-                    $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['view360'] =
-                        $item['UF_CRM_7_1752575817'];
+            // Получаем элементы
+            $photoobj = $relphotofactory->getItems($params);
+            $photoresult = [];
+            foreach ($photoobj as $key=>$item) {
+                $data = $item->getData();
+                if($mode=='bayut') {
+                    if($item['UF_CRM_6_1752590366']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+                            'https://primocapitalcrm.ae/'.$photoarr['SRC'];
+                    }
+                } elseif($mode=='Pf') {
+                    if($item['UF_CRM_6_1752590335']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['large'] =
+                            [
+                                'height' => $photoarr['HEIGHT'],
+                                'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
+                                'width' => $photoarr['WIDTH'],
+                            ];
+                    }
+                    if($item['UF_CRM_6_1752590350']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590350']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['medium'] =
+                            [
+                                'height' => $photoarr['HEIGHT'],
+                                'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
+                                'width' => $photoarr['WIDTH'],
+                            ];
+                    }
+                    if($item['UF_CRM_6_1752590366']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['original'] =
+                            [
+                                'height' => $photoarr['HEIGHT'],
+                                'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
+                                'width' => $photoarr['WIDTH'],
+                            ];
+                    }
+                    if($item['UF_CRM_6_1752590507']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590507']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['thumbnail'] =
+                            [
+                                'height' => $photoarr['HEIGHT'],
+                                'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
+                                'width' => $photoarr['WIDTH'],
+                            ];
+                    }
+                    if($item['UF_CRM_6_1752590519']) {
+                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590519']);
+                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['watermarked'] =
+                            [
+                                'height' => $photoarr['HEIGHT'],
+                                'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
+                                'width' => $photoarr['WIDTH'],
+                            ];
+                    }
                 }
             }
-        }
-        //print_r($locresult);
 
-        foreach ($result as $key=>&$item) {
-            $item['location'] = $locresult[$item['location']];
-            $item['assignedTo'] = $userresult[$item['assignedTo']];
+            // get videos
+            $params = [
+                'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+                'filter' => [
+                    '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+                ],
+                'order' => ['ID' => 'ASC'],
+                //'limit' => 100,
+            ];
 
-            if($mode=='bayut') {
-                $item['Photos'] = $photoresult[$key];
-                $item['Videos'] = $videoresult[$key];
-            } elseif($mode=='Pf') {
-                $item['createdBy'] = $userresult[$item['createdBy']];
-                $item['media']['images'] = $photoresult[$key];
-                $item['media']['videos'] = $videoresult[$key];
+            // Получаем элементы
+            $videoobj = $relvideofactory->getItems($params);
+            $videoresult = [];
+            foreach ($videoobj as $item) {
+                $data = $item->getData();
+                if($mode=='bayut') {
+                    if($item['UF_CRM_7_1752575795']) {
+                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+                            $item['UF_CRM_7_1752575795'];
+                    }
+                } elseif($mode=='Pf') {
+                    if($item['UF_CRM_7_1752575795']) {
+                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['default'] =
+                            $item['UF_CRM_7_1752575795'];
+                    }
+                    if($item['UF_CRM_7_1752575817']) {
+                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['view360'] =
+                            $item['UF_CRM_7_1752575817'];
+                    }
+                }
             }
+            //print_r($locresult);
+
+            foreach ($result as $key=>&$item) {
+                $item['location'] = $locresult[$item['location']];
+                $item['assignedTo'] = $userresult[$item['assignedTo']];
+
+                if($mode=='bayut') {
+                    $item['Photos'] = $photoresult[$key];
+                    $item['Videos'] = $videoresult[$key];
+                } elseif($mode=='Pf') {
+                    $item['createdBy'] = $userresult[$item['createdBy']];
+                    $item['media']['images'] = $photoresult[$key];
+                    $item['media']['videos'] = $videoresult[$key];
+                }
+            }
+
+            //print_r($result);
         }
-
-        //print_r($result);
-
         return $result;
     }
 

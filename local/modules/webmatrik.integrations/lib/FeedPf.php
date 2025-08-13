@@ -79,6 +79,21 @@ class FeedPf extends Feed
         parent::__construct();
     }
 
+    protected function getHttpClient() {
+        $httpClient = new HttpClient([
+            "socketTimeout" => 10,
+            "streamTimeout" => 15
+        ]);
+
+        $httpClient->setHeader('Content-Type', 'application/json', true);
+        $httpClient->setHeader('Accept', 'application/json', true);
+        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true);
+        if(static::$token) {
+            $httpClient->setHeader('Authorization', 'Bearer '.static::$token, true);
+        }
+        return $httpClient;
+    }
+
     protected function makeAuth() {
         if(static::$offplan) {
             $data = [
@@ -91,15 +106,7 @@ class FeedPf extends Feed
                 'apiSecret' => 'CoI2eARQkVfLYxz50q0b2NzVe0bULDZT'
             ];
         }
-
-        $httpClient = new HttpClient([
-            "socketTimeout" => 10,
-            "streamTimeout" => 15
-        ]);
-
-        $httpClient->setHeader('Content-Type', 'application/json', true);
-        $httpClient->setHeader('Accept', 'application/json', true);
-        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true); // mimic real browser
+        $httpClient = self::getHttpClient();
 
         $response = $httpClient->post(
             'https://atlas.propertyfinder.com/v1/auth/token',
@@ -148,14 +155,7 @@ class FeedPf extends Feed
     }
 
     private static function getPfLocations($city) {
-        $httpClient = new HttpClient([
-            "socketTimeout" => 10,
-            "streamTimeout" => 15
-        ]);
-        $httpClient->setHeader('Content-Type', 'application/json', true);
-        $httpClient->setHeader('Accept', 'application/json', true);
-        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true); // mimic real browser
-        $httpClient->setHeader('Authorization', 'Bearer '.static::$token, true);
+        $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/locations'; // Adjust endpoint as needed
 
         $queryParams = [
@@ -218,14 +218,7 @@ class FeedPf extends Feed
     }
 
     public function getPfUsers() {
-        $httpClient = new HttpClient([
-            "socketTimeout" => 10,
-            "streamTimeout" => 15
-        ]);
-        $httpClient->setHeader('Content-Type', 'application/json', true);
-        $httpClient->setHeader('Accept', 'application/json', true);
-        $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true); // mimic real browser
-        $httpClient->setHeader('Authorization', 'Bearer '.static::$token, true);
+        $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/users/'; // Adjust endpoint as needed
 
         $queryParams = [
@@ -289,7 +282,6 @@ class FeedPf extends Feed
     }
 
     public function syncLocations($city) {
-
         $factory = Service\Container::getInstance()->getFactory(static::$locentityTypeId);
         $curloc = static::getCurLocations($factory, $city);
         $pfloc = static::getPfLocations($city);
@@ -404,8 +396,6 @@ class FeedPf extends Feed
                 $cleanresult[] = $item;
             }
         }
-
-
         $cleanresult = [];
 
         foreach ($result as $key=>$item) {
@@ -426,7 +416,6 @@ class FeedPf extends Feed
                 //}
             }
         }
-
     }
 
     public function sendListingDraft($lisId) {
@@ -439,6 +428,8 @@ class FeedPf extends Feed
             throw new \Exception('No data for export. Please check portals field');
         } else {
             $data = self::prepareListing(current($data));
+            $lisid = self::deliverListing($data);
+            return $lisid;
         }
     }
 
@@ -527,6 +518,11 @@ class FeedPf extends Feed
             ksort($data);
             return $data;
         }
+    }
+
+    protected function deliverListing(array $data) {
+
+
     }
 
     /*public function setLocations()

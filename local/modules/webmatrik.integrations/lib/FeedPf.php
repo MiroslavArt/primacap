@@ -259,7 +259,7 @@ class FeedPf extends Feed
             $user = \Bitrix\Main\UserTable::getList(array(
                 'filter' => array(
                     '@EMAIL' => $emails,
-                    'UF_PFID' => false
+                    //'UF_PFID' => false
                 ),
                 'select'=>array('ID', 'EMAIL','UF_PFID'),
             ))->fetchAll();
@@ -279,7 +279,8 @@ class FeedPf extends Feed
                 }
                 if($update) {
                     $fields = Array(
-                        "UF_PFID" => $res[$email]
+                        "UF_PFID" => $res[$email],
+                        "UF_PFOP" => static::$offplan
                     );
                     $usero->Update($us['ID'], $fields);
                 }
@@ -443,6 +444,7 @@ class FeedPf extends Feed
 
     protected function prepareListing(array $data) {
         $reserr = [];
+        $resdescr = [];
         if(!$data['price']['amounts']['sum']) {
             $reserr[] = 'price in AED';
         } else {
@@ -510,11 +512,19 @@ class FeedPf extends Feed
                 }
             }
         }
+        if($data['assignedTo']) {
+            if(!$data['createdBy']) {
+                $data['createdBy'] = $data['assignedTo'];
+            }
+        } else {
+            $reserr[] = 'assignedTo';
+            $resdescr[] = 'User not present at PropertyFinder account';
+        }
         if(!empty($reserr)) {
             throw new \Exception('Errors in fields '.implode(",", $reserr).
-                '!');
+                '!'.implode(".", $resdescr));
         } else {
-            $data = ksort($data);
+            ksort($data);
             return $data;
         }
     }

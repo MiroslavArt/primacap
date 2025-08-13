@@ -503,9 +503,24 @@ class FeedPf extends Feed
                 }
             }
         }
+        if($data['location']) {
+            $loc = $data['location'];
+            unset($data['location']);
+            $data['location']['id'] = $loc;
+        } else {
+            $reserr[] = 'location';
+        }
         if($data['assignedTo']) {
+            $assgn = $data['assignedTo'];
+            unset($data['assignedTo']);
+            $data['assignedTo']['id'] = $assgn;
             if(!$data['createdBy']) {
-                $data['createdBy'] = $data['assignedTo'];
+                unset($data['createdBy']);
+                $data['createdBy']['id'] = $assgn;
+            } else {
+                $cre = $data['createdBy'];
+                unset($data['createdBy']);
+                $data['createdBy']['id'] = $cre;
             }
         } else {
             $reserr[] = 'assignedTo';
@@ -521,7 +536,22 @@ class FeedPf extends Feed
     }
 
     protected function deliverListing(array $data) {
+        $httpClient = self::getHttpClient();
 
+        $response = $httpClient->post(
+            'https://atlas.propertyfinder.com/v1/listings',
+            json_encode($data)
+        );
+
+        $status = $httpClient->getStatus();
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            print_r($responseData);
+        } else {
+            echo "❌ HTTP Error: $status\n";
+            echo "Response Body: " . $response . "\n";
+        }
 
     }
 

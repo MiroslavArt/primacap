@@ -294,7 +294,6 @@ abstract class Feed
             foreach ($result as $key=>&$item) {
                 $item['location'] = $locresult[$item['location']];
                 $item['assignedTo'] = $userresult[$item['assignedTo']];
-
                 if($mode=='bayut') {
                     $item['Photos'] = $photoresult[$key];
                     $item['Videos'] = $videoresult[$key];

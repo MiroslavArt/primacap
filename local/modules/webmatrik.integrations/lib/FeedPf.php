@@ -551,6 +551,35 @@ class FeedPf extends Feed
         } else {
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
+
+        }
+
+    }
+
+    public function searchLocation($search) {
+        $httpClient = self::getHttpClient();
+
+        $url = 'https://atlas.propertyfinder.com/v1/locations'; // Adjust endpoint as needed
+
+        $queryParams = [
+            'search' => $search,
+            'page' => 1, // Example additional parameter,
+            'perPage' => 100
+        ];
+
+        $fullUrl = $url . '?' . http_build_query($queryParams);
+
+        $response = $httpClient->get(
+            $fullUrl
+        );
+
+        $status = $httpClient->getStatus();
+
+        $pflocations = [];
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            print_r($responseData);
         }
 
     }

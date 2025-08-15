@@ -15,6 +15,7 @@ class FeedBayut extends Feed
     protected static $root;
     protected static $mask;
     protected static $furnmap;
+    protected static $extraAmenities;
 
     public function __construct()
     {
@@ -43,7 +44,47 @@ class FeedBayut extends Feed
             'UF_CRM_5_1752755788' => 'offplanDetails_saleType',
             'UF_CRM_5_1752755825' => 'offplanDetails_dldWaiver',
             'UF_CRM_5_1754555417' => 'offplanDetails_originalPrice',
-            'UF_CRM_5_1754555396' => 'offplanDetails_amountPaid'
+            'UF_CRM_5_1754555396' => 'offplanDetails_amountPaid',
+            'UF_CRM_5_1752569021' => 'Parking Spaces',
+            'UF_CRM_5_1755236272' => 'View',
+            'UF_CRM_5_1755238439' => 'Pet policy',
+            'UF_CRM_5_1752508720' => 'Floor',
+            'UF_CRM_5_1755238866' => 'Other Main Features',
+            'UF_CRM_5_1755238928' => 'Other Rooms',
+            'UF_CRM_5_1755238978' => 'Other Facilities',
+            'UF_CRM_5_1755239127' => 'Land Area',
+            'UF_CRM_5_1755239186' => 'Nearby Schools',
+            'UF_CRM_5_1755239275' => 'Nearby Hospitals',
+            'UF_CRM_5_1755239336' => 'Nearby Shopping Malls',
+            'UF_CRM_5_1755239384' => 'Distance From Airport (kms)',
+            'UF_CRM_5_1755239445' => 'Nearby Public Transport',
+            'UF_CRM_5_1755239531' => 'Other Nearby Places',
+            'UF_CRM_5_1755239591' => 'Total Floors',
+            'UF_CRM_5_1755239671' => 'Elevators in Building',
+            'UF_CRM_5_1755239741' => 'Completion Year',
+            'UF_CRM_5_1755239886' => 'Flooring'
+        ];
+
+        static::$extraAmenities = [
+            'Parking Spaces',
+            'View',
+            'Pet policy',
+            'Floor',
+            'Other Main Features',
+            'Other Rooms',
+            'Other Facilities',
+            'Land Area',
+            'Nearby Schools',
+            'Nearby Hospitals',
+            'Nearby Hospitals',
+            'Nearby Shopping Malls',
+            'Distance From Airport (kms)',
+            'Nearby Public Transport',
+            'Other Nearby Places',
+            'Total Floors',
+            'Elevators in Building',
+            'Completion Year',
+            'Flooring'
         ];
 
         static::$furnmap = [
@@ -65,9 +106,25 @@ class FeedBayut extends Feed
 
         $data = static::retrieveDate($filter,  'bayut');
 
+        $data = self::prepareData($data);
+        print_r($data);
+
         if($data) {
             self::packtoXML($data);
         }
+    }
+
+    protected static function prepareData($data) {
+        foreach ($data as $key => &$item) {
+            if(is_array($item['Features'])) {
+                foreach (static::$extraAmenities as $kitem) {
+                    if($item[$kitem]) {
+                        $item['Features'][] = $kitem.':'.$item[$kitem];
+                    }
+                }
+            }
+        }
+        return $data;
     }
 
     protected static function packtoXML($data) {

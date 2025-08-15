@@ -110,7 +110,8 @@ class FeedBayut extends Feed
         print_r($data);
 
         if($data) {
-            self::packtoXML($data);
+            self::packtoXML($data, 'No');
+            self::packtoXML($data, 'Yes');
         }
     }
 
@@ -127,7 +128,11 @@ class FeedBayut extends Feed
         return $data;
     }
 
-    protected static function packtoXML($data) {
+    protected static function packtoXML($data, string $offPlan = 'No') {
+        $fileName = 'bayutdubizzlesec.xml';
+        if($offPlan=='Yes') {
+            $fileName = 'bayutdubizzleoffp.xml';
+        }
         $inputUTF8 = <<<INPUT
             <?xml version="1.0" encoding="UTF-8"?>
             <Properties>
@@ -135,60 +140,61 @@ class FeedBayut extends Feed
             INPUT;
         $root = simplexml_load_string($inputUTF8);
         foreach ($data as $key => $item) {
-            $property = $root->addChild('Property');
-            $property->Property_Ref_No = '<![CDATA['.$item['Property_Ref_No'].']]>';
-            $property->Property_purpose = '<![CDATA['.$item['Property_purpose'].']]>';
-            $property->Property_Type = '<![CDATA['.$item['Property_Type'].']]>';
-            $property->Property_Status = '<![CDATA['.$item['Property_Status'].']]>';
-            $property->City = '<![CDATA['.$item['location']['City'].']]>';
-            $property->Locality = '<![CDATA['.$item['location']['Locality'].']]>';
-            $property->Sub_Locality = '<![CDATA['.$item['location']['Sub_Locality'].']]>';
-            $property->Tower_Name = '<![CDATA['.$item['location']['Tower_Name'].']]>';
-            $property->Property_Title = '<![CDATA['.$item['Property_Title'].']]>';
-            $property->Property_Title_AR = '<![CDATA['.$item['Property_Title_AR'].']]>';
-            $property->Property_Description = '<![CDATA['.$item['Property_Description'].']]>';
-            $property->Property_Description_AR = '<![CDATA['.$item['Property_Description_AR'].']]>';
-            $property->Property_Size = '<![CDATA['.$item['Property_Size'].']]>';
-            $property->Property_Size_Unit = $item['Property_Size_Unit'] ?
-                '<![CDATA['.$item['Property_Size_Unit'].']]>' : '<![CDATA[SQFT]]>';
-            $property->Bedrooms = '<![CDATA['.$item['Bedrooms'].']]>';
-            $property->Bathroom = '<![CDATA['.$item['Bathrooms'].']]>';
-            $property->Price = '<![CDATA['.$item['Price'].']]>';
-            $property->Listing_Agent = '<![CDATA['.$item['assignedTo']['Listing_Agent'].']]>';
-            $property->Listing_Agent_Phone = '<![CDATA['.$item['assignedTo']['Listing_Agent_Phone'].']]>';
-            $property->Listing_Agent_Email = '<![CDATA['.$item['assignedTo']['Listing_Agent_Email'].']]>';
-            $features = $property->addChild('Features');
-            foreach($item['Features'] as $key => $val) {
-                $features->Feature[$key] = '<![CDATA['.$val.']]>';
+            if($item['Off_plan'] == $offPlan) {
+                $property = $root->addChild('Property');
+                $property->Property_Ref_No = '<![CDATA['.$item['Property_Ref_No'].']]>';
+                $property->Property_purpose = '<![CDATA['.$item['Property_purpose'].']]>';
+                $property->Property_Type = '<![CDATA['.$item['Property_Type'].']]>';
+                $property->Property_Status = '<![CDATA['.$item['Property_Status'].']]>';
+                $property->City = '<![CDATA['.$item['location']['City'].']]>';
+                $property->Locality = '<![CDATA['.$item['location']['Locality'].']]>';
+                $property->Sub_Locality = '<![CDATA['.$item['location']['Sub_Locality'].']]>';
+                $property->Tower_Name = '<![CDATA['.$item['location']['Tower_Name'].']]>';
+                $property->Property_Title = '<![CDATA['.$item['Property_Title'].']]>';
+                $property->Property_Title_AR = '<![CDATA['.$item['Property_Title_AR'].']]>';
+                $property->Property_Description = '<![CDATA['.$item['Property_Description'].']]>';
+                $property->Property_Description_AR = '<![CDATA['.$item['Property_Description_AR'].']]>';
+                $property->Property_Size = '<![CDATA['.$item['Property_Size'].']]>';
+                $property->Property_Size_Unit = $item['Property_Size_Unit'] ?
+                    '<![CDATA['.$item['Property_Size_Unit'].']]>' : '<![CDATA[SQFT]]>';
+                $property->Bedrooms = '<![CDATA['.$item['Bedrooms'].']]>';
+                $property->Bathroom = '<![CDATA['.$item['Bathrooms'].']]>';
+                $property->Price = '<![CDATA['.$item['Price'].']]>';
+                $property->Listing_Agent = '<![CDATA['.$item['assignedTo']['Listing_Agent'].']]>';
+                $property->Listing_Agent_Phone = '<![CDATA['.$item['assignedTo']['Listing_Agent_Phone'].']]>';
+                $property->Listing_Agent_Email = '<![CDATA['.$item['assignedTo']['Listing_Agent_Email'].']]>';
+                $features = $property->addChild('Features');
+                foreach($item['Features'] as $key => $val) {
+                    $features->Feature[$key] = '<![CDATA['.$val.']]>';
+                }
+                $images = $property->addChild('Images');
+                foreach($item['Photos'] as $key => $val) {
+                    $images->Image[$key] = '<![CDATA['.$val.']]>';
+                }
+                $videos = $property->addChild('Videos');
+                foreach($item['Videos'] as $key => $val) {
+                    $videos->Video[$key] = '<![CDATA['.$val.']]>';
+                }
+                $property->Last_Updated = '<![CDATA['.$item['Last_Updated'].']]>';
+                $property->Permit_Number = '<![CDATA['.$item['Permit_Number'].']]>';
+                if($item['Property_purpose'] == 'Rent') {
+                    $property->Rent_Frequency = '<![CDATA['.$item['Rent_Frequency'].']]>';
+                }
+                $property->Off_plan = '<![CDATA['.$item['Off_plan'].']]>';
+                if($item['Off_plan'] == 'Yes') {
+                    $property->offplanDetails_saleType = '<![CDATA['.$item['offplanDetails_saleType'].']]>';
+                    $property->offplanDetails_dldWaiver = '<![CDATA['.$item['offplanDetails_dldWaiver'].']]>';
+                    $property->offplanDetails_originalPrice = '<![CDATA['.$item['offplanDetails_originalPrice'].']]>';
+                    $property->offplanDetails_amountPaid = '<![CDATA['.$item['offplanDetails_amountPaid'].']]>';
+                }
+                $property->Furnished = '<![CDATA['.static::$furnmap[$item['Furnished']].']]>';
+                $portals = $property->addChild('Portals');
+                foreach($item['Portals'] as $key => $val) {
+                    $portals->Portal[$key] = '<![CDATA['.$val.']]>';
+                }
             }
-            $images = $property->addChild('Images');
-            foreach($item['Photos'] as $key => $val) {
-                $images->Image[$key] = '<![CDATA['.$val.']]>';
-            }
-            $videos = $property->addChild('Videos');
-            foreach($item['Videos'] as $key => $val) {
-                $videos->Video[$key] = '<![CDATA['.$val.']]>';
-            }
-            $property->Last_Updated = '<![CDATA['.$item['Last_Updated'].']]>';
-            $property->Permit_Number = '<![CDATA['.$item['Permit_Number'].']]>';
-            if($item['Property_purpose'] == 'Rent') {
-                $property->Rent_Frequency = '<![CDATA['.$item['Rent_Frequency'].']]>';
-            }
-            $property->Off_plan = '<![CDATA['.$item['Off_plan'].']]>';
-            if($item['Off_plan'] == 'Yes') {
-                $property->offplanDetails_saleType = '<![CDATA['.$item['offplanDetails_saleType'].']]>';
-                $property->offplanDetails_dldWaiver = '<![CDATA['.$item['offplanDetails_dldWaiver'].']]>';
-                $property->offplanDetails_originalPrice = '<![CDATA['.$item['offplanDetails_originalPrice'].']]>';
-                $property->offplanDetails_amountPaid = '<![CDATA['.$item['offplanDetails_amountPaid'].']]>';
-            }
-            $property->Furnished = '<![CDATA['.static::$furnmap[$item['Furnished']].']]>';
-            $portals = $property->addChild('Portals');
-            foreach($item['Portals'] as $key => $val) {
-                $portals->Portal[$key] = '<![CDATA['.$val.']]>';
-            }
-
         }
-        $root->asXML(static::$root."/bayutdubizzle.xml");
+        $root->asXML(static::$root."/".$fileName);
     }
 
     protected static function cleanDir($dir) {

@@ -96,7 +96,8 @@ abstract class Feed
                             } elseif (in_array($key,$bool)) {
                                 $val = 'true';
                             } elseif ($key=='UF_CRM_5_1752508197') {
-                                $val = $data[$key]->format(\DateTime::ATOM);
+                                //$val = $data[$key]->format(\DateTime::ATOM);
+                                $val = $data[$key]->format('Y-m-d\TH:i:s\Z');
                             } else {
                                 $val = $data[$key];
                             }
@@ -109,7 +110,16 @@ abstract class Feed
                         }
                     }
                     $itemarr = explode( ',', $item);
-                    $res = self::arrayToNestedKeys($itemarr, $res, $val);
+                    if(in_array($key,$bool)) {
+                        $res = self::arrayToNestedKeys($itemarr, $res, $val);
+                    } else {
+                        if($val) {
+                            $res = self::arrayToNestedKeys($itemarr, $res, $val);
+                        }
+                    }
+
+                    //}
+                    //$res = self::arrayToNestedKeys($itemarr, $res, $val);
                     /*if(count($itemarr)==1) {
                         $res[$itemarr[0]] = $val;
                     } elseif(count($itemarr)==2) {
@@ -153,7 +163,7 @@ abstract class Feed
                         'Tower_Name' => $titles[3]
                     ];
                 } elseif($mode=='Pf') {
-                    $locresult[$data['ID']] = $data['UF_CRM_9_1753773914'];
+                    $locresult[$data['ID']] = (int)$data['UF_CRM_9_1753773914'];
                 }
             }
             // get users
@@ -182,7 +192,7 @@ abstract class Feed
                     ];
                 } elseif($mode=='Pf') {
                     if($item['UF_PFOP']==static::$offplan) {
-                        $userresult[$item['ID']] = $item['UF_PFID'];
+                        $userresult[$item['ID']] = (int)$item['UF_PFID'];
                     } else {
                         $userresult[$item['ID']] = '';
                     }
@@ -214,45 +224,45 @@ abstract class Feed
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['large'] =
                             [
-                                'height' => $photoarr['HEIGHT'],
                                 'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                                'width' => $photoarr['WIDTH'],
+                                'width' => (int)$photoarr['WIDTH'],
+                                'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
                     if($item['UF_CRM_6_1752590350']) {
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590350']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['medium'] =
                             [
-                                'height' => $photoarr['HEIGHT'],
                                 'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                                'width' => $photoarr['WIDTH'],
+                                'width' => (int)$photoarr['WIDTH'],
+                                'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
                     if($item['UF_CRM_6_1752590366']) {
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['original'] =
                             [
-                                'height' => $photoarr['HEIGHT'],
                                 'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                                'width' => $photoarr['WIDTH'],
+                                'width' => (int)$photoarr['WIDTH'],
+                                'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
                     if($item['UF_CRM_6_1752590507']) {
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590507']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['thumbnail'] =
                             [
-                                'height' => $photoarr['HEIGHT'],
                                 'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                                'width' => $photoarr['WIDTH'],
+                                'width' => (int)$photoarr['WIDTH'],
+                                'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
                     if($item['UF_CRM_6_1752590519']) {
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590519']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['watermarked'] =
                             [
-                                'height' => $photoarr['HEIGHT'],
                                 'url' => 'https://primocapitalcrm.ae/'.$photoarr['SRC'],
-                                'width' => $photoarr['WIDTH'],
+                                'width' => (int)$photoarr['WIDTH'],
+                                'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
                 }

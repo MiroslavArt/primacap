@@ -57,8 +57,8 @@ class FeedPf extends Feed
             'UF_CRM_5_1752579812' => 'price,mortgage,enabled',
             'UF_CRM_5_1752569413' => 'price,numberOfCheques',
             'UF_CRM_5_1752569581' => 'price,numberOfMortgageYears',
-            'UF_CRM_5_1752579686' => 'price,obligation,obligationenabled',
-            'UF_CRM_5_1752569649' => 'price,obligation,obligationcomment',
+            'UF_CRM_5_1752579686' => 'price,obligation,enabled',
+            'UF_CRM_5_1752569649' => 'price,obligation,comment',
             'UF_CRM_5_1752569673' => 'price,onRequest',
             'UF_CRM_5_1754893298' => 'price,paymentMethods',
             'UF_CRM_5_1752569908' => 'price,type',
@@ -538,9 +538,12 @@ class FeedPf extends Feed
     protected function deliverListing(array $data) {
         $httpClient = self::getHttpClient();
 
+        //$dataj =  json_encode($data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
+        $dataj =  json_encode($data, JSON_UNESCAPED_SLASHES);
+        file_put_contents(__DIR__.'/data.json', $dataj);
         $response = $httpClient->post(
             'https://atlas.propertyfinder.com/v1/listings',
-            json_encode($data)
+            $dataj
         );
 
         $status = $httpClient->getStatus();

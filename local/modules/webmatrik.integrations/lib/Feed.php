@@ -87,17 +87,17 @@ abstract class Feed
             if($data['UF_CRM_5_1755322729'] || $data['UF_CRM_5_1755322753']) {
                 if($mode=='bayut') {
                     $res['Videos'] = [];
-                    if($res['UF_CRM_5_1755322729']) {
+                    if($data['UF_CRM_5_1755322729']) {
                         $res['Videos'][] = $data['UF_CRM_5_1755322729'];
                     }
-                    if($res['UF_CRM_5_1755322753'])  {
+                    if($data['UF_CRM_5_1755322753'])  {
                         $res['Videos'][] = $data['UF_CRM_5_1755322753'];
                     }
                 } elseif($mode=='Pf') {
-                    if($res['UF_CRM_5_1755322729']) {
+                    if($data['UF_CRM_5_1755322729']) {
                         $res['media']['videos']['default'] = $data['UF_CRM_5_1755322729'];
                     }
-                    if($res['UF_CRM_5_1755322753'])  {
+                    if($data['UF_CRM_5_1755322753'])  {
                         $res['media']['videos']['view360'] = $data['UF_CRM_5_1755322753'];
                     }
                 }

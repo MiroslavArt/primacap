@@ -242,7 +242,7 @@ class FeedPf extends Feed
             $data = $responseData['data'];
 
             foreach ($data as $item) {
-                $res[mb_strtolower($item['email'])] = $item['id'];
+                $res[mb_strtolower($item['email'])] = $item['publicProfile']['id'];
             }
 
             $emails = array_keys($res);
@@ -539,7 +539,7 @@ class FeedPf extends Feed
         $httpClient = self::getHttpClient();
 
         //$dataj =  json_encode($data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
-        $dataj =  json_encode($data, JSON_UNESCAPED_SLASHES);
+        $dataj =  json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         file_put_contents(__DIR__.'/data.json', $dataj);
         $response = $httpClient->post(
             'https://atlas.propertyfinder.com/v1/listings',
@@ -554,9 +554,14 @@ class FeedPf extends Feed
         } else {
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
-
+            $err = json_decode($response, true);
+            //if ($status == 422) {
+                //throw new \Exception('Listing creation returned with errors: '.
+                //    implode(",", $err['errors']));
+            //} else {
+                throw new \Exception('Error in creating listing - please contact service desk');
+            //}
         }
-
     }
 
     public function searchLocation($search) {

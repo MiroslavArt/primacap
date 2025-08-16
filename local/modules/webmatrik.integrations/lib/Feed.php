@@ -75,6 +75,33 @@ abstract class Feed
             } elseif($mode=='Pf' && $data['BEGINDATE']) {
                 $res['availableFrom'] = $data['BEGINDATE']->format("Y-m-d");;
             }
+            if($data['UF_CRM_5_1755322696']) {
+                if($mode=='bayut') {
+                    $photos = self::processPhotos($data['UF_CRM_5_1755322696'], 'bayut');
+                    $res['Photos'] = $photos;
+                } elseif($mode=='Pf') {
+                    $photos = self::processPhotos($data['UF_CRM_5_1755322696'], 'Pf');
+                    $res['media']['images'] = $photos;
+                }
+            }
+            if($data['UF_CRM_5_1755322729'] || $data['UF_CRM_5_1755322753']) {
+                if($mode=='bayut') {
+                    $res['Videos'] = [];
+                    if($res['UF_CRM_5_1755322729']) {
+                        $res['Videos'][] = $data['UF_CRM_5_1755322729'];
+                    }
+                    if($res['UF_CRM_5_1755322753'])  {
+                        $res['Videos'][] = $data['UF_CRM_5_1755322753'];
+                    }
+                } elseif($mode=='Pf') {
+                    if($res['UF_CRM_5_1755322729']) {
+                        $res['media']['videos']['default'] = $data['UF_CRM_5_1755322729'];
+                    }
+                    if($res['UF_CRM_5_1755322753'])  {
+                        $res['media']['videos']['view360'] = $data['UF_CRM_5_1755322753'];
+                    }
+                }
+            }
             // sale amount
             // get main info
             foreach (static::$mask as $key => $item) {
@@ -198,7 +225,7 @@ abstract class Feed
                     }
                 }
             }
-            // get photos
+            /* old photovideo selection
             $params = [
                 'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
                 'filter' => [
@@ -208,7 +235,6 @@ abstract class Feed
                 //'limit' => 100,
             ];
 
-            // Получаем элементы
             $photoobj = $relphotofactory->getItems($params);
             $photoresult = [];
             foreach ($photoobj as $key=>$item) {
@@ -268,7 +294,6 @@ abstract class Feed
                 }
             }
 
-            // get videos
             $params = [
                 'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
                 'filter' => [
@@ -278,7 +303,6 @@ abstract class Feed
                 //'limit' => 100,
             ];
 
-            // Получаем элементы
             $videoobj = $relvideofactory->getItems($params);
             $videoresult = [];
             foreach ($videoobj as $item) {
@@ -298,25 +322,45 @@ abstract class Feed
                             $item['UF_CRM_7_1752575817'];
                     }
                 }
-            }
+            }*/
             //print_r($locresult);
 
             foreach ($result as $key=>&$item) {
                 $item['location'] = $locresult[$item['location']];
                 $item['assignedTo'] = $userresult[$item['assignedTo']];
                 if($mode=='bayut') {
-                    $item['Photos'] = $photoresult[$key];
-                    $item['Videos'] = $videoresult[$key];
+                    //$item['Photos'] = $photoresult[$key];
+                    //$item['Videos'] = $videoresult[$key];
                 } elseif($mode=='Pf') {
                     $item['createdBy'] = $userresult[$item['createdBy']];
-                    $item['media']['images'] = $photoresult[$key];
-                    $item['media']['videos'] = $videoresult[$key];
+                    //$item['media']['images'] = $photoresult[$key];
+                    //$item['media']['videos'] = $videoresult[$key];
                 }
             }
 
             //print_r($result);
         }
         return $result;
+    }
+
+    function processPhotos($data, $mode = 'bayut') {
+        $resarr = [];
+        foreach ($data as $item) {
+            $photoarr = \CFile::GetFileArray($item);
+            $src = 'https://primocapitalcrm.ae'.$photoarr['SRC'];
+            if($mode == 'bayut') {
+                $resarr[] = $src;
+            } elseif($mode=='Pf') {
+                $resarr[] = [
+                    'original' => [
+                        'url' => $src,
+                        'width' => (int)$photoarr['WIDTH'],
+                        'height' => (int)$photoarr['HEIGHT'],
+                    ]
+                ];
+            }
+        }
+        return $resarr;
     }
 
     function arrayToNestedKeys(array $keys, &$targetArray = [], $value = null) {

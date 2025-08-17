@@ -35,8 +35,8 @@ abstract class Feed
 
         $factory = $container->getFactory(static::$entityTypeId);
         $rellocfactory = $container->getFactory(static::$locentityTypeId);
-        $relphotofactory = $container->getFactory(static::$photoentityTypeId);
-        $relvideofactory = $container->getFactory(static::$videoentityTypeId);
+        //$relphotofactory = $container->getFactory(static::$photoentityTypeId);
+        //$relvideofactory = $container->getFactory(static::$videoentityTypeId);
 
         if (!$factory) {
             throw new Exception('Factory not found');

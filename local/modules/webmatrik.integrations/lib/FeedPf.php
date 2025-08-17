@@ -551,16 +551,22 @@ class FeedPf extends Feed
         if ($status == 200) {
             $responseData = json_decode($response, true);
             print_r($responseData);
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $responseData, "success exp ".date('Y-m-d H:i:s'), "pfexport.log");
+            return $responseData['id'];
         } else {
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $response, "error exp ".date('Y-m-d H:i:s'), "pfexport.log");
             $err = json_decode($response, true);
-            //if ($status == 422) {
-                //throw new \Exception('Listing creation returned with errors: '.
-                //    implode(",", $err['errors']));
-            //} else {
+            if (str_contains($response, 'reference already exists')) {
+                throw new \Exception('Error in creating listing - reference is not unique');
+            } elseif(str_contains($response, 'does not match authenticated user')) {
+                throw new \Exception('Error in creating listing - assigned agent not registered for Pf account');
+            } else {
                 throw new \Exception('Error in creating listing - please contact service desk');
-            //}
+            }
         }
     }
 

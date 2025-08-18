@@ -33,7 +33,7 @@ class FeedBayut extends Feed
             'UF_CRM_5_1752508051' => 'Bedrooms',
             'UF_CRM_5_1752507949' => 'Bathrooms',
             'UF_CRM_5_1754495503' => 'Features',
-            'UF_CRM_5_1754553774' => 'Off_plan',
+            'UF_CRM_5_1752571194' => 'Off_plan',
             'UF_CRM_5_1752569141' => 'Portals',
             'UF_CRM_5_1752508408' => 'Property_Description',
             'UF_CRM_5_1752571489' => 'Property_Title_AR',
@@ -123,6 +123,16 @@ class FeedBayut extends Feed
                         $item['Features'][] = $kitem.':'.$item[$kitem];
                     }
                 }
+            }
+            switch ($item['Off_plan']) {
+                case 'off_plan':
+                case 'off_plan_primary':
+                    $item['Off_plan'] = 'Yes';
+                    break;
+                case 'completed':
+                case 'completed_primary':
+                    $item['Off_plan'] = 'No';
+                    break;
             }
         }
         return $data;

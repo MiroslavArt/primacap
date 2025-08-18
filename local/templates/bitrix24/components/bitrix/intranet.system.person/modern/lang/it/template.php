@@ -1,9 +1,9 @@
-<?
+<?php
 $MESS["INTR_CONFIRM_DELETE"] = "L'invito sarà eliminato definitivamente.\\n\\nEliminare il dipendente?";
 $MESS["INTR_CONFIRM_FIRE"] = "Il dipendente non potrà accedere al portale e non sarà mostrato nella struttura azienda. Tuttavia, tutti i suoi dati personali (file, messaggi, incarichi e così via) rimarranno intatti.\\n\\nnNegare l'accesso a questo dipendente?";
 $MESS["INTR_CONFIRM_RESTORE"] = "Il dipendente potrà accedere al portale e sarà mostrato nella struttura azienda.\\n\\nConsentire l'accesso a questo dipendente?";
 $MESS["INTR_EXTRANET"] = "(extranet)";
-$MESS["INTR_ISP_DEACTIVATE_USER"] = "Elimina";
+$MESS["INTR_ISP_DEACTIVATE_USER"] = "Rimuovi";
 $MESS["INTR_ISP_DELETE_USER"] = "Elimina";
 $MESS["INTR_ISP_EDIT_LINK"] = "Modifica";
 $MESS["INTR_ISP_EDIT_USER"] = "Modifica";
@@ -21,8 +21,9 @@ $MESS["INTR_IS_ADMIN"] = "Amministratore";
 $MESS["INTR_IS_HEAD"] = "Supervisore";
 $MESS["INTR_USER_admin"] = "Amministratore";
 $MESS["INTR_USER_extranet"] = "Extranet";
-$MESS["INTR_USER_fired"] = "Eliminato";
+$MESS["INTR_USER_fired"] = "Rimossi";
 $MESS["INTR_USER_inactive"] = "Invitato";
+$MESS["INTR_USER_integrator"] = "Partner di Bitrix24";
 $MESS["ISL_DATE_REGISTER"] = "Registrato il";
 $MESS["ISL_EMAIL"] = "E-mail";
 $MESS["ISL_FULL_NAME"] = "Nome e cognome";
@@ -53,4 +54,3 @@ $MESS["ISL_PERSONAL_ZIP"] = "CAP";
 $MESS["ISL_SECOND_NAME"] = "Secondo nome";
 $MESS["ISL_WORK_PHONE"] = "Telefono ufficio";
 $MESS["ISL_WORK_POSITION"] = "Posizione";
-?>

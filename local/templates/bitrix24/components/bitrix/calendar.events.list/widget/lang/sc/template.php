@@ -1,4 +1,0 @@
-<?
-$MESS["WIDGET_CALENDAR_DETAILS"] = "更多";
-$MESS["WIDGET_CALENDAR_TITLE"] = "即将到来的事件";
-?>

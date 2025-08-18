@@ -1,4 +1,0 @@
-<?
-$MESS["INTR_ISBN_TPL_FILTER_ALL"] = "会社全体";
-$MESS["INTR_ISBN_TPL_FILTER_MINE"] = "自分のオフィス";
-?>

@@ -6,13 +6,13 @@ $MESS["BX24_TITLE"] = "Transferência de extranet para intranet";
 $MESS["BX24_TITLE_EMAIL"] = "Transferir para a intranet";
 $MESS["SOCNET_CONFIRM_DELETE"] = "Convidar serão eliminados de forma irrevogável.
 
-Você tem certeza que deseja excluir o empregado?";
-$MESS["SOCNET_CONFIRM_FIRE"] = "O funcionário não será capaz de fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerá intacto. 
+Você tem certeza que deseja excluir o colaborador?";
+$MESS["SOCNET_CONFIRM_FIRE"] = "O colaborador não será capaz de fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerão intactos. 
 
-Você tem certeza que deseja fechar o acesso para este empregado?";
-$MESS["SOCNET_CONFIRM_RECOVER"] = "O funcionário será capaz de fazer login no portal e será mostrado na estrutura da empresa. 
+Você tem certeza que deseja fechar o acesso para este colaborador?";
+$MESS["SOCNET_CONFIRM_RECOVER"] = "O colaborador será capaz de fazer login no portal e será mostrado na estrutura da empresa. 
 
-Você tem certeza de que quer abrir o acesso para este empregado?";
+Você tem certeza de que quer abrir o acesso para este colaborador?";
 $MESS["SONET_ACTIONS"] = "Ações";
 $MESS["SONET_ACTIVITY_STATUS"] = "Status";
 $MESS["SONET_ADDITIONAL_EMPTY"] = "Não há informação adicional";

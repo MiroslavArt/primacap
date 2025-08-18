@@ -53,6 +53,7 @@ $MESS["SONET_UM_MOD"] = "Moderatoren bearbeiten";
 $MESS["SONET_UM_MOD1"] = "Moderatoren";
 $MESS["SONET_UM_MODS"] = "Moderatoren";
 $MESS["SONET_UM_NEWS"] = "Feed";
+$MESS["SONET_UM_NEWS2"] = "Feed";
 $MESS["SONET_UM_PHOTO"] = "Foto";
 $MESS["SONET_UM_REQUESTS"] = "Einladungen und Anfragen";
 $MESS["SONET_UM_REQUESTS_OUT"] = "Einladungen zur Gruppe";

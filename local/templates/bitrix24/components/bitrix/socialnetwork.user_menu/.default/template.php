@@ -11,12 +11,13 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
 /** @global CUser $USER */
 /** @global CMain $APPLICATION */
 
+use Bitrix\Intranet\Settings\Tools\ToolsManager;
 use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Web\Uri;
 use Bitrix\Tasks\Internals\Counter;
 use Bitrix\Tasks\Internals\Counter\Name;
-use Bitrix\Tasks\Util\Restriction\Bitrix24Restriction\Limit\KpiLimit;
+use Bitrix\Tasks\Util\Restriction\Bitrix24Restriction\Limit\TaskLimit;
 use Bitrix\Tasks\Util\User;
 
 CUtil::InitJSCore(array("popup"));
@@ -56,9 +57,7 @@ if (
 $userId = (int)$arResult['User']['ID'];
 $isCurrentUserPage = ($userId === (int)$USER->GetID());
 
-$this->addExternalCss(SITE_TEMPLATE_PATH."/css/profile_menu.css");
-$bodyClass = $APPLICATION->GetPageProperty("BodyClass");
-$APPLICATION->SetPageProperty("BodyClass", ($bodyClass ? $bodyClass." " : "")."profile-menu-mode");
+$this->addExternalCss(SITE_TEMPLATE_PATH . "/src/css/standalone/profile-menu.css");
 
 if (!(isset($_REQUEST["IFRAME"]) && $_REQUEST["IFRAME"] === "Y"))
 {
@@ -66,21 +65,13 @@ if (!(isset($_REQUEST["IFRAME"]) && $_REQUEST["IFRAME"] === "Y"))
 }
 elseif($arParams['PAGE_ID'] === 'user')
 {
-	$this->SetViewTarget("below_pagetitle", 100);
-}
+	$bodyClass = $APPLICATION->GetPageProperty("BodyClass");
+	$APPLICATION->SetPageProperty(
+		"BodyClass",
+		($bodyClass ? $bodyClass." " : "")."--header-overlay --toolbar-under-menu"
+	);
 
-$className = '';
-if ($arResult["User"]["TYPE"] === 'extranet')
-{
-	$className = ' profile-menu-user-info-extranet';
-}
-elseif ($arResult["User"]["TYPE"] === 'email')
-{
-	$className = ' profile-menu-user-info-email';
-}
-elseif ($arResult["User"]["IS_EXTRANET"] === 'Y')
-{
-	$className = ' profile-menu-user-info-extranet';
+	$this->SetViewTarget("below_pagetitle", 100);
 }
 
 $requestUri = Application::getInstance()->getContext()->getRequest()->getRequestUri();
@@ -119,6 +110,7 @@ $items = array_merge($items, $profileItem);
 if (
 	is_array($arResult["CanView"])
 	&& $arResult["CanView"]['tasks']
+	&& ToolsManager::getInstance()->checkAvailabilityByToolId('tasks')
 )
 {
 	$uri = new Uri($arResult["Urls"]['tasks']);
@@ -146,17 +138,15 @@ if (
 				'ta_el' => 'horizontal_menu',
 			]);
 		}
-		$taskItem['tasks']['SUB_LINK'] = [
-			'CLASS' => '',
-			'URL' => $sublink->getUri(),
-		];
 	}
 	$items = array_merge($items, $taskItem);
 }
 
 if (
 	is_array($arResult["CanView"])
+	&& isset($arResult["CanView"]['calendar'])
 	&& $arResult["CanView"]['calendar']
+	&& ToolsManager::getInstance()->checkAvailabilityByToolId('calendar')
 )
 {
 	$uri = new Uri($arResult["Urls"]['calendar']);
@@ -197,6 +187,7 @@ if (
 
 if (
 	is_array($arResult["CanView"])
+	&& isset($arResult["CanView"]['blog'])
 	&& !!$arResult["CanView"]['blog']
 )
 {
@@ -223,13 +214,16 @@ if(
 	is_array($arResult['CanView'])
 	&& isset($arResult['CanView']['sign'])
 	&& !!$arResult['CanView']['sign']
+    && Loader::includeModule('sign')
+	&& method_exists(\Bitrix\Sign\Config\Storage::class, 'isB2eAvailable')
+	&& \Bitrix\Sign\Config\Storage::instance()->isB2eAvailable()
 )
 {
 	$uri = new Uri($arResult['Urls']['sign']);
 	$uri->addParams(['IFRAME' => 'Y']);
 	$redirect = $uri->getUri();
 
-	$items = array_merge($items, [
+	$signItem = [
 		'sign' => [
 			'ID' => 'sign',
 			'TEXT' => $arResult['Title']['sign'],
@@ -238,15 +232,43 @@ if(
 				width: 1000 
 			})",
 			'IS_ACTIVE' => (mb_strpos($requestUri, $arResult['Urls']['sign']) === 0),
-			'URL' => $redirect
-			]
-	]);
+			'URL' => $redirect,
+		]
+	];
+
+	if (enum_exists(\Bitrix\Sign\Type\CounterType::class))
+	{
+		$signItem['sign']['COUNTER_ID'] = \Bitrix\Sign\Type\CounterType::SIGN_B2E_MY_DOCUMENTS->value;
+		$userId = (int)\Bitrix\Main\Engine\CurrentUser::get()->getId();
+		$signItem['sign']['COUNTER'] = \Bitrix\Sign\Service\Container::instance()
+			->getCounterService()
+			->get(\Bitrix\Sign\Type\CounterType::SIGN_B2E_MY_DOCUMENTS, $userId)
+		;
+	}
+
+	$items = array_merge($items, $signItem);
+}
+
+if (
+	Loader::includeModule('biconnector')
+	&& class_exists('\Bitrix\BIConnector\Superset\Scope\ScopeService')
+)
+{
+	/** @see \Bitrix\BIConnector\Superset\Scope\MenuItem\MenuItemCreatorProfile::getMenuItemData */
+	$menuItem = \Bitrix\BIConnector\Superset\Scope\ScopeService::getInstance()->prepareScopeMenuItem(
+		\Bitrix\BIConnector\Superset\Scope\ScopeService::BIC_SCOPE_PROFILE
+	);
+	if ($menuItem)
+	{
+		$items[] = $menuItem;
+	}
 }
 
 if (
 	is_array($arResult['CanView'])
 	&& $arResult['CanView']['tasks']
 	&& checkEffectiveRights($userId)
+	&& ToolsManager::getInstance()->checkAvailabilityByToolId('effective')
 )
 {
 	$uri = new Uri($arResult['Urls']['tasks']);
@@ -255,23 +277,27 @@ if (
 
 	CModule::includeModule('tasks');
 
-	$efficiencyUrl = (
+	if (($arResult['User']['IS_COLLABER'] ?? 'N') !== 'Y')
+	{
+		$efficiencyUrl = (
 		$arResult['isExtranetSite']
 			? SITE_DIR . "contacts/personal/user/{$userId}/tasks/effective/"
 			: SITE_DIR . "company/personal/user/{$userId}/tasks/effective/"
-	);
-	$efficiencyCounter = (KpiLimit::isLimitExceeded() ? 0 : Counter::getInstance($userId)->get(Name::EFFECTIVE));
+		);
+		$efficiencyCounter = (TaskLimit::isLimitExceeded() ? 0 : Counter::getInstance($userId)->get(Name::EFFECTIVE));
 
-	$items['effective_counter'] = [
-		'TEXT' => GetMessage('SONET_UM_EFFICIENCY'),
-		'ON_CLICK' => "BX.SidePanel.Instance.open('{$efficiencyUrl}', { width: 1000 })",
-		'COUNTER' => $efficiencyCounter,
-		'MAX_COUNTER_SIZE' => 100,
-		'COUNTER_ID' => 'effective_counter',
-		'ID' => 'effective_counter',
-		'CLASS' => 'effective_counter',
-		'IS_ACTIVE' => (mb_strpos($requestUri, $efficiencyUrl) === 0),
-	];
+		$items['effective_counter'] = [
+			'TEXT' => GetMessage('SONET_UM_EFFICIENCY'),
+			'ON_CLICK' => "BX.SidePanel.Instance.open('{$efficiencyUrl}', { width: 1000 })",
+			'ID' => 'effective_counter',
+			'CLASS' => 'effective_counter',
+			'IS_ACTIVE' => (mb_strpos($requestUri, $efficiencyUrl) === 0),
+			'SUPER_TITLE' => [
+				'TEXT' => $efficiencyCounter . '%',
+				'CLASS' => 'effective_counter',
+			],
+		];
+	}
 }
 
 if (
@@ -322,6 +348,7 @@ if (
 	is_array($arResult["CurrentUserPerms"])
 	&& is_array($arResult["CurrentUserPerms"]["Operations"])
 	&& $arResult["CurrentUserPerms"]["Operations"]['viewgroups']
+	&& ToolsManager::getInstance()->checkAvailabilityByToolId('workgroups')
 )
 {
 	$uri = new Uri($arResult["Urls"]['groups']);
@@ -353,7 +380,11 @@ $APPLICATION->IncludeComponent(
 					&& CSocNetUser::isCurrentUserModuleAdmin()
 				)
 			)
-		)
+		),
+		"THEME" => "air",
+		"THEME_VARS" => [
+			'--mib-margin-bottom' => 0,
+		],
 	)
 );
 

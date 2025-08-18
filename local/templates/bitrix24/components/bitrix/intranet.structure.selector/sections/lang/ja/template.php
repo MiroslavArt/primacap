@@ -1,4 +1,0 @@
-<?
-$MESS["INTR_STR_ABOUT_DEPARTMENT"] = "部署について";
-$MESS["INTR_STR_HEAD_DEPARTMENT"] = "親部門";
-?>

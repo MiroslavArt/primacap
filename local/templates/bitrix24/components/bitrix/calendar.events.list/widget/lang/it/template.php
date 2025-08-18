@@ -1,4 +1,3 @@
-<?
+<?php
 $MESS["WIDGET_CALENDAR_DETAILS"] = "Altro";
 $MESS["WIDGET_CALENDAR_TITLE"] = "Eventi futuri";
-?>

@@ -1,0 +1,105 @@
+<?php
+$MESS["INTRANET_USER_PROFILE_ADDITIONAL_INFO"] = "Thông tin bổ sung";
+$MESS["INTRANET_USER_PROFILE_ADD_PHOTO"] = "Thay đổi ảnh";
+$MESS["INTRANET_USER_PROFILE_ADMIN_MODE"] = "Chế độ quản trị";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL"] = "Cài đặt ứng dụng";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL_TEXT"] = "Bạn sẽ nhận được một tin nhắn văn bản chứa liên kết để tải về và cài đặt ứng dụng di động Bitrix24.";
+$MESS["INTRANET_USER_PROFILE_APP_PHONE"] = "Điện thoại";
+$MESS["INTRANET_USER_PROFILE_APP_SEND"] = "Gửi";
+$MESS["INTRANET_USER_PROFILE_AVATAR_CAMERA"] = "Chụp ảnh";
+$MESS["INTRANET_USER_PROFILE_AVATAR_LOAD"] = "Tải lên một ảnh";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_ADD"] = "Gửi lời cảm ơn";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_TITLE"] = "Lời cảm ơn";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_MODIFY"] = "sửa";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_BUTTON"] = "Giới thiệu về bản thân bạn";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_TEXT"] = "Chia sẻ các câu chuyện thú vị hoặc kể với những người dùng khác về bản thân bạn, tải lên các ảnh về những khoảnh khắc đáng nhớ.";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_TITLE"] = "Giới thiệu về tôi";
+$MESS["INTRANET_USER_PROFILE_CHAT"] = "Trò chuyện";
+$MESS["INTRANET_USER_PROFILE_CHAT_HISTORY"] = "Nhật ký tin nhắn";
+$MESS["INTRANET_USER_PROFILE_CLOSE"] = "Đóng";
+$MESS["INTRANET_USER_PROFILE_CONTACT_INFO"] = "Thông tin liên lạc";
+$MESS["INTRANET_USER_PROFILE_DELETE"] = "Xóa";
+$MESS["INTRANET_USER_PROFILE_DELETE_CONFIRM"] = "Bạn có chắc bạn muốn xóa người dùng được mời?";
+$MESS["INTRANET_USER_PROFILE_DESKTOP_APP"] = "Ứng dụng máy tính để bàn";
+$MESS["INTRANET_USER_PROFILE_DISK_INSTALLED"] = "Bitrix24.Drive đã được cài đặt";
+$MESS["INTRANET_USER_PROFILE_DISK_SPACE"] = "dung lượng ổ đĩa: #VALUE#";
+$MESS["INTRANET_USER_PROFILE_FIELD_LAST_NAME"] = "Họ";
+$MESS["INTRANET_USER_PROFILE_FIELD_MANAGERS"] = "Người giám sát";
+$MESS["INTRANET_USER_PROFILE_FIELD_NAME"] = "Tên";
+$MESS["INTRANET_USER_PROFILE_FIELD_SECOND_NAME"] = "Tên thứ hai";
+$MESS["INTRANET_USER_PROFILE_FIELD_SUBORDINATE"] = "Cấp dưới";
+$MESS["INTRANET_USER_PROFILE_FIRE"] = "Sa thải";
+$MESS["INTRANET_USER_PROFILE_FIRE_CONFIRM"] = "Nhân viên này sẽ không thể đăng nhập vào Bitrix24, và sẽ không được hiển thị trong cấu trúc công ty. Toàn bộ dữ liệu của họ (tập tin, thư, tác vụ, v.v.) vẫn được giữ nguyên.
+<br/><br/>
+Bạn có chắc bạn muốn sa thải nhân viên này?";
+$MESS["INTRANET_USER_PROFILE_HIRE"] = "Tuyển dụng";
+$MESS["INTRANET_USER_PROFILE_HIRE_CONFIRM"] = "Nhân viên này sẽ có thể đăng nhập vào Bitrix24 và được hiển thị trong cấu trúc của công ty.
+<br/><br/>
+Bạn có chắc bạn muốn cấp quyền truy cập cho nhân viên này?";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON"] = "Kể về sở thích của bạn";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON_2"] = "Chọn mối quan tâm";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_TEXT"] = "Tạo hoặc tham gia các sở thích. Tìm bạn bè chia sẻ sở thích của bạn.";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_F"] = "hoạt động gần nhất #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_F"] = "không hoạt động từ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_M"] = "không hoạt động từ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_M"] = "hoạt động gần nhất #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_MOBILE_APP"] = "Ứng dụng di động";
+$MESS["INTRANET_USER_PROFILE_MORE"] = "Hiển thị thêm #NUM# mục";
+$MESS["INTRANET_USER_PROFILE_MOVE"] = "Chuyển giao";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM"] = "Bitrix24 của bạn đã đạt số quản trị viên tối đa cho phép.<br/>Đặc quyền quản trị viên của bạn sẽ bị thu hồi nếu bạn đặt người dùng này làm quản trị viên. Bạn có chắc bạn muốn chuyển giao quyền quản trị viên cho người dùng này?";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM_PROMO"] = "#LINK_START#Tận dụng nhiều hơn từ Bitrix24 của bạn#LINK_END#";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET"] = "Chuyển sang Intranet";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_TITLE"] = "Chuyển sang Intranet";
+$MESS["INTRANET_USER_PROFILE_NO"] = "Không";
+$MESS["INTRANET_USER_PROFILE_PASSWORDS"] = "Mật khẩu";
+$MESS["INTRANET_USER_PROFILE_PHOTO_DELETE_CONFIRM"] = "Bạn có chắc bạn muốn xóa ảnh này?";
+$MESS["INTRANET_USER_PROFILE_QUIT_ADMIN_MODE"] = "Thoát chế độ Quản trị";
+$MESS["INTRANET_USER_PROFILE_REINVITE"] = "Mời lại";
+$MESS["INTRANET_USER_PROFILE_REINVITE_SUCCESS"] = "Thư mời đã được gửi đi";
+$MESS["INTRANET_USER_PROFILE_REMOVE_ADMIN_RIGHTS"] = "Thu hồi quyền quản trị viên";
+$MESS["INTRANET_USER_PROFILE_RIGHTS"] = "Quyền truy cập";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_MORE"] = "Tìm hiểu thêm";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT1"] = "Tận dụng Bitrix24 của bạn";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT2"] = "Phân công nhiều quản trị viên để đảm bảo Bitrix24 luôn được quản lý tốt! Các quản trị viên có quyền truy cập toàn bộ các tính năng bao gồm telephony, Open Channel và cài đặt! Bạn có thể phân công số quản trị viên tùy theo gói Bitrix24 của mình:";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TITLE"] = "Giới hạn quản trị viên";
+$MESS["INTRANET_USER_PROFILE_SECURITY"] = "Bảo mật";
+$MESS["INTRANET_USER_PROFILE_SET_ADMIN_RIGHTS"] = "Phân công quyền quản trị viên";
+$MESS["INTRANET_USER_PROFILE_SET_INEGRATOR_RIGHTS"] = "Cấp quyền đối tác Bitrix24";
+$MESS["INTRANET_USER_PROFILE_SET_INTEGRATOR_RIGHTS_CONFIRM"] = "Các đối tác Bitrix24 đã được chứng nhận có thể giúp bạn thiết lập hoặc tinh chỉnh Bitrix24 cho dòng công việc của công ty bạn: CRM, Kênh mở, tài liệu, telephony, báo cáo và các công cụ kinh doanh khác. 
+#LINK_START#Tìm hiểu thêm#LINK_END#
+<br/><br/>
+#NAME# sẽ nhận toàn bộ quyền truy cập, ngoại trừ quyền mời hoặc sa thải quản trị viên. 
+Bạn có chắc bạn muốn cấp quyền đối tác Bitrix24 cho người dùng này?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_BUTTON"] = "Làm thế nào để đo?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_INDICATOR_TEXT"] = "căng thẳng";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_TITLE"] = "Đo cấp độ căng thẳng của bạn";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_INVISIBLE"] = "Những người dùng khác không thể thấy cấp độ căng thẳng của bạn.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_VISIBLE"] = "Những người dùng khác có thể thấy cấp độ căng thẳng của bạn.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_SHARE_LINK"] = "sao chép vào Bảng nháp";
+$MESS["INTRANET_USER_PROFILE_SYNCHRONIZE"] = "Đồng bộ";
+$MESS["INTRANET_USER_PROFILE_TAGS_MODIFY"] = "sửa";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_ADD"] = "Thêm mục";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_2"] = "Hiện không có sở thích nào mà bạn có thể tham gia. Hãy tạo sở thích của bạn!";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_3"] = "Để thêm sở thích, hãy nhập chúng và nhấn Enter. Chia tách các sở thích bằng dấu cách.";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_SEARCH_TITLE"] = "Kết quả tìm kiếm:";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_TITLE"] = "Thẻ phổ biến:";
+$MESS["INTRANET_USER_PROFILE_TAGS_TITLE"] = "Những điều tôi thích";
+$MESS["INTRANET_USER_PROFILE_TARIFF_COMPANY"] = "Professional";
+$MESS["INTRANET_USER_PROFILE_TARIFF_PROJECT"] = "Free";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TEAM"] = "Standard";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TF"] = "Plus";
+$MESS["INTRANET_USER_PROFILE_THEME"] = "Thay đổi nền";
+$MESS["INTRANET_USER_PROFILE_UNLIM"] = "không giới hạn";
+$MESS["INTRANET_USER_PROFILE_VIDEOCALL"] = "Cuộc gọi video";
+$MESS["INTRANET_USER_PROFILE_VIEW_ACCESS_DENIED"] = "Truy cập đến hồ sơ người dùng bị từ chối.";
+$MESS["INTRANET_USER_PROFILE_YES"] = "Có";
+$MESS["INTRANET_USER_PROFILE_admin"] = "Quản trị viên";
+$MESS["INTRANET_USER_PROFILE_email"] = "Người dùng qua email";
+$MESS["INTRANET_USER_PROFILE_employee"] = "Hành động";
+$MESS["INTRANET_USER_PROFILE_extranet"] = "Extranet";
+$MESS["INTRANET_USER_PROFILE_fired"] = "Đã bỏ qua";
+$MESS["INTRANET_USER_PROFILE_integrator"] = "Đối tác";
+$MESS["INTRANET_USER_PROFILE_invited"] = "Được mời";
+$MESS["INTRANET_USER_PROFILE_shop"] = "Người dùng cửa hàng web";
+$MESS["INTRANET_USER_PROFILE_visitor"] = "Khách";
+$MESS["NTRANET_USER_PROFILE_MOBILE_GOOGLE_PLAY_URL"] = "https://play.google.com/store/apps/details?id=com.bitrix24.android";

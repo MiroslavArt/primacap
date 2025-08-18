@@ -1,4 +1,0 @@
-<?
-$MESS["MARKETPLACE_CATEGORY_ROWS_DEINSTALL"] = "ตัดการเชื่อมต่อ";
-$MESS["MARKETPLACE_CATEGORY_ROWS_INSTALL"] = "เชื่อมต่อ";
-?>

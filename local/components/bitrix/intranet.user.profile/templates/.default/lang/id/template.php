@@ -1,0 +1,105 @@
+<?php
+$MESS["INTRANET_USER_PROFILE_ADDITIONAL_INFO"] = "Informasi tambahan";
+$MESS["INTRANET_USER_PROFILE_ADD_PHOTO"] = "Ubah foto";
+$MESS["INTRANET_USER_PROFILE_ADMIN_MODE"] = "Mode admin";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL"] = "Instalasi aplikasi";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL_TEXT"] = "Anda akan menerima pesan teks yang berisi tautan untuk mengunduh dan menginstal aplikasi mobile Bitrix24.";
+$MESS["INTRANET_USER_PROFILE_APP_PHONE"] = "Telepon";
+$MESS["INTRANET_USER_PROFILE_APP_SEND"] = "Kirim";
+$MESS["INTRANET_USER_PROFILE_AVATAR_CAMERA"] = "Ambil foto";
+$MESS["INTRANET_USER_PROFILE_AVATAR_LOAD"] = "Unggah foto";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_ADD"] = "Kirim apresiasi";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_TITLE"] = "Apresiasi";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_MODIFY"] = "edit";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_BUTTON"] = "Ceritakan tentang dirimu";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_TEXT"] = "Bagikan cerita kehidupan yang menarik atau beritahukan tentang diri Anda, unggah foto dari momen kenangan.";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_TITLE"] = "Tentang saya";
+$MESS["INTRANET_USER_PROFILE_CHAT"] = "Obrolan";
+$MESS["INTRANET_USER_PROFILE_CHAT_HISTORY"] = "Log pesan";
+$MESS["INTRANET_USER_PROFILE_CLOSE"] = "Tutup";
+$MESS["INTRANET_USER_PROFILE_CONTACT_INFO"] = "Informasi kontak";
+$MESS["INTRANET_USER_PROFILE_DELETE"] = "Hapus";
+$MESS["INTRANET_USER_PROFILE_DELETE_CONFIRM"] = "Anda yakin ingin menghapus pengguna yang diundang?";
+$MESS["INTRANET_USER_PROFILE_DESKTOP_APP"] = "Aplikasi desktop";
+$MESS["INTRANET_USER_PROFILE_DISK_INSTALLED"] = "Bitrix24.Drive diinstal";
+$MESS["INTRANET_USER_PROFILE_DISK_SPACE"] = "ruang disk: #VALUE#";
+$MESS["INTRANET_USER_PROFILE_FIELD_LAST_NAME"] = "Nama belakang";
+$MESS["INTRANET_USER_PROFILE_FIELD_MANAGERS"] = "Supervisor";
+$MESS["INTRANET_USER_PROFILE_FIELD_NAME"] = "Nama depan";
+$MESS["INTRANET_USER_PROFILE_FIELD_SECOND_NAME"] = "Nama kedua";
+$MESS["INTRANET_USER_PROFILE_FIELD_SUBORDINATE"] = "Bawahan";
+$MESS["INTRANET_USER_PROFILE_FIRE"] = "Berhentikan";
+$MESS["INTRANET_USER_PROFILE_FIRE_CONFIRM"] = "Karyawan tidak akan dapat log on ke Bitrix24, dan tidak akan terlihat dalam struktur perusahaan. Semua data mereka (file, pesan, tugas, dll.) akan tetap utuh.
+<br/><br/>
+Anda yakin ingin memberhentikan karyawan ini?";
+$MESS["INTRANET_USER_PROFILE_HIRE"] = "Rekrut";
+$MESS["INTRANET_USER_PROFILE_HIRE_CONFIRM"] = "Karyawan akan dapat log on ke Bitrix24 dan akan terlihat dalam struktur perusahaan.
+<br/><br/>
+Anda yakin ingin memberikan akses karyawan?";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON"] = "Beritahukan tentang minat Anda";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON_2"] = "Pilih minat";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_TEXT"] = "Buat atau gabung dalam minat. Temukan teman yang memiliki minat yang sama dengan Anda.";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_F"] = "terakhir terlihat #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_F"] = "idle sejak #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_M"] = "idle sejak #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_M"] = "terakhir terlihat #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_MOBILE_APP"] = "Aplikasi mobile";
+$MESS["INTRANET_USER_PROFILE_MORE"] = "Tampilkan lebih banyak #NUM#";
+$MESS["INTRANET_USER_PROFILE_MOVE"] = "Transfer";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM"] = "Bitrix24 Anda sudah mencapai jumlah maksimum administrator.<br/>Privilese administrator Anda akan dicabut jika Anda menetapkan pengguna ini sebagai administrator. Anda yakin ingin mentransfer izin admin ke pengguna ini?";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM_PROMO"] = "#LINK_START#Dapatkan lebih banyak dari Bitrix24 Anda#LINK_END#";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET"] = "Transfer ke intranet";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_TITLE"] = "Transfer ke intranet";
+$MESS["INTRANET_USER_PROFILE_NO"] = "Tidak";
+$MESS["INTRANET_USER_PROFILE_PASSWORDS"] = "Kata sandi";
+$MESS["INTRANET_USER_PROFILE_PHOTO_DELETE_CONFIRM"] = "Anda yakin ingin menghapus foto ini?";
+$MESS["INTRANET_USER_PROFILE_QUIT_ADMIN_MODE"] = "Keluar dari mode Admin";
+$MESS["INTRANET_USER_PROFILE_REINVITE"] = "Undang kembali";
+$MESS["INTRANET_USER_PROFILE_REINVITE_SUCCESS"] = "Undangan sudah dikirim";
+$MESS["INTRANET_USER_PROFILE_REMOVE_ADMIN_RIGHTS"] = "Cabut izin admin";
+$MESS["INTRANET_USER_PROFILE_RIGHTS"] = "Izin";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_MORE"] = "Lihat selengkapnya";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT1"] = "Dapatkan lebih banyak dari Bitrix24 Anda";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT2"] = "Tugaskan banyak administrator untuk memastikan Bitrix24 Anda dikelola sepanjang waktu! Administrator memiliki akses penuh ke semua fitur termasuk telefoni, Saluran Terbuka, dan pengaturan! Anda dapat menugaskan sebanyak mungkin administrator seperti ditentukan oleh paket Bitrix24 Anda:";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TITLE"] = "Limit administrator";
+$MESS["INTRANET_USER_PROFILE_SECURITY"] = "Keamanan";
+$MESS["INTRANET_USER_PROFILE_SET_ADMIN_RIGHTS"] = "Tugaskan izin admin";
+$MESS["INTRANET_USER_PROFILE_SET_INEGRATOR_RIGHTS"] = "Berikan hak partner Bitrix24";
+$MESS["INTRANET_USER_PROFILE_SET_INTEGRATOR_RIGHTS_CONFIRM"] = "Partner Bitrix24 yang bersertifikasi dapat membantu Anda menata atau menyempurnakan Bitrix24 Anda sesuai alur kerja perusahaan Anda: CRM, Saluran Terbuka, dokumentasi, telefoni, laporan, dan perangkat bisnis lainnya. 
+#LINK_START#Pelajari lebih lanjut#LINK_END#
+<br/><br/>
+#NAME# akan menerima izin akses penuh, dengan pengecualian hak untuk mengundang atau memberhentikan administrator. 
+Anda yakin ingin memberikan hak partner Bitrix24 kepada pengguna ini?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_BUTTON"] = "Bagaimana cara mengukur?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_INDICATOR_TEXT"] = "stres";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_TITLE"] = "Ukur tingkat stres Anda";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_INVISIBLE"] = "Pengguna lain tidak dapat melihat tingkat stres Anda.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_VISIBLE"] = "Pengguna lain dapat melihat tingkat stres Anda.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_SHARE_LINK"] = "salin ke Clipboard";
+$MESS["INTRANET_USER_PROFILE_SYNCHRONIZE"] = "Sinkronkan";
+$MESS["INTRANET_USER_PROFILE_TAGS_MODIFY"] = "edit";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_ADD"] = "Tambahkan item";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_2"] = "Saat ini tidak ada minat yang dapat Anda ikuti. Buat minat Anda!";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_3"] = "Untuk menambahkan minat, masukkan minat dan tekan Enter. Pisahkan berbagai minat dengan spasi.";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_SEARCH_TITLE"] = "Hasil pencarian:";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_TITLE"] = "Tag populer:";
+$MESS["INTRANET_USER_PROFILE_TAGS_TITLE"] = "Hal yang saya suka";
+$MESS["INTRANET_USER_PROFILE_TARIFF_COMPANY"] = "Professional";
+$MESS["INTRANET_USER_PROFILE_TARIFF_PROJECT"] = "Free";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TEAM"] = "Standard";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TF"] = "Plus";
+$MESS["INTRANET_USER_PROFILE_THEME"] = "Ubah latar";
+$MESS["INTRANET_USER_PROFILE_UNLIM"] = "tidak terbatas";
+$MESS["INTRANET_USER_PROFILE_VIDEOCALL"] = "Panggilan video";
+$MESS["INTRANET_USER_PROFILE_VIEW_ACCESS_DENIED"] = "Akses ke profil pengguna ditolak.";
+$MESS["INTRANET_USER_PROFILE_YES"] = "Ya";
+$MESS["INTRANET_USER_PROFILE_admin"] = "Administrator";
+$MESS["INTRANET_USER_PROFILE_email"] = "Pengguna email";
+$MESS["INTRANET_USER_PROFILE_employee"] = "Tindakan";
+$MESS["INTRANET_USER_PROFILE_extranet"] = "Ekstranet";
+$MESS["INTRANET_USER_PROFILE_fired"] = "Diberhentikan";
+$MESS["INTRANET_USER_PROFILE_integrator"] = "Partner";
+$MESS["INTRANET_USER_PROFILE_invited"] = "Diundang";
+$MESS["INTRANET_USER_PROFILE_shop"] = "Pengguna toko web";
+$MESS["INTRANET_USER_PROFILE_visitor"] = "Tamu";
+$MESS["NTRANET_USER_PROFILE_MOBILE_GOOGLE_PLAY_URL"] = "https://play.google.com/store/apps/details?id=com.bitrix24.android";

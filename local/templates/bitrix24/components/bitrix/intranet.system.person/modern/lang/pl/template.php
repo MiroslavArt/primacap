@@ -1,4 +1,4 @@
-<?
+<?php
 $MESS["INTR_CONFIRM_DELETE"] = "Zaproszenie zostanie usunięte nieodwracalnie.\\n\\nNa pewno chcesz usunąć tego pracownika?";
 $MESS["INTR_CONFIRM_FIRE"] = "Pracownik nie będzie w stanie zalogować się do portalu, nie będzie widoczny w strukturze firmy. Jednakże, wszystkie jego lub jej osobiste dane (pliki, wiadomości, zadania, itp.) pozostaną nietknięte.\\n\\nNa pewno chcesz odmówić dostępu temu pracownikowi?";
 $MESS["INTR_CONFIRM_RESTORE"] = "Pracownik będzie w stanie się logować do portalu i będzie widoczny w strukturze firmy.\\n\\nNa pewno chcesz zezwolić na dostęp temu pracownikowi?";
@@ -23,6 +23,7 @@ $MESS["INTR_USER_admin"] = "Administrator";
 $MESS["INTR_USER_extranet"] = "Extranet";
 $MESS["INTR_USER_fired"] = "Zwolniony";
 $MESS["INTR_USER_inactive"] = "Zaproszony";
+$MESS["INTR_USER_integrator"] = "Partner Bitrix24";
 $MESS["ISL_DATE_REGISTER"] = "Zarejestrowane na";
 $MESS["ISL_EMAIL"] = "E-mail";
 $MESS["ISL_FULL_NAME"] = "Pełna nazwa";
@@ -53,4 +54,3 @@ $MESS["ISL_PERSONAL_ZIP"] = "Kod pocztowy";
 $MESS["ISL_SECOND_NAME"] = "Drugie Imię";
 $MESS["ISL_WORK_PHONE"] = "Telefon Służbowy";
 $MESS["ISL_WORK_POSITION"] = "Stanowisko";
-?>

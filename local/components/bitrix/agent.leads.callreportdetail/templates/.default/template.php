@@ -51,7 +51,13 @@ elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']=='ASSIGNED'))
 {
 /*------------------------total leads assigned------------------------------*/ 
 
-$leadsSql = $DB->Query("Select b.ID,b.TITLE,b.STATUS_ID from b_crm_lead_status_history a, b_crm_lead b  where a.RESPONSIBLE_ID = '".$_REQUEST['ASSIGNED_BY_ID']."' and a.STATUS_ID IN ('UC_9WUJ49','UC_23YNYD','UC_TCX0EY','IN_PROCESS','UC_OD8Y57','UC_TB6VLO','UC_6QWK0K',7,'UC_U2UJ60','JUNK',1,2,3,4,5,6,'CONVERTED')  and a.OWNER_ID = b.ID  and a.CREATED_TIME between '".$fromdate."' and '".$todate."'");
+$leadsSql = $DB->Query("Select b.ID,b.TITLE,b.STATUS_ID from b_crm_lead_status_history a, b_crm_lead b  where a.RESPONSIBLE_ID = '".$_REQUEST['ASSIGNED_BY_ID']."' and a.STATUS_ID IN ('UC_9WUJ49')  and a.OWNER_ID = b.ID  and a.CREATED_TIME between '".$fromdate."' and '".$todate."'");
+}
+elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']=='TOTACTIVE'))
+{
+/*------------------------total active leads assigned------------------------------*/ 
+
+$leadsSql = $DB->Query("Select b.ID,b.TITLE,b.STATUS_ID from b_crm_lead_status_history a, b_crm_lead b  where a.RESPONSIBLE_ID = '".$_REQUEST['ASSIGNED_BY_ID']."' and a.STATUS_ID IN ('UC_9WUJ49','UC_23YNYD','UC_TCX0EY','IN_PROCESS','UC_OD8Y57','UC_TB6VLO','UC_6QWK0K',7,'UC_U2UJ60')  and a.OWNER_ID = b.ID  and a.CREATED_TIME between '".$fromdate."' and '".$todate."'");
 }
 elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']==''))
 {
@@ -123,6 +129,12 @@ elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']=='ASSIGNED'))
 {
 /*------------------------total leads assigned------------------------------*/ 
 $leadsSql = $DB->Query("Select b.ID,b.TITLE,b.STATUS_ID from b_crm_lead_status_history a, b_crm_lead b  where a.RESPONSIBLE_ID = '".$_REQUEST['ASSIGNED_BY_ID']."' and a.STATUS_ID IN ('UC_9WUJ49')  and a.OWNER_ID = b.ID");
+
+}
+elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']=='TOTACTIVE'))
+{
+/*------------------------total leads assigned------------------------------*/ 
+$leadsSql = $DB->Query("Select b.ID,b.TITLE,b.STATUS_ID from b_crm_lead_status_history a, b_crm_lead b  where a.RESPONSIBLE_ID = '".$_REQUEST['ASSIGNED_BY_ID']."' and a.STATUS_ID IN ('UC_9WUJ49','UC_23YNYD','UC_TCX0EY','IN_PROCESS','UC_OD8Y57','UC_TB6VLO','UC_6QWK0K',7,'UC_U2UJ60')  and a.OWNER_ID = b.ID");
 
 }
 elseif(($_REQUEST['PROJECT_ID']=='')&&($_REQUEST['LEAD_TYPE']==''))

@@ -1,8 +1,8 @@
-<?
+<?php
 $MESS["INTR_ISE_TPL_FILTER_CANCEL"] = "Cancelar";
 $MESS["INTR_ISE_TPL_FILTER_DEPARTMENT"] = "Departamento";
 $MESS["INTR_ISE_TPL_FILTER_SUBMIT"] = "Pesquisar";
-$MESS["INTR_ISE_TPL_NOTE_NULL"] = "Sua procura não encontrou nenhum empregado";
+$MESS["INTR_ISE_TPL_NOTE_NULL"] = "Sua procura não encontrou nenhum colaborador.";
 $MESS["ISL_ADMIN_NOTES"] = "Notas do Administrador";
 $MESS["ISL_DATE_REGISTER"] = "Registrado no:";
 $MESS["ISL_EMAIL"] = "E-mail";
@@ -34,4 +34,3 @@ $MESS["ISL_PERSONAL_ZIP"] = "Cep";
 $MESS["ISL_SECOND_NAME"] = "Nome do meio";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_XML_ID"] = "ID Externo";
-?>

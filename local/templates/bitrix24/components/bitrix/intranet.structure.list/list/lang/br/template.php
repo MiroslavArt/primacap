@@ -1,8 +1,8 @@
-<?
+<?php
 $MESS["INTR_ISL_TPL_ADMIN"] = "Administrador";
 $MESS["INTR_ISL_TPL_ADMIN_S"] = "Administrador";
 $MESS["INTR_ISL_TPL_HEAD"] = "Gerente";
-$MESS["INTR_ISL_TPL_NOTE_NULL"] = "Sua procura não encontrou nenhum empregado";
+$MESS["INTR_ISL_TPL_NOTE_NULL"] = "Sua busca não encontrou nenhum colaborador.";
 $MESS["INTR_ISL_TPL_NOTE_UNFILTERED"] = "Especifique os critérios de pesquisa.";
 $MESS["ISL_ADMIN_NOTES"] = "Notas do Administrador";
 $MESS["ISL_DATE_REGISTER"] = "Registrado no:";
@@ -36,4 +36,3 @@ $MESS["ISL_WORK_COMPANY"] = "Empresa";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_WORK_POSITION"] = "Posição";
 $MESS["ISL_XML_ID"] = "ID Externo";
-?>

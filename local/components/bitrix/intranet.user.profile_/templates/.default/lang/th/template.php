@@ -1,0 +1,105 @@
+<?php
+$MESS["INTRANET_USER_PROFILE_ADDITIONAL_INFO"] = "ข้อมูลเพิ่มเติม";
+$MESS["INTRANET_USER_PROFILE_ADD_PHOTO"] = "เปลี่ยนรูป";
+$MESS["INTRANET_USER_PROFILE_ADMIN_MODE"] = "โหมดผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL"] = "การติดตั้งแอปพลิเคชัน";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL_TEXT"] = "คุณจะได้รับข้อความที่มีลิงก์ในการดาวน์โหลดและติดตั้งแอปมือถือ Bitrix24";
+$MESS["INTRANET_USER_PROFILE_APP_PHONE"] = "โทรศัพท์";
+$MESS["INTRANET_USER_PROFILE_APP_SEND"] = "ส่ง";
+$MESS["INTRANET_USER_PROFILE_AVATAR_CAMERA"] = "ถ่ายรูป";
+$MESS["INTRANET_USER_PROFILE_AVATAR_LOAD"] = "อัปโหลดรูป";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_ADD"] = "ส่งความขอบคุณ";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_TITLE"] = "ความขอบคุณ";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_MODIFY"] = "แก้ไข";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_BUTTON"] = "บอกเกี่ยวกับตัวคุณ";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_TEXT"] = "แชร์เรื่องราวชีวิตที่น่าสนใจ หรือบอกผู้ใช้งานคนอื่น ๆ เกี่ยวกับตัวคุณ อัปโหลดรูปถ่ายของช่วงเวลาที่น่าจดจำ";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_TITLE"] = "เกี่ยวกับฉัน";
+$MESS["INTRANET_USER_PROFILE_CHAT"] = "แชท";
+$MESS["INTRANET_USER_PROFILE_CHAT_HISTORY"] = "ล็อกข้อความ";
+$MESS["INTRANET_USER_PROFILE_CLOSE"] = "ปิด";
+$MESS["INTRANET_USER_PROFILE_CONTACT_INFO"] = "ข้อมูลติดต่อ";
+$MESS["INTRANET_USER_PROFILE_DELETE"] = "ลบ";
+$MESS["INTRANET_USER_PROFILE_DELETE_CONFIRM"] = "คุณแน่ใจหรือไม่ ว่าต้องการลบผู้ใช้งานที่ได้รับเชิญ?";
+$MESS["INTRANET_USER_PROFILE_DESKTOP_APP"] = "แอปพลิเคชันเดสก์ท็อป";
+$MESS["INTRANET_USER_PROFILE_DISK_INSTALLED"] = "ติดตั้ง Bitrix24.Drive แล้ว";
+$MESS["INTRANET_USER_PROFILE_DISK_SPACE"] = "พื้นที่ดิสก์: #VALUE#";
+$MESS["INTRANET_USER_PROFILE_FIELD_LAST_NAME"] = "นามสกุล";
+$MESS["INTRANET_USER_PROFILE_FIELD_MANAGERS"] = "ผู้ควบคุมดูแล";
+$MESS["INTRANET_USER_PROFILE_FIELD_NAME"] = "ชื่อ";
+$MESS["INTRANET_USER_PROFILE_FIELD_SECOND_NAME"] = "ชื่อที่สอง";
+$MESS["INTRANET_USER_PROFILE_FIELD_SUBORDINATE"] = "ผู้ใต้บังคับบัญชา";
+$MESS["INTRANET_USER_PROFILE_FIRE"] = "ไล่ออก";
+$MESS["INTRANET_USER_PROFILE_FIRE_CONFIRM"] = "พนักงานจะไม่สามารถเข้าสู่ระบบ Bitrix24 ได้ และจะไม่เห็นในโครงสร้างบริษัท ข้อมูลของพนักงาน (ไฟล์ ข้อความ งาน ฯลฯ) จะยังคงอยู่
+<br/><br/>
+คุณแน่ใจหรือไม่ ว่าต้องการไล่พนักงานออก?";
+$MESS["INTRANET_USER_PROFILE_HIRE"] = "จ้าง";
+$MESS["INTRANET_USER_PROFILE_HIRE_CONFIRM"] = "พนักงานจะสามารถเข้าสู่ระบบ Bitrix24 ได้ และจะเห็นอยู่ในโครงสร้างบริษัท
+<br/><br/>
+คุณแน่ใจหรือไม่ ว่าต้องการให้สิทธิ์เข้าถึงแก่พนักงาน?";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON"] = "บอกเกี่ยวกับความสนใจของคุณ";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON_2"] = "เลือกสิ่งที่สนใจ";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_TEXT"] = "สร้างหรือเข้าร่วมความสนใจ ค้นหาเพื่อนที่มีความสนใจร่วมกันกับคุณ";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_F"] = "เห็นครั้งล่าสุดเมื่อ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_F"] = "นิ่งเฉยตั้งแต่ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_M"] = "นิ่งเฉยตั้งแต่ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_M"] = "เห็นครั้งล่าสุดเมื่อ #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_MOBILE_APP"] = "แอปพลิเคชันมือถือ";
+$MESS["INTRANET_USER_PROFILE_MORE"] = "แสดงเพิ่มเติม #NUM#";
+$MESS["INTRANET_USER_PROFILE_MOVE"] = "โอน";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM"] = "Bitrix24 ได้ถึงจำนวนผู้ดูแลระบบสูงสุดที่เป็นไปได้แล้ว<br/>สิทธิพิเศษผู้ดูแลระบบของคุณจะถูกเพิกถอน หากคุณตั้งผู้ใช้งานรายนี้เป็นผู้ดูแลระบบ คุณแน่ใจหรือไม่ ว่าต้องการโอนสิทธิ์ผู้ดูแลระบบให้แก่ผู้ใช้งานรายนี้?";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM_PROMO"] = "#LINK_START#ใช้ประโยชน์จาก Bitrix24 ของคุณให้มากยิ่งขึ้น#LINK_END#";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET"] = "โอนไปยังอินทราเน็ต";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_TITLE"] = "โอนไปยังอินทราเน็ต";
+$MESS["INTRANET_USER_PROFILE_NO"] = "ไม่";
+$MESS["INTRANET_USER_PROFILE_PASSWORDS"] = "รหัสผ่าน";
+$MESS["INTRANET_USER_PROFILE_PHOTO_DELETE_CONFIRM"] = "คุณแน่ใจหรือไม่ ว่าต้องการลบรูป?";
+$MESS["INTRANET_USER_PROFILE_QUIT_ADMIN_MODE"] = "ออกจากโหมดผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_REINVITE"] = "เชิญอีกครั้ง";
+$MESS["INTRANET_USER_PROFILE_REINVITE_SUCCESS"] = "ส่งคำเชิญแล้ว";
+$MESS["INTRANET_USER_PROFILE_REMOVE_ADMIN_RIGHTS"] = "เพิกถอนสิทธิ์ผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_RIGHTS"] = "สิทธิ์";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_MORE"] = "เรียนรู้เพิ่มเติม";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT1"] = "ใช้ประโยชน์จาก Bitrix24 ของคุณให้มากยิ่งขึ้น";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT2"] = "มอบหมายผู้ดูแลระบบหลายคนเพื่อให้แน่ใจว่า Bitrix24 ของคุณได้รับการจัดการตลอดเวลา! ผู้ดูแลระบบสามารถเข้าถึงคุณลักษณะทั้งหมดได้อย่างเต็มที่ รวมถึงระบบโทรศัพท์ Open Channel และการตั้งค่า! คุณสามารถมอบหมายผู้ดูแลระบบได้มากเท่าที่ระบุไว้ในแผน Bitrix24 ของคุณ:";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TITLE"] = "ขีดจำกัดผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_SECURITY"] = "ความปลอดภัย";
+$MESS["INTRANET_USER_PROFILE_SET_ADMIN_RIGHTS"] = "มอบหมายสิทธิ์ผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_SET_INEGRATOR_RIGHTS"] = "ให้สิทธิ์แก่หุ้นส่วนของ Bitrix24";
+$MESS["INTRANET_USER_PROFILE_SET_INTEGRATOR_RIGHTS_CONFIRM"] = "หุ้นส่วนที่ได้รับการรับรองของ Bitrix24 สามารถช่วยคุณ ในเรื่องการติดตั้งหรือการปรับแต่ง Bitrix24 ของคุณ กับเวิร์กโฟลว์ของบริษัทคุณได้: CRM, Open Channel, เอกสาร, ระบบโทรศัพท์, รายงานและเครื่องมือทางธุรกิจอื่น ๆ 
+#LINK_START#เรียนรู้เพิ่มเติม#LINK_END#
+<br/><br/>
+#NAME# จะรับสิทธิ์การเข้าถึงเต็มรูปแบบ โดยมีข้อยกเว้นของสิทธิ์ในการเชิญหรือไล่ผู้ดูแลระบบออก 
+คุณแน่ใจหรือไม่ ว่าต้องการให้สิทธิ์แก่หุ้นส่วนของ Bitrix24 กับผู้ใช้งานรายนี้?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_BUTTON"] = "วัดอย่างไร?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_INDICATOR_TEXT"] = "ความเครียด";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_TITLE"] = "วัดระดับความเครียดของคุณ";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_INVISIBLE"] = "ผู้ใช้งานรายอื่นไม่สามารถดูระดับความเครียดของคุณได้";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_VISIBLE"] = "ผู้ใช้งานรายอื่นสามารถดูระดับความเครียดของคุณได้";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_SHARE_LINK"] = "คัดลอกไปยังคลิปบอร์ด";
+$MESS["INTRANET_USER_PROFILE_SYNCHRONIZE"] = "ซิงโครไนซ์";
+$MESS["INTRANET_USER_PROFILE_TAGS_MODIFY"] = "แก้ไข";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_ADD"] = "เพิ่มรายการ";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_2"] = "ขณะนี้ไม่มีความสนใจใด ๆ ที่คุณสามารถเข้าร่วมได้ สร้างความสนใจของคุณขึ้นมา!";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_3"] = "ในการที่จะเพิ่มความสนใจ ให้ใส่ลงไปแล้วกด Enter คั่นความสนใจหลาย ๆ อย่างด้วยเว้นวรรค";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_SEARCH_TITLE"] = "ผลลัพธ์การค้นหา:";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_TITLE"] = "แท็กยอดนิยม:";
+$MESS["INTRANET_USER_PROFILE_TAGS_TITLE"] = "สิ่งที่ฉันชอบ";
+$MESS["INTRANET_USER_PROFILE_TARIFF_COMPANY"] = "Professional";
+$MESS["INTRANET_USER_PROFILE_TARIFF_PROJECT"] = "ฟรี";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TEAM"] = "Standard";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TF"] = "Plus";
+$MESS["INTRANET_USER_PROFILE_THEME"] = "เปลี่ยนพื้นหลัง";
+$MESS["INTRANET_USER_PROFILE_UNLIM"] = "ไม่จำกัด";
+$MESS["INTRANET_USER_PROFILE_VIDEOCALL"] = "วิดีโอคอล";
+$MESS["INTRANET_USER_PROFILE_VIEW_ACCESS_DENIED"] = "การเข้าถึงโปรไฟล์ผู้ใช้งานถูกปฏิเสธ";
+$MESS["INTRANET_USER_PROFILE_YES"] = "ใช่";
+$MESS["INTRANET_USER_PROFILE_admin"] = "ผู้ดูแลระบบ";
+$MESS["INTRANET_USER_PROFILE_email"] = "ผู้ใช้งานที่ใช้อีเมล";
+$MESS["INTRANET_USER_PROFILE_employee"] = "การกระทำ";
+$MESS["INTRANET_USER_PROFILE_extranet"] = "เอกซ์ทราเน็ต";
+$MESS["INTRANET_USER_PROFILE_fired"] = "ถูกไล่ออกแล้ว";
+$MESS["INTRANET_USER_PROFILE_integrator"] = "หุ้นส่วน";
+$MESS["INTRANET_USER_PROFILE_invited"] = "ได้รับเชิญ";
+$MESS["INTRANET_USER_PROFILE_shop"] = "ผู้ใช้งานเว็บสโตร์";
+$MESS["INTRANET_USER_PROFILE_visitor"] = "แขก";
+$MESS["NTRANET_USER_PROFILE_MOBILE_GOOGLE_PLAY_URL"] = "https://play.google.com/store/apps/details?id=com.bitrix24.android";

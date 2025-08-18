@@ -1,7 +1,7 @@
-<?
+<?php
 $MESS["INTR_ISL_TPL_GENDER_F"] = "F";
 $MESS["INTR_ISL_TPL_GENDER_M"] = "M";
-$MESS["INTR_ISL_TPL_NOTE_NULL"] = "Sua procura não encontrou nenhum empregado";
+$MESS["INTR_ISL_TPL_NOTE_NULL"] = "Sua busca não encontrou nenhum colaborador.";
 $MESS["INTR_ISL_TPL_NOTE_UNFILTERED"] = "Especifique os critérios de pesquisa.";
 $MESS["INTR_ISP_EDIT_USER"] = "editar";
 $MESS["INTR_ISP_IS_ABSENT"] = "Ausente";
@@ -43,4 +43,3 @@ $MESS["ISL_WORK_FAX"] = "Faz do trabalho";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_WORK_POSITION"] = "Posição";
 $MESS["ISL_XML_ID"] = "ID Externo";
-?>

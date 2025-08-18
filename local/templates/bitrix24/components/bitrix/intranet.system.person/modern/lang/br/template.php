@@ -1,7 +1,7 @@
-<?
-$MESS["INTR_CONFIRM_DELETE"] = "Convite serão eliminados de forma irrevogável.\\n\\nVocê tem certeza que deseja excluir o empregado?";
-$MESS["INTR_CONFIRM_FIRE"] = "O funcionário não será capaz de fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerá intacto.\\n\\nVocê tem certeza de que quer negar o acesso a este funcionário?";
-$MESS["INTR_CONFIRM_RESTORE"] = "O funcionário será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que quer permitir o acesso para este empregado?";
+<?php
+$MESS["INTR_CONFIRM_DELETE"] = "Convite serão eliminados de forma irrevogável.\\n\\nVocê tem certeza que deseja excluir o colaborador?";
+$MESS["INTR_CONFIRM_FIRE"] = "O colaborador não será capaz de fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerão intactos.\\n\\nVocê tem certeza de que quer negar o acesso a este colaborador?";
+$MESS["INTR_CONFIRM_RESTORE"] = "O colaborador será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que quer permitir o acesso para este colaborador?";
 $MESS["INTR_EXTRANET"] = "(extranet)";
 $MESS["INTR_ISP_DEACTIVATE_USER"] = "Demitir";
 $MESS["INTR_ISP_DELETE_USER"] = "Excluir";
@@ -23,6 +23,7 @@ $MESS["INTR_USER_admin"] = "Administrador";
 $MESS["INTR_USER_extranet"] = "Extranet";
 $MESS["INTR_USER_fired"] = "Demitido";
 $MESS["INTR_USER_inactive"] = "Convidado";
+$MESS["INTR_USER_integrator"] = "Parceiro Bitrix24";
 $MESS["ISL_DATE_REGISTER"] = "Registrado no";
 $MESS["ISL_EMAIL"] = "E-Mail";
 $MESS["ISL_FULL_NAME"] = "Nome completo";
@@ -53,4 +54,3 @@ $MESS["ISL_PERSONAL_ZIP"] = "Cep";
 $MESS["ISL_SECOND_NAME"] = "Nome do meio";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_WORK_POSITION"] = "Posição";
-?>

@@ -1,0 +1,5 @@
+<?
+$MESS["INTRANET_USER_PROFILE_EMPTY_DEPARTMENT_ERROR"] = "未选定部门";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_NOTIFY"] = "您已从外部网络转移到内部网络。请注销然后再次登录，以使更改生效。";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_SUCCESS"] = "员工已成功转移。现在，他们可以根据其权限访问您的内网的内部内容。";
+?>

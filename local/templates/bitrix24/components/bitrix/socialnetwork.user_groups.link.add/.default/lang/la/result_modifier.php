@@ -3,7 +3,6 @@ $MESS["SONET_C36_FILTER_LIST_YES"] = "Si";
 $MESS["SONET_C36_T_FILTER_CLOSED"] = "Archivo";
 $MESS["SONET_C36_T_FILTER_EXTRANET"] = "Extranet";
 $MESS["SONET_C36_T_FILTER_FAVORITES"] = "Favoritos";
-$MESS["SONET_C36_T_FILTER_LANDING"] = "Publicación en Bitrix24 Sitios web";
 $MESS["SONET_C36_T_FILTER_LANDING_MSGVER_1"] = "Publicación en Bitrix24 Sitios web";
 $MESS["SONET_C36_T_FILTER_MEMBER"] = "Miembro";
 $MESS["SONET_C36_T_FILTER_NAME"] = "Nombre";

@@ -17,6 +17,7 @@ export default class Widget
 		this.avatarType = Type.isStringFilled(params.avatarType) ? params.avatarType : '';
 		this.projectTypeCode = Type.isStringFilled(params.projectTypeCode) ? params.projectTypeCode : '';
 		this.canModify = Type.isBoolean(params.canModify) ? params.canModify : false;
+		this.editFeaturesAllowed = Type.isBoolean(params.editFeaturesAllowed) ? params.editFeaturesAllowed : true;
 
 		this.urls = Type.isPlainObject(params.urls) ? params.urls : {};
 
@@ -44,10 +45,11 @@ export default class Widget
 					members: this.urls.GroupUsers,
 					features: this.urls.Features,
 				},
+				editRolesAllowed: this.editFeaturesAllowed,
 			});
 		}
 
-		this.projectWidgetInstance.show(event.target);
+		this.projectWidgetInstance.show(event.currentTarget);
 		if (
 			this.projectWidgetInstance.widget
 			&& this.projectWidgetInstance.widget.getPopup()

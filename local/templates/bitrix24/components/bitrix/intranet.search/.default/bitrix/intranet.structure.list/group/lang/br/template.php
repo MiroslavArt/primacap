@@ -1,4 +1,4 @@
-<?
+<?php
 $MESS["INTR_ISL_TPL_GENDER_F"] = "F";
 $MESS["INTR_ISL_TPL_GENDER_M"] = "M";
 $MESS["ISL_ADMIN_NOTES"] = "Notas do Administrador";
@@ -29,9 +29,8 @@ $MESS["ISL_PERSONAL_STREET"] = "Endereço";
 $MESS["ISL_PERSONAL_WWW"] = "Web site";
 $MESS["ISL_PERSONAL_ZIP"] = "Cep";
 $MESS["ISL_SECOND_NAME"] = "Nome do meio";
-$MESS["ISL_TPL_NOTE_NULL"] = "Sua pesquisa não encontrou nenhum empregado";
+$MESS["ISL_TPL_NOTE_NULL"] = "Sua busca não encontrou nenhum colaborador.";
 $MESS["ISL_TPL_NOTE_UNFILTERED"] = "Especifique os critérios de pesquisa.";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_WORK_POSITION"] = "Posição";
 $MESS["ISL_XML_ID"] = "ID Externo";
-?>

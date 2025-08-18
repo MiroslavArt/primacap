@@ -79,6 +79,6 @@ $MESS["SONET_USER_STATUS"] = "Estado";
 $MESS["SONET_USER_admin"] = "Administrador";
 $MESS["SONET_USER_extranet"] = "Extranet";
 $MESS["SONET_USER_fired"] = "Desactivado";
-$MESS["SONET_USER_integrator"] = "Partner de bitrix24";
+$MESS["SONET_USER_integrator"] = "Socio de Bitrix26";
 $MESS["SONET_USER_invited"] = "Invitado";
 $MESS["SONET_VIDEO_CALL"] = "Vídeo llamada";

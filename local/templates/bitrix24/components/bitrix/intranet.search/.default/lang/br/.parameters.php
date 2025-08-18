@@ -1,4 +1,4 @@
-<?
+<?php
 $MESS["ISL_ADMIN_NOTES"] = "Notas do Administrador";
 $MESS["ISL_DATE_REGISTER"] = "Registrado no:";
 $MESS["ISL_EMAIL"] = "E-mail";
@@ -13,7 +13,7 @@ $MESS["ISL_PARAM_DEFAULT_VIEW_VALUE_list"] = "Lista";
 $MESS["ISL_PARAM_DEFAULT_VIEW_VALUE_table"] = "detalhes";
 $MESS["ISL_PARAM_EXTRANET_TYPE"] = "No site extranet";
 $MESS["ISL_PARAM_EXTRANET_TYPE_CONTACTS"] = "contatos";
-$MESS["ISL_PARAM_EXTRANET_TYPE_EMPLOYEES"] = "Empregados";
+$MESS["ISL_PARAM_EXTRANET_TYPE_EMPLOYEES"] = "Colaboradores";
 $MESS["ISL_PARAM_LIST_VIEW"] = "Ver Lista de Modelos";
 $MESS["ISL_PARAM_LIST_VIEW_VALUE_group"] = "grupo por departamento";
 $MESS["ISL_PARAM_LIST_VIEW_VALUE_list"] = "simples lista";
@@ -46,4 +46,3 @@ $MESS["ISL_WORK_COMPANY"] = "Empresa";
 $MESS["ISL_WORK_PHONE"] = "Telefone do Trabalho";
 $MESS["ISL_WORK_POSITION"] = "Posição";
 $MESS["ISL_XML_ID"] = "ID Externo";
-?>

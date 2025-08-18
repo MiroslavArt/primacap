@@ -12,7 +12,8 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
 /** @global CUser $USER */
 /** @global CMain $APPLICATION */
 
-use Bitrix\Main\Application;
+use Bitrix\Socialnetwork\Collab\Url\UrlManager;
+use Bitrix\Socialnetwork\Item\Workgroup\Type;
 use Bitrix\Socialnetwork\UserToGroupTable;
 use Bitrix\Socialnetwork\Helper\Workgroup;
 use Bitrix\Main\Config\Option;
@@ -23,9 +24,16 @@ $arResult['inIframe'] = \Bitrix\Main\Context::getCurrent()->getRequest()->getQue
 
 $firstMenuItemCode = false;
 
+$isDebug = (int)\Bitrix\Main\Context::getCurrent()->getRequest()->get('debug') === 1;
+
+$isCollab = $arResult['Group']['TYPE'] === Type::Collab->value && !$isDebug;
+$collabUrl = UrlManager::getCollabUrlById($arResult['Group']['ID']);
+
 /** @see \CMainInterfaceButtons::getUserOptions */
 $userOptions = \CUserOptions::getOption("ui", $arResult["menuId"]);
-$urlGeneralSpecific = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_GROUP_GENERAL"], array("group_id" => $arResult["Group"]["ID"]));
+$urlGeneralSpecific = $isCollab ?
+	$collabUrl
+	: CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_GROUP_GENERAL"], array("group_id" => $arResult["Group"]["ID"]));
 
 $arResult['Group']['TypeCode'] = Workgroup::getTypeCodeByParams([
 	'fields' => [
@@ -67,6 +75,11 @@ $sampleKeysList = [
 
 if ($arResult['Group']['PROJECT'] === 'Y')
 {
+	if ($arResult['CanView']['tasks'] ?? false)
+	{
+		$firstMenuItemCode = 'tasks';
+	}
+
 	$sampleKeysList = [
 		'tasks' => 0,
 		'general' => 1,
@@ -197,6 +210,10 @@ if ($arParams['PAGE_ID'] === 'group')
 			}
 		}
 	}
+	elseif($isCollab)
+	{
+		$redirectUrl = $collabUrl;
+	}
 	elseif (
 		$arResult['Group']['ProjectTypeCode'] === 'scrum'
 		|| (
@@ -205,7 +222,7 @@ if ($arParams['PAGE_ID'] === 'group')
 		)
 	)
 	{
-		$redirectUrl = $arResult['Urls'][$firstKeyDefault];
+		$redirectUrl = $arResult['Urls'][$firstKeyDefault] ?? '';
 	}
 
 	if ($redirectUrl)
@@ -230,6 +247,23 @@ elseif (
 	}
 
 	LocalRedirect($redirectUrl);
+}
+elseif ($isCollab)
+{
+	if (
+		$arParams['PAGE_ID'] === 'group_general'
+		|| $arParams['PAGE_ID'] === 'group_card'
+		|| $arParams['componentPage'] === 'group_features'
+		|| $arParams['componentPage'] === 'group_edit'
+		|| $arParams['componentPage'] === 'group_invite'
+		|| $arParams['componentPage'] === 'group_delete'
+		|| $arParams['componentPage'] === 'group_requests'
+		|| $arParams['componentPage'] === 'group_copy'
+		|| $arParams['componentPage'] === 'group_blog'
+	)
+	{
+		LocalRedirect($collabUrl);
+	}
 }
 
 if ($this->__component->__parent && $this->__component->__parent->arResult && array_key_exists("PATH_TO_GROUP_CARD", $this->__component->__parent->arResult))
@@ -338,22 +372,22 @@ if (
 	}
 
 	$arResult["UserRelationId"] = false;
-	$res = \Bitrix\Socialnetwork\UserToGroupTable::getList(array(
-		'filter' => array(
-			'USER_ID' => $USER->getId(),
-			'GROUP_ID' => $arResult["Group"]["ID"]
-		),
-		'select' => array('ID')
-	));
+	$res = \Bitrix\Socialnetwork\UserToGroupTable::query()
+		->setSelect(['ID'])
+		->where('USER_ID', $USER->getId())
+		->where('GROUP_ID', $arResult["Group"]["ID"])
+		->setLimit(1)
+		->exec()
+	;
+
 	if ($relation = $res->fetch())
 	{
 		$arResult["UserRelationId"] = $relation['ID'];
 	}
 
-	if (empty($arParams["PATH_TO_USER_REQUESTS"]))
-	{
-		$arParams["PATH_TO_USER_REQUESTS"] = \Bitrix\Socialnetwork\ComponentHelper::getUserSEFUrl().'user/#user_id#/requests/';
-	}
+	$arParams["PATH_TO_USER_REQUESTS"] = $arParams["PATH_TO_USER_REQUESTS"]
+		?? \Bitrix\Socialnetwork\ComponentHelper::getUserSEFUrl().'user/#user_id#/requests/'
+	;
 
 	$arResult["Urls"]["UserRequests"] = CComponentEngine::MakePathFromTemplate($arParams["PATH_TO_USER_REQUESTS"], array("user_id" => $USER->getId()));
 }

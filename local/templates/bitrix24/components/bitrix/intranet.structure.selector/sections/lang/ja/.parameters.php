@@ -1,3 +1,0 @@
-<?
-$MESS["INTR_ISS_TPL_PARAM_SHOW_SECTION_INFO"] = "部門情報を表示する";
-?>

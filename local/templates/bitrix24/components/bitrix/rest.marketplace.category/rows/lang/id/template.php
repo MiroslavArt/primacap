@@ -1,4 +1,0 @@
-<?
-$MESS["MARKETPLACE_CATEGORY_ROWS_DEINSTALL"] = "Putuskan hubungan";
-$MESS["MARKETPLACE_CATEGORY_ROWS_INSTALL"] = "Hubungkan";
-?>

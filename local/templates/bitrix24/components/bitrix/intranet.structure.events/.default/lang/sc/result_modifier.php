@@ -1,5 +1,0 @@
-<?
-$MESS["INTR_ABSC_TPL_ADD_ENTRY"] = "添加条目";
-$MESS["INTR_ABSC_TPL_EDIT_ENTRIES"] = "管理";
-$MESS["INTR_ABSC_TPL_EDIT_ENTRIES_TITLE"] = "员工异动管理（在控制面板中）";
-?>

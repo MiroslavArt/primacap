@@ -23,6 +23,7 @@ $MESS["INTR_USER_admin"] = "Administrateur";
 $MESS["INTR_USER_extranet"] = "Extranet";
 $MESS["INTR_USER_fired"] = "Démissionné";
 $MESS["INTR_USER_inactive"] = "Est invité";
+$MESS["INTR_USER_integrator"] = "Partenaire Bitrix24";
 $MESS["ISL_DATE_REGISTER"] = "Date d'enregistrement";
 $MESS["ISL_EMAIL"] = "E-mail";
 $MESS["ISL_FULL_NAME"] = "Nom, prénom";

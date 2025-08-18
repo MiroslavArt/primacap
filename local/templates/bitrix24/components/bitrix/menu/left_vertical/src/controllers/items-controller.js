@@ -1,8 +1,9 @@
-import {Loc, Type, Dom, Text} from 'main.core';
+import { Loc, Type, Dom, Text, Reflection } from 'main.core';
 import {EventEmitter} from 'main.core.events';
 import getItem from '../items/index';
 import Item from '../items/item';
 import ItemActive from '../items/item-active';
+import { ItemMainPage } from '../items/item-main-page';
 import ItemUserSelf from '../items/item-user-self';
 import ItemUserFavorites from '../items/item-user-favorites';
 import Options from "../options";
@@ -12,8 +13,7 @@ import Backend from "../backend";
 import ItemAdminCustom from "../items/item-admin-custom";
 import {Menu, MenuItem} from 'main.popup';
 import ItemGroup from "../items/item-group";
-
-import { DesktopApi } from 'im.v2.lib.desktop-api';
+import { Counter } from 'ui.cnt';
 
 export default class ItemsController extends DefaultController{
 	parentContainer: Element;
@@ -55,7 +55,11 @@ export default class ItemsController extends DefaultController{
 		const itemClass = getItem(node);
 		const item = new itemClass(this.container, node);
 		this.items.set(item.getId(), item);
-		this.#registerDND(item);
+
+		if (!(item instanceof ItemMainPage))
+		{
+			this.#registerDND(item);
+		}
 
 		if (this.#activeItem.checkAndSet(
 			item,
@@ -89,8 +93,8 @@ export default class ItemsController extends DefaultController{
 		;
 		item.container
 			.querySelector('[data-role="item-edit-control"]')
-			.addEventListener('click', (event) => {
-				this.openItemMenu(item, event.target)
+			?.addEventListener('click', (event) => {
+				this.openItemMenu(item, event.target, event.currentTarget);
 			});
 		return item;
 	}
@@ -334,10 +338,13 @@ export default class ItemsController extends DefaultController{
 	#recalculateCounters(item: Item)
 	{
 		let counterValue = 0;
-		if (item.container.querySelector('[data-role="counter"]'))
+		const counter = Counter.initFromCounterNode(item.container.querySelector(`.${Counter.BaseClassname}`));
+
+		if (counter)
 		{
-			counterValue = item.container.querySelector('[data-role="counter"]').dataset.counterValue;
+			counterValue = counter.getRealValue();
 		}
+
 		if (counterValue <= 0)
 		{
 			return;
@@ -356,26 +363,18 @@ export default class ItemsController extends DefaultController{
 		[...this.parentContainer
 			.querySelectorAll(`.menu-item-block[data-status="hide"][data-role='item']`)
 		].forEach((node) => {
-				const counterNode = node.querySelector('[data-role="counter"]');
-				if (counterNode)
-				{
-					hiddenCounterValue += parseInt(counterNode.dataset.counterValue);
-				}
-			})
-		;
+			const hiddenMenuItemCounter = Counter.initFromCounterNode(node.querySelector(`.${Counter.BaseClassname}`));
 
-		const hiddenCounterNode = this.parentContainer.querySelector('#menu-hidden-counter');
-		hiddenCounterNode.dataset.counterValue = Math.max(0, hiddenCounterValue);
-		if (hiddenCounterNode.dataset.counterValue > 0)
-		{
-			hiddenCounterNode.classList.remove('menu-hidden-counter');
-			hiddenCounterNode.innerHTML = hiddenCounterNode.dataset.counterValue > 99 ? '99+' : hiddenCounterNode.dataset.counterValue;
-		}
-		else
-		{
-			hiddenCounterNode.classList.add('menu-hidden-counter');
-			hiddenCounterNode.innerHTML = '';
-		}
+			if (hiddenMenuItemCounter)
+			{
+				hiddenCounterValue += hiddenMenuItemCounter.getRealValue();
+			}
+		});
+
+		Counter.updateCounterNodeValue(
+			Counter.initFromCounterNode(this.parentContainer.querySelector('#menu-hidden-counter')),
+			hiddenCounterValue,
+		);
 	}
 
 	#refreshActivity(item: Item, oldParent:? ItemGroup)
@@ -471,7 +470,7 @@ export default class ItemsController extends DefaultController{
 							let counterId = 'doesNotMatter';
 							if (id.indexOf('menu_crm') >= 0 || id.indexOf('menu_tasks') >= 0)
 							{
-								const counterNode = item.container.querySelector('[data-role="counter"]');
+								const counterNode = item.container.querySelector(`.${Counter.BaseClassname}`);
 								if (counterNode)
 								{
 									counterId = counterNode.id;
@@ -497,7 +496,8 @@ export default class ItemsController extends DefaultController{
 				this.#updateCountersLastValue < 0 ? '0' : this.#updateCountersLastValue
 			));
 
-			if (DesktopApi.isDesktop())
+			const DesktopApi = Reflection.getClass('BX.Messenger.v2.Lib.DesktopApi');
+			if (DesktopApi && DesktopApi.isDesktop())
 			{
 				DesktopApi.setBrowserIconBadge(visibleValue);
 			}
@@ -537,12 +537,14 @@ export default class ItemsController extends DefaultController{
 		const result = [];
 		[...this.items.values()]
 			.forEach((item: Item) => {
-				const node = item.container.querySelector('[data-role="counter"]');
-				if (node && node.id.indexOf(counterId) >= 0)
+				const counter = Counter.initFromCounterNode(item.container.querySelector(`.${Counter.BaseClassname}`));
+
+				if (counter && counter.getId().includes(counterId))
 				{
 					result.push(item);
 				}
 			});
+
 		return result;
 	}
 
@@ -767,15 +769,34 @@ export default class ItemsController extends DefaultController{
 
 	//region DropdownActions
 	#openItemMenuPopup;
-	openItemMenu(item: Item, target)
+	openItemMenu(item: Item, target: HTMLElement, currentTarget: HTMLElement)
 	{
+		if (currentTarget)
+		{
+			Dom.addClass(currentTarget, '--open');
+		}
+		else
+		{
+			Dom.addClass(target, '--open');
+		}
+
 		if (this.#openItemMenuPopup)
 		{
 			this.#openItemMenuPopup.close();
 		}
 		const contextMenuItems = [];
 		// region hide/show item
-		if (item.container.getAttribute("data-status") === "show")
+
+		if (item instanceof ItemMainPage)
+		{
+			contextMenuItems.push({
+				text: Loc.getMessage('MENU_OPEN_SETTINGS_MAIN_PAGE'),
+				onclick: () => {
+					item.openSettings();
+				},
+			});
+		}
+		else if (item.container.getAttribute("data-status") === "show")
 		{
 			contextMenuItems.push({
 				text: Loc.getMessage("hide_item"),
@@ -798,6 +819,7 @@ export default class ItemsController extends DefaultController{
 		//region set as main page
 		if (
 			!Options.isExtranet
+			&& !Options.isMainPageEnabled
 			&& !(item instanceof ItemUserSelf)
 			&& !(item instanceof ItemGroup)
 			&& this.container.querySelector('li.menu-item-block[data-role="item"]') !== item.container
@@ -818,12 +840,15 @@ export default class ItemsController extends DefaultController{
 				contextMenuItems.push(actionItem);
 			});
 
-		contextMenuItems.push({
-			text: this.#isEditMode ? Loc.getMessage("MENU_EDIT_READY_FULL") : Loc.getMessage("MENU_SETTINGS_MODE"),
-			onclick: () => {
-				this.#isEditMode ? this.switchToViewMode() : this.switchToEditMode();
-			}
-		});
+		if (!(item instanceof ItemMainPage))
+		{
+			contextMenuItems.push({
+				text: this.#isEditMode ? Loc.getMessage("MENU_EDIT_READY_FULL") : Loc.getMessage("MENU_SETTINGS_MODE"),
+				onclick: () => {
+					this.#isEditMode ? this.switchToViewMode() : this.switchToEditMode();
+				}
+			});
+		}
 
 		contextMenuItems.forEach((item) => {
 			item['className'] = ["menu-popup-no-icon", item['className'] ?? ''].join(' ');
@@ -833,17 +858,28 @@ export default class ItemsController extends DefaultController{
 				onclick.call(event, item);
 			};
 		});
+		const targetPosition = Dom.getPosition(target);
 		this.#openItemMenuPopup = new Menu({
-			bindElement: target,
+			bindElement: {
+				top: targetPosition.top - targetPosition.height,
+				left: targetPosition.right,
+			},
 			items: contextMenuItems,
 			offsetTop: 0,
-			offsetLeft: 12,
-			angle: true,
+			offsetLeft: Dom.getPosition(target).width / 2,
 			events: {
 				onClose: () => {
 					EventEmitter.emit(this, Options.eventName('onClose'));
 					item.container.classList.remove('menu-item-block-hover');
 					this.#openItemMenuPopup = null;
+					if (currentTarget)
+					{
+						Dom.removeClass(currentTarget, '--open');
+					}
+					else
+					{
+						Dom.removeClass(target, '--open');
+					}
 				},
 				onShow: () => {
 					item.container.classList.add('menu-item-block-hover');

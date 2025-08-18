@@ -137,7 +137,7 @@ input[type=reset]:hover {
 <th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Won Leads</th>
 <th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Active Leads</th>
 <th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Junk Leads</th>
-<th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Total Leads</th>
+<th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Total Working Leads</th>
 <th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Total Assigned Leads</th>
 <th align='center' style='border:1px #f5f9f9 solid; color:#fff;'>Score</th>
 </tr>
@@ -317,6 +317,18 @@ function getProactivenessScore($DB, $USER, $arRes, $fromdate = null, $todate = n
                                          $leadAssignedCondition");
     $strtotleadAssignedRestot = $strtotleadAssignedSql->Fetch();
 
+    // Define total active lead date condition
+    $leadActiveCondition = ($fromdate && $todate) ? "AND CREATED_DATE BETWEEN '".$fromdate."' AND '".$todate."'" : "";
+
+    // Calculate total active lead count
+    $strtotleadActiveSql = $DB->Query("SELECT COUNT(*) AS tot_lead_active_count 
+                                         FROM b_crm_lead_status_history 
+                                         WHERE RESPONSIBLE_ID = '".$arRes['ID']."' 
+                                         AND STATUS_ID IN ('UC_9WUJ49','UC_23YNYD','UC_TCX0EY','IN_PROCESS','UC_OD8Y57','UC_TB6VLO','UC_6QWK0K',7,'UC_U2UJ60') 
+                                         $leadActiveCondition");
+    $strtotleadActiveRestot = $strtotleadActiveSql->Fetch();
+
+    $totActive = $strtotleadActiveRestot['tot_lead_active_count'];
     $totAssigned = $strtotleadAssignedRestot['tot_lead_assigned_count'];
     $proactivities = $proactRes['proactivities_count'];
 
@@ -343,6 +355,7 @@ function getProactivenessScore($DB, $USER, $arRes, $fromdate = null, $todate = n
 
     // Return an associative array with the required values
     return [
+        'tot_lead_active_count' => $totActive,
         'tot_lead_assigned_count' => $totAssigned,
         'proactivities_count' => $proactivities,
         'proscore' => min($proscore, 15),

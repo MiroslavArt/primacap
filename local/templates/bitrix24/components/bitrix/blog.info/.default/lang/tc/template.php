@@ -1,5 +1,0 @@
-<?
-$MESS["BLOG_BLOG_BLOGINFO_CAT"] = "標籤";
-$MESS["BLOG_BLOG_BLOGINFO_CAT_VIEW"] = "檢視具有本標籤的所有訊息";
-$MESS["BLOG_BLOG_TAG_CLOUD"] = "標籤雲端";
-?>

@@ -1,7 +1,0 @@
-<?
-$MESS["INTR_IAU_TPL_FROM"] = "從";
-$MESS["INTR_IAU_TPL_NOT_FOUND"] = "未找到缺勤記錄";
-$MESS["INTR_IAU_TPL_TO"] = "到";
-$MESS["SONET_ABSENCE_USER_TITLE"] = "缺勤";
-$MESS["SONET_USER_ABSENCE"] = "缺勤";
-?>

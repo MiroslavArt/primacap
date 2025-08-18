@@ -1,0 +1,105 @@
+<?php
+$MESS["INTRANET_USER_PROFILE_ADDITIONAL_INFO"] = "Maklumat tambahan";
+$MESS["INTRANET_USER_PROFILE_ADD_PHOTO"] = "Tukar gambar";
+$MESS["INTRANET_USER_PROFILE_ADMIN_MODE"] = "Mod pentadbir";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL"] = "Pemasangan aplikasi";
+$MESS["INTRANET_USER_PROFILE_APP_INSTALL_TEXT"] = "Anda akan menerima pesanan ringkas yang mengandungi pautan untuk memuat turun dan memasang aplikasi mudah alih Bitrix24.";
+$MESS["INTRANET_USER_PROFILE_APP_PHONE"] = "Telefon";
+$MESS["INTRANET_USER_PROFILE_APP_SEND"] = "Hantar";
+$MESS["INTRANET_USER_PROFILE_AVATAR_CAMERA"] = "Ambil gambar";
+$MESS["INTRANET_USER_PROFILE_AVATAR_LOAD"] = "Muat naik foto";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_ADD"] = "Hantar penghargaan";
+$MESS["INTRANET_USER_PROFILE_BLOG_GRAT_TITLE"] = "Penghargaan";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_MODIFY"] = "sunting";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_BUTTON"] = "Ceritakan tentang diri anda";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_STUB_TEXT"] = "Kongsi cerita kehidupan yang menarik atau beritahu pengguna lain mengenai diri anda, muat naik foto saat yang tidak dapat dilupakan.";
+$MESS["INTRANET_USER_PROFILE_BLOG_POST_TITLE"] = "Tentang saya";
+$MESS["INTRANET_USER_PROFILE_CHAT"] = "Sembang";
+$MESS["INTRANET_USER_PROFILE_CHAT_HISTORY"] = "Log mesej";
+$MESS["INTRANET_USER_PROFILE_CLOSE"] = "Tutup";
+$MESS["INTRANET_USER_PROFILE_CONTACT_INFO"] = "Maklumat orang hubungan";
+$MESS["INTRANET_USER_PROFILE_DELETE"] = "Hapus";
+$MESS["INTRANET_USER_PROFILE_DELETE_CONFIRM"] = "Adakah anda pasti anda mahu menghapuskan pengguna dijemput?";
+$MESS["INTRANET_USER_PROFILE_DESKTOP_APP"] = "Aplikasi komputer atas meja";
+$MESS["INTRANET_USER_PROFILE_DISK_INSTALLED"] = "Bitrix24.Drive dipasang";
+$MESS["INTRANET_USER_PROFILE_DISK_SPACE"] = "ruang cakera: #VALUE#";
+$MESS["INTRANET_USER_PROFILE_FIELD_LAST_NAME"] = "Nama akhir";
+$MESS["INTRANET_USER_PROFILE_FIELD_MANAGERS"] = "Penyelia";
+$MESS["INTRANET_USER_PROFILE_FIELD_NAME"] = "Nama pertama";
+$MESS["INTRANET_USER_PROFILE_FIELD_SECOND_NAME"] = "Nama kedua";
+$MESS["INTRANET_USER_PROFILE_FIELD_SUBORDINATE"] = "Pekerja bawahan";
+$MESS["INTRANET_USER_PROFILE_FIRE"] = "Dipecat";
+$MESS["INTRANET_USER_PROFILE_FIRE_CONFIRM"] = "Pekerja tidak akan dapat log masuk ke Bitrix24, dan tidak akan ditunjukkan dalam struktur syarikat. Semua fail mereka (fail, mesej, tugas, dll.) akan tetap dalam keadaan baik.
+<br/><br/>
+Adakah anda pasti anda mahu memecat pekerja?";
+$MESS["INTRANET_USER_PROFILE_HIRE"] = "Mengambil kerja";
+$MESS["INTRANET_USER_PROFILE_HIRE_CONFIRM"] = "Pekerja akan dapat log masuk ke Bitrix24 dan akan dilihat dalam struktur syarikat.
+<br/><br/>
+Adakah anda pasti mahu memberi akses kepada pekerja?";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON"] = "Ceritakan tentang minat anda";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_BUTTON_2"] = "Pilih minat";
+$MESS["INTRANET_USER_PROFILE_INTERESTS_STUB_TEXT"] = "Cipta atau sertai minat. Cari kawan yang berkongsi minat anda.";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_F"] = "dilihat terakhir #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_F"] = "melahu sejak #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_IDLE_M"] = "melahu sejak #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_LAST_SEEN_M"] = "dilihat terakhir #LAST_SEEN#";
+$MESS["INTRANET_USER_PROFILE_MOBILE_APP"] = "Aplikasi mudah alih";
+$MESS["INTRANET_USER_PROFILE_MORE"] = "Tunjuk lebih #NUM#";
+$MESS["INTRANET_USER_PROFILE_MOVE"] = "Pindah";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM"] = "Bitrix24 anda telah mencapai bilangan maksimum pentadbir yang mungkin.<br/>Keistimewaan pentadbir anda akan dibatalkan jika anda menetapkan pengguna ini sebagai pentadbir. Adakah anda pasti anda ingin pindah kebenaran pentadbir kepada pengguna ini?";
+$MESS["INTRANET_USER_PROFILE_MOVE_ADMIN_RIGHTS_CONFIRM_PROMO"] = "#LINK_START#Dapatkan lebih manfaat daripada Bitrix24#LINK_END# anda";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET"] = "Pindah ke intranet";
+$MESS["INTRANET_USER_PROFILE_MOVE_TO_INTRANET_TITLE"] = "Pindah ke intranet";
+$MESS["INTRANET_USER_PROFILE_NO"] = "Tidak";
+$MESS["INTRANET_USER_PROFILE_PASSWORDS"] = "Kata laluan";
+$MESS["INTRANET_USER_PROFILE_PHOTO_DELETE_CONFIRM"] = "Adakah anda pasti anda mahu menghapuskan foto?";
+$MESS["INTRANET_USER_PROFILE_QUIT_ADMIN_MODE"] = "Keluar mod Pentadbir";
+$MESS["INTRANET_USER_PROFILE_REINVITE"] = "Jemput lagi";
+$MESS["INTRANET_USER_PROFILE_REINVITE_SUCCESS"] = "Jemputan telah dihantar";
+$MESS["INTRANET_USER_PROFILE_REMOVE_ADMIN_RIGHTS"] = "Batalkan kebenaran pentadbir";
+$MESS["INTRANET_USER_PROFILE_RIGHTS"] = "Kebenaran";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_MORE"] = "Belajar lebih lanjut";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT1"] = "Dapatkan lebih banyak daripada Bitrix24 anda";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TEXT2"] = "Berikan berbilang pentadbir untuk memastikan Bitrix24 anda diuruskan setiap masa! Pentadbir mempunyai akses penuh ke semua ciri termasuk telefoni, Saluran Terbuka dan tetapan! Anda boleh menetapkan sebanyak pentadbir seperti dinyatakan oleh pelan Bitrix24 anda:";
+$MESS["INTRANET_USER_PROFILE_RIGHTS_RESTR_TITLE"] = "Had pentadbir";
+$MESS["INTRANET_USER_PROFILE_SECURITY"] = "Keselamatan";
+$MESS["INTRANET_USER_PROFILE_SET_ADMIN_RIGHTS"] = "Berikan kebenaran pentadbir";
+$MESS["INTRANET_USER_PROFILE_SET_INEGRATOR_RIGHTS"] = "Berikan hak rakan kongsi Grant Bitrix24";
+$MESS["INTRANET_USER_PROFILE_SET_INTEGRATOR_RIGHTS_CONFIRM"] = "Rakan kongsi Bitrix24 yang diperakui boleh membantu anda menyediakan atau menyempurnakan Bitrix24 anda kepada aliran kerja syarikat anda: CRM, Saluran Terbuka, dokumentasi, telefoni, laporan dan alat perniagaan lain.
+#LINK_START#Ketahui lebih lanjut#LINK_END#
+<br/><br/>
+#NAME# akan menerima kebenaran akses penuh, kecuali hak untuk menjemput atau memberhentikan pentadbir. 
+Adakah anda pasti anda mahu memberikan hak rakan kongsi Bitrix24 kepada pengguna ini?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_BUTTON"] = "Bagaimana mengukur?";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_INDICATOR_TEXT"] = "tekanan";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_NORESULT_TITLE"] = "Ukur tahap tekanan anda";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_INVISIBLE"] = "Pengguna lain tidak dapat melihat tahap tekanan anda.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_HINT_VISIBLE"] = "Pengguna lain boleh lihat tahap tekanan anda.";
+$MESS["INTRANET_USER_PROFILE_STRESSLEVEL_RESULT_SHARE_LINK"] = "salin ke Papan Keratan";
+$MESS["INTRANET_USER_PROFILE_SYNCHRONIZE"] = "Segerakkan";
+$MESS["INTRANET_USER_PROFILE_TAGS_MODIFY"] = "sunting";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_ADD"] = "Tambah Item";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_2"] = "Pada masa ini tiada minat yang anda boleh sertai. Cipta minat anda!";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_HINT_3"] = "Untuk menambah minat, masukkannya dan tekan Masuk. Asingkan pelbagai minat dengan ruang.";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_SEARCH_TITLE"] = "Keputusan carian:";
+$MESS["INTRANET_USER_PROFILE_TAGS_POPUP_TITLE"] = "Teg popular:";
+$MESS["INTRANET_USER_PROFILE_TAGS_TITLE"] = "Benda yang saya suka";
+$MESS["INTRANET_USER_PROFILE_TARIFF_COMPANY"] = "Profesional";
+$MESS["INTRANET_USER_PROFILE_TARIFF_PROJECT"] = "Percuma";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TEAM"] = "Standard";
+$MESS["INTRANET_USER_PROFILE_TARIFF_TF"] = "Plus";
+$MESS["INTRANET_USER_PROFILE_THEME"] = "Tukar latar belakang";
+$MESS["INTRANET_USER_PROFILE_UNLIM"] = "tanpa had";
+$MESS["INTRANET_USER_PROFILE_VIDEOCALL"] = "Panggilan video";
+$MESS["INTRANET_USER_PROFILE_VIEW_ACCESS_DENIED"] = "Akses ke profil pengguna dinafikan.";
+$MESS["INTRANET_USER_PROFILE_YES"] = "Ya";
+$MESS["INTRANET_USER_PROFILE_admin"] = "Pentadbir";
+$MESS["INTRANET_USER_PROFILE_email"] = "Pengguna e-mel";
+$MESS["INTRANET_USER_PROFILE_employee"] = "Tindakan";
+$MESS["INTRANET_USER_PROFILE_extranet"] = "Ekstranet";
+$MESS["INTRANET_USER_PROFILE_fired"] = "Dipecat";
+$MESS["INTRANET_USER_PROFILE_integrator"] = "Rakan kongsi Bitrix24";
+$MESS["INTRANET_USER_PROFILE_invited"] = "Dijemput";
+$MESS["INTRANET_USER_PROFILE_shop"] = "Pengguna kedai web";
+$MESS["INTRANET_USER_PROFILE_visitor"] = "Tetamu";
+$MESS["NTRANET_USER_PROFILE_MOBILE_GOOGLE_PLAY_URL"] = "https://play.google.com/store/apps/details?id=com.bitrix24.android";

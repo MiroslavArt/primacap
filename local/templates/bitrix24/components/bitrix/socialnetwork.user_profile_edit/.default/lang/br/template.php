@@ -1,4 +1,4 @@
-<?
+<?php
 $MESS["ISL_ADD_PHOTO"] = "Adicionar foto";
 $MESS["ISL_ADMIN_NOTES"] = "Notas do Administrador";
 $MESS["ISL_AUTO_TIME_ZONE"] = "Fuso Horário Auto";
@@ -80,16 +80,16 @@ $MESS["ISL_XML_ID"] = "ID Externo";
 $MESS["SOCNET_BUTTON_CANCEL"] = "Cancelar";
 $MESS["SOCNET_BUTTON_SAVE"] = "Salvar";
 $MESS["SOCNET_CHANGE_PASSWORD"] = "Trocar passaword";
-$MESS["SOCNET_CONFIRM_FIRE1"] = "O empregado não poderá fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerão intactos.\\n\\nVocê tem certeza de que deseja negar o acesso a este empregado?";
-$MESS["SOCNET_CONFIRM_RECOVER1"] = "O empregado será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que deseja permitir o acesso para este empregado?";
+$MESS["SOCNET_CONFIRM_FIRE1"] = "O colaborador não poderá fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerão intactos.\\n\\nVocê tem certeza de que deseja negar o acesso a este colaborador?";
+$MESS["SOCNET_CONFIRM_RECOVER1"] = "O colaborador será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que deseja permitir o acesso para este colaborador?";
 $MESS["SOCNET_MOVE_RIGHTS_AUTH_HINT"] = "A permissão pode ser delegada apenas a um usuário que efetuou login pelo menos uma vez.";
 $MESS["SOCNET_MOVE_RIGHTS_CONFIRM"] = "Seu Bitrix24 atingiu o número máximo possível de administradores.<br/>Seus privilégios de administrador serão revogados se você configurar esse usuário como administrador.";
 $MESS["SOCNET_MOVE_RIGHTS_CONFIRM_TITLE"] = "Confirmar ação";
 $MESS["SOCNET_PHONE_ADD"] = "Adicionar telefones";
-$MESS["SOCNET_RIGHTS_RESTR_COMPANY_TEXT"] = "Existem atualmente 10 funcionários com permissão de administrador Bitrix24. Este é o número máximo de administradores permitido para o plano Profissional. Para adicionar mais administradores, faça um upgrade para a <a href=\"https://www.bitrix24.com/self-hosted/\" target='_blank'>Versão No Local</a> ou substitua um dos atuais administradores.";
+$MESS["SOCNET_RIGHTS_RESTR_COMPANY_TEXT"] = "Existem atualmente 10 colaboradores com permissão de administrador Bitrix24. Este é o número máximo de administradores permitido para o plano Profissional. Para adicionar mais administradores, faça um upgrade para a <a href=\"https://www.bitrix24.com/self-hosted/\" target='_blank'>Versão No Local</a> ou substitua um dos atuais administradores.";
 $MESS["SOCNET_RIGHTS_RESTR_MORE"] = "Saiba mais";
 $MESS["SOCNET_RIGHTS_RESTR_TEXT1"] = "Aproveite mais a sua conta Bitrix24";
-$MESS["SOCNET_RIGHTS_RESTR_TEXT2"] = "Tenha mais de um administrador gerenciando sua conta Bitrix24. Os administradores podem editar preferências, gerenciar telefonia e Canais Abertos, atribuir permissões de acesso a funções Bitrix24, contratar e demitir funcionários. Escolha um plano que ofereça o número máximo desejado de administradores:";
+$MESS["SOCNET_RIGHTS_RESTR_TEXT2"] = "Tenha mais de um administrador gerenciando sua conta Bitrix24. Os administradores podem editar preferências, gerenciar telefonia e Canais Abertos, atribuir permissões de acesso a funções Bitrix24, contratar e demitir colaboradores. Escolha um plano que ofereça o número máximo desejado de administradores:";
 $MESS["SOCNET_RIGHTS_RESTR_TITLE"] = "Limite do Administrador";
 $MESS["SOCNET_SOCNET_ADD"] = "Adicionar redes sociais";
 $MESS["SOCNET_SUBMIT_FIRE"] = "Acesso negado";
@@ -112,4 +112,3 @@ $MESS["SOCNET_USER_FIRED"] = "Usuário Inativo";
 $MESS["soc_profile_time_zones_auto_def"] = "(padrão)";
 $MESS["soc_profile_time_zones_auto_no"] = "Não, escolher da lista";
 $MESS["soc_profile_time_zones_auto_yes"] = "Sim, use as configurações do navegador";
-?>

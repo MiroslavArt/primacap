@@ -8,7 +8,7 @@ $MESS["SONET_C6_ACT_JOIN_REQUEST_SENT"] = "Hai già inviato una richiesta per en
 $MESS["SONET_C6_ACT_JOIN_REQUEST_SENT_BY_GROUP"] = "L'invito a partecipare a questo gruppo di lavoro ti è già stato inviato. Puoi confermare la tua iscrizione nella <a href='#LINK#'>pagina di invito</a>.";
 $MESS["SONET_C6_ACT_MODN"] = "Moderatori";
 $MESS["SONET_C6_ACT_MODN_ACTION"] = "Modifica";
-$MESS["SONET_C6_ACT_MODN_PROJECT"] = "Assistenti di progetto";
+$MESS["SONET_C6_ACT_MODN_PROJECT"] = "Moderatori progetto";
 $MESS["SONET_C6_ACT_MODN_SCRUM_PROJECT"] = "Team";
 $MESS["SONET_C6_ACT_REQU"] = "Invita al gruppo";
 $MESS["SONET_C6_ACT_REQU_PROJECT"] = "Invita al progetto";

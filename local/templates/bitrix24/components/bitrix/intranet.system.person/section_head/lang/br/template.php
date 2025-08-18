@@ -1,7 +1,7 @@
-<?
+<?php
 $MESS["INTR_CONFIRM_DELETE"] = "Convite serão eliminados de forma irrevogável.\\n\\nVocê tem certeza que deseja excluir o empregado?";
-$MESS["INTR_CONFIRM_FIRE"] = "O funcionário não será capaz de fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerá intacto.\\n\\nVocê tem certeza de que quer negar o acesso a este funcionário?";
-$MESS["INTR_CONFIRM_RESTORE"] = "O funcionário será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que quer permitir o acesso para este empregado?";
+$MESS["INTR_CONFIRM_FIRE"] = "O colaborador não poderá fazer login no portal, não será mostrado na estrutura da empresa. No entanto, todos os seus dados pessoais (arquivos, mensagens, tarefas, etc) permanecerão intactos.\\n\\nVocê tem certeza de que deseja negar o acesso a este colaborador?";
+$MESS["INTR_CONFIRM_RESTORE"] = "O colaborador será capaz de fazer login no portal e será mostrado na estrutura da empresa.\\n\\nVocê tem certeza de que deseja permitir o acesso para este colaborador?";
 $MESS["INTR_EXTRANET"] = "(extranet)";
 $MESS["INTR_ISP_DEACTIVATE_USER"] = "Acesso negado";
 $MESS["INTR_ISP_DELETE_ERROR"] = "Erro! O usúario não foi deletado";
@@ -26,4 +26,3 @@ $MESS["ISL_PERSONAL_BIRTHDAY"] = "Data de nascimento";
 $MESS["ISL_PERSONAL_EMAIL"] = "E-MAIL";
 $MESS["ISL_PERSONAL_PHONE"] = "Telefone";
 $MESS["ISL_PERSONAL_SKYPE"] = "Skype";
-?>

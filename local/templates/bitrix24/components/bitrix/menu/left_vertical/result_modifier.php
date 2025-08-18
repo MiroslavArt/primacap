@@ -10,9 +10,6 @@ use Bitrix\Main;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\ModuleManager;
-use Bitrix\Main\Type\Date;
-use Bitrix\Tasks\Internals\Counter\CounterDictionary as TasksCounterDictionary;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 {
@@ -21,6 +18,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
 // region for
 Main\Localization\Loc::loadMessages(__FILE__);
 use \Bitrix\Intranet\UI\LeftMenu;
+
 //Make some preparations. I do not know what it means.
 if ($presetId = \CUserOptions::GetOption("intranet", "left_menu_preset"))
 {
@@ -32,7 +30,9 @@ if ($presetId = \CUserOptions::GetOption("intranet", "left_menu_preset"))
 $defaultItems = $arResult;
 $menuUser = new LeftMenu\User();
 $menu = new LeftMenu\Menu($defaultItems, $menuUser);
-$activePreset = LeftMenu\Preset\Manager::getPreset();
+$isCollaber = Loader::includeModule('extranet')
+	&& \Bitrix\Extranet\Service\ServiceContainer::getInstance()->getCollaberService()->isCollaberById(\Bitrix\Intranet\CurrentUser::get()->getId());
+$activePreset = LeftMenu\Preset\Manager::getPreset($isCollaber ? 'collab' : null);
 $menu->applyPreset($activePreset);
 $visibleItems = $menu->getVisibleItems();
 $firstPageChanger = ToolsManager::getInstance()->getFirstPageChanger();
@@ -44,8 +44,8 @@ if ($firstPageChanger->checkNeedChanges())
 
 $arResult = [
 	'IS_ADMIN' => $menuUser->isAdmin(),
-	'IS_EXTRANET' => isModuleInstalled("extranet") && SITE_ID    == \COption::GetOptionString("extranet", "extranet_site"),
-	'SHOW_PRESET_POPUP' => \COption::GetOptionString("intranet", "show_menu_preset_popup", "N") == "Y",
+	'IS_EXTRANET' => isModuleInstalled("extranet") && SITE_ID === \COption::GetOptionString("extranet", "extranet_site"),
+	'SHOW_PRESET_POPUP' => \COption::GetOptionString("intranet", "show_menu_preset_popup", "N") == "Y" && $menuUser->isAdmin(),
 	'SHOW_SITEMAP_BUTTON' => false,
 	'ITEMS' => [
 		'show' => $visibleItems,
@@ -53,7 +53,6 @@ $arResult = [
 	],
 	'IS_CUSTOM_PRESET_AVAILABLE' => LeftMenu\Preset\Custom::isAvailable(),
 	'CURRENT_PRESET_ID' => $activePreset->getCode(),
-	'WORKGROUP_COUNTER_DATA' => [],
 	'PRESET_TOOLS_AVAILABILITY' => [
 		'crm' => ToolsManager::getInstance()->checkAvailabilityByToolId('crm'),
 		'tasks' => ToolsManager::getInstance()->checkAvailabilityByToolId('tasks'),
@@ -99,134 +98,22 @@ if ($menuUser->isAdmin())
 
 $counters = \CUserCounter::GetValues($USER->GetID(), SITE_ID);
 $counters = is_array($counters) ? $counters : [];
-
-$workgroupCounterData = [
-	'livefeed' => ($counters[\CUserCounter::LIVEFEED_CODE . 'SG0'] ?? ''),
-];
-
-if (Loader::includeModule('tasks'))
-{
-	$tasksCounterInstance = \Bitrix\Tasks\Internals\Counter::getInstance($USER->GetID());
-
-	$workgroupCounterData[TasksCounterDictionary::COUNTER_PROJECTS_MAJOR] = (
-		$tasksCounterInstance->get(TasksCounterDictionary::COUNTER_GROUPS_TOTAL_COMMENTS)
-		+ $tasksCounterInstance->get(TasksCounterDictionary::COUNTER_PROJECTS_TOTAL_COMMENTS)
-		+ $tasksCounterInstance->get(TasksCounterDictionary::COUNTER_GROUPS_TOTAL_EXPIRED)
-		+ $tasksCounterInstance->get(TasksCounterDictionary::COUNTER_PROJECTS_TOTAL_EXPIRED)
-	);
-
-	$workgroupCounterData[TasksCounterDictionary::COUNTER_SCRUM_TOTAL_COMMENTS] = $tasksCounterInstance->get(TasksCounterDictionary::COUNTER_SCRUM_TOTAL_COMMENTS);
-}
-
-$counters['workgroups'] = array_sum($workgroupCounterData);
-
 $arResult["COUNTERS"] = $counters;
-$arResult['WORKGROUP_COUNTER_DATA'] = $workgroupCounterData;
 
-$arResult["GROUPS"] = array();
+$arResult["GROUP_COUNT"] = 0;
 if (!$arResult["IS_EXTRANET"] && $GLOBALS["USER"]->isAuthorized())
 {
-	$arResult["GROUPS"] = include(__DIR__."/groups.php");
+	$arResult["GROUP_COUNT"] = count(\Bitrix\Intranet\Controller\LeftMenu::getMyGroups());
 }
-
-$arResult["IS_PUBLIC_CONVERTED"] = file_exists($_SERVER["DOCUMENT_ROOT"].SITE_DIR."stream/");
 
 //license button
 $arResult["SHOW_LICENSE_BUTTON"] = false;
+
 if (
 	Main\Loader::includeModule('bitrix24')
 	&& !(Main\Loader::includeModule("extranet") && CExtranet::IsExtranetSite())
 )
 {
-	$licenseFamily = \CBitrix24::getLicenseFamily();
-	if (!\CBitrix24::isMaximalLicense())
-	{
-		$arResult["SHOW_LICENSE_BUTTON"] = true;
-		$arResult["B24_LICENSE_PATH"] = CBitrix24::PATH_LICENSE_ALL;
-		$arResult["LICENSE_BUTTON_COUNTER_URL"] = CBitrix24::PATH_COUNTER;
-		$arResult["HOST_NAME"] = defined('BX24_HOST_NAME')? BX24_HOST_NAME: SITE_SERVER_NAME;
-		$arResult["IS_DEMO_LICENSE"] = \CBitrix24::getLicenseFamily() === "demo";
-		$arResult["DEMO_DAYS"] = "";
-
-		if ($arResult["IS_DEMO_LICENSE"])
-		{
-			$demoEnd = COption::GetOptionInt('main', '~controller_group_till');
-
-			if ($demoEnd > 0)
-			{
-				$currentDate = (new Main\Type\DateTime)->getTimestamp();
-				$timeUntilEndLicense = $demoEnd - $currentDate;
-
-				if ($timeUntilEndLicense > 86400)
-				{
-					$arResult["DEMO_DAYS"] = FormatDate("ddiff", $currentDate, $demoEnd + 86400);
-				}
-				elseif ($timeUntilEndLicense === 86400)
-				{
-					$arResult["DEMO_DAYS"] = FormatDate("ddiff", $currentDate, $demoEnd);
-				}
-				elseif ($timeUntilEndLicense < 86400)
-				{
-					$arResult["DEMO_DAYS"] = Loc::getMessage('MENU_LICENSE_LESS_DAY');
-				}
-			}
-		}
-	}
+	$arResult["SHOW_LICENSE_BUTTON"] = \CBitrix24::getLicenseFamily() !== 'ent';
+	$arResult["B24_LICENSE_PATH"] = \CBitrix24::PATH_LICENSE_ALL . '?analyticsLabel[leftMenu]=Y&analyticsLabel[licenseType]=' . \CBitrix24::getLicenseType();
 }
-
-// exclude menu items
-global $USER;
-
-$userid = $USER->GetID();
-
-$usergroup = \CUser::GetUserGroup(
-    $userid
-);
-
-if(!in_array(1, $usergroup)) {
-    $arFilter = ['IBLOCK_ID' => 53];
-
-    $arSelect = ['ID', 'IBLOCK_ID', 'NAME', 'ACTIVE', 'PROPERTY_AVAILABLE_FOR_GROUP'];
-
-    $elementsList = \CIBlockElement::GetList([], $arFilter, false, false, $arSelect);
-
-    $propexcl = [];
-
-    while ($el = $elementsList->Fetch()) {
-        $propexcl[$el['NAME']] = $el['PROPERTY_AVAILABLE_FOR_GROUP_VALUE'];
-    }
-
-
-
-    //$arResult['ITEMS']['show'] = cleanitems($arResult['ITEMS']['show'],$propexcl,$usergroup);
-    //$arResult['ITEMS']['hide'] = cleanitems($arResult['ITEMS']['hide'],$propexcl,$usergroup);
-    $leftshow = cleanitems($arResult['ITEMS']['show'],$propexcl,$usergroup);
-    //Bitrix\Main\Diag\Debug::writeToFile($leftshow,"lv show", '__miros.log');
-    $arResult['ITEMS']['show'] = $leftshow;
-
-
-    $lefthide = cleanitems($arResult['ITEMS']['hide'],$propexcl,$usergroup);
-    //\Bitrix\Main\Diag\Debug::writeToFile($lefthide,"lv hide", '__miros.log');
-    $arResult['ITEMS']['hide'] = $lefthide;
-
-    //\Bitrix\Main\Diag\Debug::writeToFile($arResult,"arres", '__miros.log');
-
-}
-
-function cleanitems($checkitems, $propexcl, $usergroup) {
-    $retitems = [];
-    foreach ($checkitems as $item) {
-        if(array_key_exists($item['LINK'],$propexcl)) {
-            if(in_array($propexcl[$item['LINK']],$usergroup)) {
-                $retitems[] = $item;
-            }
-        } else {
-            $retitems[] = $item;
-        }
-    }
-    return $retitems;
-}
-
-
-
-

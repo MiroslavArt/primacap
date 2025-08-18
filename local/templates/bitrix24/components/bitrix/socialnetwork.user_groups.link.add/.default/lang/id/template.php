@@ -1,6 +1,0 @@
-<?
-$MESS["SONET_C36_T_CREATE"] = "Buat Grup";
-$MESS["SONET_C36_T_CREATE2"] = "Buat";
-$MESS["SONET_C36_T_CREATE_PROJECT"] = "Buat proyek";
-$MESS["SONET_C36_T_SEARCH_PLACEHOLDER"] = "Cari";
-?>

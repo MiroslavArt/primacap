@@ -70,7 +70,7 @@ class FeedPf extends Feed
             'UF_CRM_5_1752571276' => 'size',
             'UF_CRM_5_1752571294' => 'street,direction',
             'UF_CRM_5_1752571434' => 'street,width',
-            'UF_CRM_5_1752571489' => 'title,ar',
+            //'UF_CRM_5_1752571489' => 'title,ar',
             'TITLE' => 'title,en',
             'UF_CRM_5_1752571572' => 'type',
             'UF_CRM_5_1752509816' => 'uaeEmirate',

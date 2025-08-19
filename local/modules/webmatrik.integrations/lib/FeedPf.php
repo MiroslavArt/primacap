@@ -598,6 +598,32 @@ class FeedPf extends Feed
 
     }
 
+    public function getListing($id) {
+        $httpClient = self::getHttpClient();
+
+        $url = 'https://atlas.propertyfinder.com/v1/listings'; // Adjust endpoint as needed
+
+        $queryParams = [
+            'filter' => [
+                'ids' => $id
+            ]
+        ];
+
+        $fullUrl = $url . '?' . http_build_query($queryParams);
+
+        $response = $httpClient->get(
+            $fullUrl
+        );
+
+        $status = $httpClient->getStatus();
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            print_r($responseData);
+        }
+
+    }
+
     /*public function setLocations()
     {
         //$token = self::makeAuth();

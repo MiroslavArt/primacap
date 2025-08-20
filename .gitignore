@@ -4,3 +4,6 @@
 
 /local/php_interface/scripts.php
 *.zip
+.gitignore
+.DS_Store
+.DS_Store/

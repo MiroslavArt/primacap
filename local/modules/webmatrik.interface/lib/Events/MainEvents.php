@@ -101,6 +101,7 @@ class MainEvents
         }
         \CJSCore::init('jquery3');
         \CJSCore::init('select2');
+        \Bitrix\Main\UI\Extension::load("ui.notification");
 
         if($type =='leadkanban' || $type =='leadlist') {
             \CJSCore::init(['webmatrik_interface_leads']);
@@ -109,8 +110,8 @@ class MainEvents
         } elseif($type == 'detailprop') {
             \CJSCore::init(['webmatrik_interface_type']);
             $asset->addString('<link href="/local/css/crm/type/style.css" rel="stylesheet"></link>');
-            /*$asset->addString('<script>BX.ready(function () {BX.Webmatrik.Interface.Crm.Type.init
-                ();});</script>');*/
+            $asset->addString('<script>BX.ready(function () {BX.Webmatrik.Interface.Crm.Type.init
+                ();});</script>');
         }
     }
 }

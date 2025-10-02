@@ -1,1 +1,342 @@
-.main-field-file-wrapper { width: 100%; }
+.custom-tile-widget {
+  display: block;
+  width: 100%;
+}
+.custom-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 20px;
+}
+.tile-item {
+  /* width: 120px; 
+  height: 140px;*/
+  /* border: 2px solid #ddd; */
+  border-radius: 8px;
+  cursor: move;
+  transition: all 0.2s ease;
+  position: relative;
+  background: white;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+  transition: box-shadow .2s;
+  overflow: hidden;
+    width: 100%;
+    max-width: 166px;
+    height: 160px;
+    padding: var(--ui-space-inset-2xs);
+    border-radius: var(--ui-border-radius-lg);
+    background: var(--ui-color-base-8);
+    cursor: pointer;
+}
+
+.tile-item:hover {
+  transform: scale(1.02);
+  border-color: #007cba;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tile-item.drag-over {
+  border-color: #2196f3 !important;
+  background-color: rgba(33, 150, 243, 0.1) !important;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+}
+
+.tile-item.dragging {
+  opacity: 0.6;
+  transform: scale(0.95) rotate(3deg);
+  z-index: 1000;
+}
+
+.tile-item.uploading {
+  border-color: #2196f3;
+  background-color: rgba(33, 150, 243, 0.05);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.tile-item.upload-failed {
+  border-color: #f44336;
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+.upload-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  z-index: 5;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 4px;
+  background: #2196f3;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: #2196f3;
+  text-align: center;
+}
+
+.tile-content {
+  padding: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.tile-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.tile-remove:hover {
+  background: #cc0000;
+  transform: scale(1.1);
+}
+
+.tile-preview {
+  flex: 1;
+  width: 100%;
+  max-width: 180px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 6px 0;
+}
+
+.tile-image {
+  width: 100%;
+  height: 100px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.tile-image:not([style*="url("]):empty::after {
+  content: "🖼️";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  opacity: 0.5;
+}
+
+.tile-image-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+}
+
+.loading-icon {
+  font-size: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Debug helper */
+.tile-image[style*="url("] {
+  border-color: #4caf50;
+}
+
+.tile-icon {
+  font-size: 24px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.file-ext {
+  font-size: 12px;
+  font-weight: bold;
+  color: #007cba;
+  background: #e3f2fd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.tile-info {
+  margin-top: auto;
+  text-align: center;
+}
+
+.tile-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.tile-size {
+  font-size: 9px;
+  color: #666;
+  font-weight: 400;
+}
+
+.upload-zone {
+  width: 120px;
+  height: 140px;
+}
+
+.drop-area {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.drop-area:hover {
+  border-color: #007cba;
+  background-color: #f0f8ff;
+  transform: scale(1.02);
+}
+
+.drop-content {
+  text-align: center;
+  padding: 10px;
+}
+
+.drop-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.drop-text {
+  margin: 0;
+  font-size: 10px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.main-field-file-wrapper {
+  min-height: 160px;
+  width: 100%;
+}
+
+.loading-indicator {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-tile-widget {
+    gap: 8px;
+    padding: 10px;
+  }
+  
+  .tile-item,
+  .upload-zone {
+    width: 100px;
+    height: 120px;
+  }
+  
+  .tile-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .tile-icon {
+    font-size: 20px;
+  }
+
+  .drop-icon {
+    font-size: 20px;
+  }
+}
+
+/* Animation for drag and drop */
+@keyframes dragPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.tile-item.drag-over {
+  animation: dragPulse 0.5s ease-in-out infinite;
+}
+
+.main-field-file-wrapper .ui-tile-uploader { display: none !important; }
+
+.ui-uploader-zone,
+.ui-uploader-drop-zone,
+.ui-uploaderinput-drop-zone,
+.ui-uploaderinput-browse {
+  display: none !important;
+}

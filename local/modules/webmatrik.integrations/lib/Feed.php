@@ -14,6 +14,7 @@ abstract class Feed
 {
     protected static $entityTypeId;
     protected static $locentityTypeId;
+    protected static $bayutLocentityTypeId;
     protected static $photoentityTypeId;
     protected static $videoentityTypeId;
 
@@ -22,11 +23,13 @@ abstract class Feed
         Loader::includeModule('crm');
         static::$entityTypeId = 1036;
         static::$locentityTypeId = 1054;
+        static::$bayutLocentityTypeId = 1074;
         static::$photoentityTypeId = 1040;
         static::$videoentityTypeId = 1044;
     }
 
-    protected function retrieveDate(array $filter, string $mode ='Pf') {
+    protected function retrieveDate(array $filter, string $mode = 'Pf')
+    {
         $uf = static::getEnumVal();
         $enums = $uf['enum'];
         $bool = $uf['bool'];
@@ -35,6 +38,7 @@ abstract class Feed
 
         $factory = $container->getFactory(static::$entityTypeId);
         $rellocfactory = $container->getFactory(static::$locentityTypeId);
+        $bayutLocFactory = $container->getFactory(static::$bayutLocentityTypeId);
         //$relphotofactory = $container->getFactory(static::$photoentityTypeId);
         //$relvideofactory = $container->getFactory(static::$videoentityTypeId);
 
@@ -43,61 +47,79 @@ abstract class Feed
         }
 
         $params = [
-            'select' => ['ID', 'TITLE', 'BEGINDATE', 'UPDATED_TIME',
-                'PARENT_ID_1054', 'CREATED_BY',
-                'ASSIGNED_BY_ID', 'UF_*'], // Все поля, включая пользовательские
+            'select' => [
+                'ID',
+                'TITLE',
+                'BEGINDATE',
+                'UPDATED_TIME',
+                'PARENT_ID_' . static::$locentityTypeId,
+                'PARENT_ID_' . static::$bayutLocentityTypeId,
+                'CREATED_BY',
+                'ASSIGNED_BY_ID',
+                'UF_*'
+            ], // Все поля, включая пользовательские
             'filter' => $filter,
             'order' => ['ID' => 'ASC']
         ];
 
         // Получаем элементы
         $items = $factory->getItems($params);
+
         $result = [];
         $locations = [];
-        $users = [];
         foreach ($items as $item) {
             $res = [];
             $data = $item->getData();
             //print_r($data);
             $lisid = $data['ID'];
-            $locations[] = $data['PARENT_ID_1054'];
-            if($mode == 'Pf') {
+            if ($data['PARENT_ID_' . static::$bayutLocentityTypeId] && $mode == 'bayut') {
+                $locations[] = $data['PARENT_ID_' . static::$bayutLocentityTypeId];
+            } else {
+                $locations[] = $data['PARENT_ID_' . static::$locentityTypeId];
+            }
+            if ($mode == 'Pf') {
                 $users[] = $data['CREATED_BY'];
             }
             $users[] = $data['ASSIGNED_BY_ID'];
-            $res['location'] = $data['PARENT_ID_1054'];
-            if($mode=='Pf') {
+            if ($mode == 'bayut') {
+                $res['location'] = $data['PARENT_ID_' . static::$bayutLocentityTypeId];
+            } else {
+                $res['location'] = $data['PARENT_ID_' . static::$locentityTypeId];
+            }
+            if ($mode == 'Pf') {
                 $res['createdBy'] = $data['CREATED_BY'];
             }
             $res['assignedTo'] = $data['ASSIGNED_BY_ID'];
-            if($mode=='bayut') {
+            if ($mode == 'bayut') {
                 $res['Last_Updated'] = $data['UPDATED_TIME']->format("Y-m-d H:i:s");
-            } elseif($mode=='Pf' && $data['BEGINDATE']) {
+            }
+
+            if ($mode == 'Pf' && $data['BEGINDATE']) {
                 $res['availableFrom'] = $data['BEGINDATE']->format("Y-m-d");;
             }
-            if($data['UF_CRM_5_1755322696']) {
-                if($mode=='bayut') {
+            if ($data['UF_CRM_5_1755322696']) {
+                if ($mode == 'bayut') {
                     $photos = self::processPhotos($data['UF_CRM_5_1755322696'], 'bayut');
                     $res['Photos'] = $photos;
-                } elseif($mode=='Pf') {
+                } elseif ($mode == 'Pf') {
                     $photos = self::processPhotos($data['UF_CRM_5_1755322696'], 'Pf');
                     $res['media']['images'] = $photos;
                 }
             }
-            if($data['UF_CRM_5_1755322729'] || $data['UF_CRM_5_1755322753']) {
-                if($mode=='bayut') {
+            if ($data['UF_CRM_5_1755322729'] || $data['UF_CRM_5_1755322753']) {
+                if ($mode == 'bayut') {
                     $res['Videos'] = [];
-                    if($data['UF_CRM_5_1755322729']) {
+                    if ($data['UF_CRM_5_1755322729']) {
                         $res['Videos'][] = $data['UF_CRM_5_1755322729'];
                     }
-                    if($data['UF_CRM_5_1755322753'])  {
+                    if ($data['UF_CRM_5_1755322753']) {
                         $res['Videos'][] = $data['UF_CRM_5_1755322753'];
                     }
-                } elseif($mode=='Pf') {
-                    if($data['UF_CRM_5_1755322729']) {
+                } elseif ($mode == 'Pf') {
+                    if ($data['UF_CRM_5_1755322729']) {
                         $res['media']['videos']['default'] = $data['UF_CRM_5_1755322729'];
                     }
-                    if($data['UF_CRM_5_1755322753'])  {
+                    if ($data['UF_CRM_5_1755322753']) {
                         $res['media']['videos']['view360'] = $data['UF_CRM_5_1755322753'];
                     }
                 }
@@ -105,83 +127,82 @@ abstract class Feed
             // sale amount
             // get main info
             foreach (static::$mask as $key => $item) {
-                if(array_key_exists($key, $data)) {
-                    if(is_array($data[$key])) {
-                        if(array_key_exists($key, $enums)) {
+                if (array_key_exists($key, $data)) {
+                    if (is_array($data[$key])) {
+                        if (array_key_exists($key, $enums)) {
                             $arr1 = $enums[$key];
                             $arr2 = $data[$key];
-                            $arr2 = array_map(function($key) use ($arr1) {
+                            $arr2 = array_map(function ($key) use ($arr1) {
                                 return $arr1[$key] ?? $key; // Если ключа нет в $arr1, оставляем исходное значение
                             }, $arr2);
 
                             $val = $arr2;
                         }
                     } else {
-                        if($data[$key]) {
-                            if(array_key_exists($key, $enums)) {
+                        if ($data[$key]) {
+                            if (array_key_exists($key, $enums)) {
                                 $val = $enums[$key][$data[$key]];
-                            } elseif (in_array($key,$bool)) {
-                                $val = 'true';
-                            } elseif ($key=='UF_CRM_5_1752508197') {
-                                //$val = $data[$key]->format(\DateTime::ATOM);
+                            } elseif (in_array($key, $bool)) {
+                                $val = $data[$key];
+                            } elseif ($key == 'UF_CRM_5_1752508197') {
                                 $val = $data[$key]->format('Y-m-d\TH:i:s\Z');
                             } else {
                                 $val = $data[$key];
                             }
                         } else {
-                            if (in_array($key,$bool)) {
-                                $val = 'false';
+                            if (in_array($key, $bool)) {
+                                $val = $data[$key];
                             } else {
                                 $val = '';
                             }
                         }
                     }
-                    $itemarr = explode( ',', $item);
-                    if(in_array($key,$bool)) {
+                    $itemarr = explode(',', $item);
+                    if (in_array($key, $bool)) {
                         $res = self::arrayToNestedKeys($itemarr, $res, $val);
                     } else {
-                        if($val) {
+                        if ($val) {
                             $res = self::arrayToNestedKeys($itemarr, $res, $val);
                         }
                     }
 
-                    //}
-                    //$res = self::arrayToNestedKeys($itemarr, $res, $val);
-                    /*if(count($itemarr)==1) {
-                        $res[$itemarr[0]] = $val;
-                    } elseif(count($itemarr)==2) {
-                        $res[$itemarr[0]][$itemarr[1]] = $val;
-                    } elseif(count($itemarr)==3) {
-                        $res[$itemarr[0]][$itemarr[1]][$itemarr[2]] = $val;
-                    }*/
+
+                    //$val = '';
+
                 }
             }
-            if($mode=='bayut') {
+            if ($mode == 'bayut') {
                 $res['Property_Status'] = 'Live';
             }
             //print_r($res);
             $result[$lisid] = $res;
-
         }
-        if($result) {
+        if ($result) {
             // get locations
             $locations = array_unique($locations);
 
             $params = [
                 'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
                 'filter' => [
-                    '@ID'=>$locations
+                    '@ID' => $locations
                 ],
                 'order' => ['ID' => 'ASC'],
             ];
 
-            $locobj = $rellocfactory->getItems($params);
+            $locobj = null;
+            if ($mode == 'bayut') {
+                // remove UF_CRM_9_1753773914 from select for bayut
+                unset($params['select'][2]);
+                $locobj = $bayutLocFactory->getItems($params);
+            } elseif ($mode == 'Pf') {
+                $locobj = $rellocfactory->getItems($params);
+            }
 
             $locresult = [];
 
             foreach ($locobj as $item) {
                 $data = $item->getData();
-                if($mode=='bayut') {
+                if ($mode == 'bayut') {
                     $titles = array_reverse(explode(",", $data['TITLE']));
                     $locresult[$data['ID']] = [
                         'City' => $titles[0],
@@ -189,64 +210,68 @@ abstract class Feed
                         'Sub_Locality' => $titles[2],
                         'Tower_Name' => $titles[3]
                     ];
-                } elseif($mode=='Pf') {
+                } elseif ($mode == 'Pf') {
                     $locresult[$data['ID']] = (int)$data['UF_CRM_9_1753773914'];
                 }
             }
+
             // get users
             $users = array_unique($users);
-            if($mode=='bayut') {
+            if ($mode == 'bayut') {
                 $select = ['ID', 'NAME', 'LAST_NAME', 'WORK_PHONE', 'EMAIL'];
-            } elseif($mode=='Pf') {
+            } elseif ($mode == 'Pf') {
                 $select = ['ID', 'UF_PFID', 'UF_PFOP'];
             }
-
+            //print_r($users);
             $userlist = \Bitrix\Main\UserTable::getList(array(
                 'filter' => array(
                     '@ID' => $users,
                 ),
-                'select'=>$select
+                'select' => $select
             ))->fetchAll();
 
             $userresult = [];
 
             foreach ($userlist as $item) {
-                if($mode=='bayut') {
+                if ($mode == 'bayut') {
                     $userresult[$item['ID']] = [
-                        'Listing_Agent' => $item['NAME'].' '.$item['LAST_NAME'],
+                        'Listing_Agent' => $item['NAME'] . ' ' . $item['LAST_NAME'],
                         'Listing_Agent_Phone' => $item['WORK_PHONE'],
                         'Listing_Agent_Email' => $item['EMAIL']
                     ];
-                } elseif($mode=='Pf') {
-                    if($item['UF_PFOP']==static::$offplan) {
+                } elseif ($mode == 'Pf') {
+                    if ($item['UF_PFOP'] == static::$offplan) {
                         $userresult[$item['ID']] = (int)$item['UF_PFID'];
                     } else {
                         $userresult[$item['ID']] = '';
                     }
                 }
             }
-            /* old photovideo selection
-            $params = [
-                'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
-                'filter' => [
-                    '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
-                ],
-                'order' => ['ID' => 'ASC'],
-                //'limit' => 100,
-            ];
 
-            $photoobj = $relphotofactory->getItems($params);
-            $photoresult = [];
-            foreach ($photoobj as $key=>$item) {
-                $data = $item->getData();
-                if($mode=='bayut') {
-                    if($item['UF_CRM_6_1752590366']) {
-                        $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
-                        $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
-                            'https://primocapitalcrm.ae/'.$photoarr['SRC'];
-                    }
-                } elseif($mode=='Pf') {
-                    if($item['UF_CRM_6_1752590335']) {
+            //print_r($userresult);
+            /* old method to get photos and videos
+			$params = [
+				'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+				'filter' => [
+					'@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+				],
+				'order' => ['ID' => 'ASC'],
+				//'limit' => 100,
+			];
+	
+			// Получаем элементы
+			$photoobj = $relphotofactory->getItems($params);
+			$photoresult = [];
+			foreach ($photoobj as $key=>$item) {
+				$data = $item->getData();
+				if($mode=='bayut') {
+					if($item['UF_CRM_6_1752590366']) {
+						$photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590366']);
+						$photoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+							'https://primocapitalcrm.ae/'.$photoarr['SRC'];
+					}
+				} elseif($mode=='Pf') {
+					if($item['UF_CRM_6_1752590335']) {
                         $photoarr = \CFile::GetFileArray($item['UF_CRM_6_1752590335']);
                         $photoresult[$item['PARENT_ID_'.static::$entityTypeId]][$key]['large'] =
                             [
@@ -291,66 +316,73 @@ abstract class Feed
                                 'height' => (int)$photoarr['HEIGHT'],
                             ];
                     }
-                }
-            }
-
-            $params = [
-                'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
-                'filter' => [
-                    '@PARENT_ID_'.static::$entityTypeId => array_keys($result),
-                ],
-                'order' => ['ID' => 'ASC'],
-                //'limit' => 100,
-            ];
-
-            $videoobj = $relvideofactory->getItems($params);
-            $videoresult = [];
-            foreach ($videoobj as $item) {
-                $data = $item->getData();
-                if($mode=='bayut') {
-                    if($item['UF_CRM_7_1752575795']) {
-                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
-                            $item['UF_CRM_7_1752575795'];
-                    }
-                } elseif($mode=='Pf') {
-                    if($item['UF_CRM_7_1752575795']) {
-                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['default'] =
-                            $item['UF_CRM_7_1752575795'];
-                    }
-                    if($item['UF_CRM_7_1752575817']) {
-                        $videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['view360'] =
-                            $item['UF_CRM_7_1752575817'];
-                    }
-                }
-            }*/
+				}
+			}
+			// get videos
+			$params = [
+				'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
+				'filter' => [
+					'@PARENT_ID_'.static::$entityTypeId => array_keys($result),
+				],
+				'order' => ['ID' => 'ASC'],
+				//'limit' => 100,
+			];
+	
+			// Получаем элементы
+			$videoobj = $relvideofactory->getItems($params);
+			$videoresult = [];
+			foreach ($videoobj as $key=>$item) {
+				$data = $item->getData();
+				if($mode=='bayut') {
+					if($item['UF_CRM_7_1752575795']) {
+						$videoresult[$item['PARENT_ID_'.static::$entityTypeId]][] =
+							$item['UF_CRM_7_1752575795'];
+					}
+				} elseif($mode=='Pf') {
+					if($item['UF_CRM_7_1752575795']) {
+						$videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['default'] =
+							$item['UF_CRM_7_1752575795'];
+					}
+					if($item['UF_CRM_7_1752575817']) {
+						$videoresult[$item['PARENT_ID_'.static::$entityTypeId]]['view360'] =
+							$item['UF_CRM_7_1752575817'];
+					}
+				}
+			}*/
             //print_r($locresult);
+            //print_r($result);
 
-            foreach ($result as $key=>&$item) {
+            foreach ($result as $key => &$item) {
                 $item['location'] = $locresult[$item['location']];
                 $item['assignedTo'] = $userresult[$item['assignedTo']];
-                if($mode=='bayut') {
+                if ($mode == 'bayut') {
                     //$item['Photos'] = $photoresult[$key];
-                    //$item['Videos'] = $videoresult[$key];
-                } elseif($mode=='Pf') {
+                    //$item['Videos'] = $videoresult[$key];                    
+                } elseif ($mode == 'Pf') {
                     $item['createdBy'] = $userresult[$item['createdBy']];
                     //$item['media']['images'] = $photoresult[$key];
+                    //if($videoresult[$key]) {
                     //$item['media']['videos'] = $videoresult[$key];
+                    //}
+
                 }
             }
-
-            //print_r($result);
         }
+
+        //print_r($result);
+
         return $result;
     }
 
-    function processPhotos($data, $mode = 'bayut') {
+    function processPhotos($data, $mode = 'bayut')
+    {
         $resarr = [];
         foreach ($data as $item) {
             $photoarr = \CFile::GetFileArray($item);
-            $src = 'https://primocapitalcrm.ae'.$photoarr['SRC'];
-            if($mode == 'bayut') {
+            $src = 'https://primocapitalcrm.ae' . $photoarr['SRC'];
+            if ($mode == 'bayut') {
                 $resarr[] = $src;
-            } elseif($mode=='Pf') {
+            } elseif ($mode == 'Pf') {
                 $resarr[] = [
                     'original' => [
                         'url' => $src,
@@ -363,7 +395,8 @@ abstract class Feed
         return $resarr;
     }
 
-    function arrayToNestedKeys(array $keys, &$targetArray = [], $value = null) {
+    function arrayToNestedKeys(array $keys, &$targetArray = [], $value = null)
+    {
         $current = &$targetArray;
 
         foreach ($keys as $key) {
@@ -398,18 +431,18 @@ abstract class Feed
     }*/
 
 
-    public static function getEnumVal() {
+    public static function getEnumVal()
+    {
         $rsUserFields = \Bitrix\Main\UserFieldTable::getList(array(
-            'filter'=>array('ENTITY_ID'=> 'CRM_5', '@USER_TYPE_ID'=>['enumeration', 'boolean']),
+            'filter' => array('ENTITY_ID' => 'CRM_5', '@USER_TYPE_ID' => ['enumeration', 'boolean']),
         ));
         $resval = [
             'enum' => [],
             'bool' => []
         ];
 
-        while($arUserField=$rsUserFields->fetch())
-        {
-            if($arUserField['USER_TYPE_ID']=='enumeration') {
+        while ($arUserField = $rsUserFields->fetch()) {
+            if ($arUserField['USER_TYPE_ID'] == 'enumeration') {
                 $enumList = \CUserFieldEnum::getList([], [
                     'USER_FIELD_ID' => $arUserField['ID']
                 ]);
@@ -427,7 +460,7 @@ abstract class Feed
     /*public static function makeFeeds() {
         Loader::includeModule("crm");
         $entityTypeId = '1036';
-// Получаем фабрику для работы с сущностью videos
+        // Получаем фабрику для работы с сущностью videos
         $container = Container::getInstance();
         $relationManager = $container->getRelationManager();
         $factory = $container->getFactory($entityTypeId);
@@ -436,7 +469,7 @@ abstract class Feed
             throw new Exception('Factory not found');
         }
 
-// Подготовка параметров запроса
+        // Подготовка параметров запроса
         $params = [
             'select' => ['*', 'UF_*'], // Все поля, включая пользовательские
             'filter' => [
@@ -446,10 +479,10 @@ abstract class Feed
             //'limit' => 100,
         ];
 
-// Получаем элементы
+        // Получаем элементы
         $items = $factory->getItemsFilteredByPermissions($params);
 
-// Обработка результатов
+        // Обработка результатов
 
         foreach ($items as $item) {
             $result = [];
@@ -543,5 +576,4 @@ abstract class Feed
 
 
     }*/
-
 }

@@ -19,7 +19,7 @@ class FeedPf extends Feed
     public function __construct(bool $gettoken = true, bool $offPlan = false)
     {
         static::$offplan = $offPlan;
-        if($gettoken) {
+        if ($gettoken) {
             static::$token = self::makeAuth();
         }
         static::$mask = [
@@ -79,23 +79,31 @@ class FeedPf extends Feed
         parent::__construct();
     }
 
-    protected static function getHttpClient() {
+    protected static function getHttpClient(bool $problem = false)
+    {
         $httpClient = new HttpClient([
             "socketTimeout" => 10,
             "streamTimeout" => 15
         ]);
 
         $httpClient->setHeader('Content-Type', 'application/json', true);
-        $httpClient->setHeader('Accept', 'application/json', true);
+        if (!$problem) {
+            $httpClient->setHeader('Accept', 'application/json', true);
+        } else {
+            $httpClient->setHeader('Accept', 'application/problem+json', true);
+        }
+
+        //$httpClient->setHeader('Accept', 'application/json', true);
         $httpClient->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0 Safari/537.36', true);
-        if(static::$token) {
-            $httpClient->setHeader('Authorization', 'Bearer '.static::$token, true);
+        if (static::$token) {
+            $httpClient->setHeader('Authorization', 'Bearer ' . static::$token, true);
         }
         return $httpClient;
     }
 
-    protected function makeAuth() {
-        if(static::$offplan) {
+    protected function makeAuth()
+    {
+        if (static::$offplan) {
             $data = [
                 'apiKey' => 'ZbtqB.S9LtCW4yuloB7HLOp9P12wr3YzponeZIaC',
                 'apiSecret' => '5qWrfodfthVtL2e0YG2r9WvRPXKWAk5U'
@@ -119,7 +127,7 @@ class FeedPf extends Feed
             $responseData = json_decode($response, true);
             //print_r($responseData);
             $token = $responseData['accessToken'];
-            if(!$token) {
+            if (!$token) {
                 throw new \Exception('no token');
             } else {
                 return $token;
@@ -129,15 +137,15 @@ class FeedPf extends Feed
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
             throw new \Exception('no token');
-
         }
     }
 
-    private static function getCurLocations($factory, $city) {
+    private static function getCurLocations($factory, $city)
+    {
         $params = [
             'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
             'filter' => [
-                '%TITLE'=>$city
+                '%TITLE' => $city
             ],
             'order' => ['ID' => 'ASC'],
         ];
@@ -154,7 +162,8 @@ class FeedPf extends Feed
         return $result;
     }
 
-    private static function getPfLocations($city) {
+    private static function getPfLocations($city)
+    {
         $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/locations'; // Adjust endpoint as needed
 
@@ -185,8 +194,8 @@ class FeedPf extends Feed
                 $pflocations[$item['id']] = $item['tree'];
             }
             $startpage = 2;
-            if($pages>1) {
-                while($startpage<=$pages) {
+            if ($pages > 1) {
+                while ($startpage <= $pages) {
                     $queryParams = [
                         'search' => $city,
                         'page' => $startpage, // Example additional parameter,
@@ -217,7 +226,8 @@ class FeedPf extends Feed
         return $pflocations;
     }
 
-    public function getPfUsers() {
+    public function getPfUsers()
+    {
         $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/users/'; // Adjust endpoint as needed
 
@@ -237,7 +247,7 @@ class FeedPf extends Feed
 
         if ($status == 200) {
             $responseData = json_decode($response, true);
-            //print_r($responseData);
+            print_r($responseData);
             $res = [];
             $data = $responseData['data'];
 
@@ -254,7 +264,7 @@ class FeedPf extends Feed
                     '@EMAIL' => $emails,
                     //'UF_PFID' => false
                 ),
-                'select'=>array('ID', 'EMAIL','UF_PFID'),
+                'select' => array('ID', 'EMAIL', 'UF_PFID'),
             ))->fetchAll();
 
             print_r($user);
@@ -263,15 +273,15 @@ class FeedPf extends Feed
             foreach ($user as $us) {
                 $update = false;
                 $email = mb_strtolower($us['EMAIL']);
-                echo "<pre>";
-                print_r($res[$email]);
-                echo "</pre>";
+                //echo "<pre>";
+                //print_r($res[$email]);
+                //echo "</pre>";
 
-                if($us['UF_PFID'] != $res[$email]) {
+                if ($us['UF_PFID'] != $res[$email]) {
                     $update = true;
                 }
-                if($update) {
-                    $fields = Array(
+                if ($update) {
+                    $fields = array(
                         "UF_PFID" => $res[$email],
                         "UF_PFOP" => static::$offplan
                     );
@@ -281,22 +291,26 @@ class FeedPf extends Feed
         }
     }
 
-    public function syncLocations($city) {
+    public function syncLocations($city)
+    {
         $factory = Service\Container::getInstance()->getFactory(static::$locentityTypeId);
         $curloc = static::getCurLocations($factory, $city);
         $pfloc = static::getPfLocations($city);
-        print_r($pfloc);
-        print_r(count($pfloc));
-        foreach($pfloc as $key=>$item) {
-            if(!array_key_exists($key, $curloc)) {
+        //print_r($pfloc);
+        //print_r(count($pfloc));
+        foreach ($pfloc as $key => $item) {
+            if (!array_key_exists($key, $curloc)) {
                 $newtree = array_reverse($item, true);
                 $titles = [];
                 foreach ($newtree as $item) {
                     $titles[] = $item['name'];
                 }
                 $title = implode(',', $titles);
-                $item = $factory->createItem(['TITLE'=>$title, 'ASSIGNED_BY_ID'=>1013,
-                    'UF_CRM_9_1753773914'=>$key]);
+                $item = $factory->createItem([
+                    'TITLE' => $title,
+                    'ASSIGNED_BY_ID' => 1013,
+                    'UF_CRM_9_1753773914' => $key
+                ]);
                 $operation = $factory->getAddOperation($item);
                 $operation
                     ->disableCheckFields()
@@ -307,8 +321,7 @@ class FeedPf extends Feed
 
                 $errorMessages = $addResult->getErrorMessages();
 
-                if ($addResult->isSuccess())
-                {
+                if ($addResult->isSuccess()) {
                     // получаем ID новой записи СП
                     $newId = $item->getId();
                     //echo $newId;
@@ -316,12 +329,12 @@ class FeedPf extends Feed
                 }
             }
         }
-
     }
 
-    private static function processLocations($data, $factory) {
+    private static function processLocations($data, $factory)
+    {
         foreach ($data as $key => $item) {
-            if($key == 99) {
+            if ($key == 99) {
                 print_r($item);
                 $locid = $item['id'];
                 $newtree = array_reverse($item['tree'], true);
@@ -330,8 +343,11 @@ class FeedPf extends Feed
                     $titles[] = $item['name'];
                 }
                 $title = implode(',', $titles);
-                $item = $factory->createItem(['TITLE'=>$title, 'ASSIGNED_BY_ID'=>1013,
-                    'UF_CRM_9_1753773914'=>$locid]);
+                $item = $factory->createItem([
+                    'TITLE' => $title,
+                    'ASSIGNED_BY_ID' => 1013,
+                    'UF_CRM_9_1753773914' => $locid
+                ]);
                 $operation = $factory->getAddOperation($item);
                 $operation
                     ->disableCheckFields()
@@ -342,24 +358,21 @@ class FeedPf extends Feed
 
                 $errorMessages = $addResult->getErrorMessages();
 
-                if ($addResult->isSuccess())
-                {
+                if ($addResult->isSuccess()) {
                     // получаем ID новой записи СП
                     $newId = $item->getId();
                     echo $newId;
-
-                }
-                else
-                {
+                } else {
                     echo "fail";
                 }
             }
         }
     }
 
-    public static function delDupl() {
+    public static function delDupl()
+    {
         $entityTypeId = static::$locentityTypeId;
-// Получаем фабрику для работы с сущностью videos
+        // Получаем фабрику для работы с сущностью videos
         $container = Container::getInstance();
         $relationManager = $container->getRelationManager();
         $factory = $container->getFactory($entityTypeId);
@@ -371,16 +384,15 @@ class FeedPf extends Feed
 
         $params = [
             'select' => ['ID', 'UF_CRM_9_1753773914'], // Все поля, включая пользовательские
-            'filter' => [
-            ],
+            'filter' => [],
             'order' => ['ID' => 'ASC'],
             //'limit' => 100,
         ];
 
-// Получаем элементы
+        // Получаем элементы
         $items = $factory->getItemsFilteredByPermissions($params);
 
-// Обработка результатов
+        // Обработка результатов
 
         $result = [];
 
@@ -392,18 +404,20 @@ class FeedPf extends Feed
         $cleanresult = [];
 
         foreach ($result as $item) {
-            if(count($item)>1) {
+            if (count($item) > 1) {
                 $cleanresult[] = $item;
             }
         }
+
+
         $cleanresult = [];
 
-        foreach ($result as $key=>$item) {
-            if(count($item)>1) {
+        foreach ($result as $key => $item) {
+            if (count($item) > 1) {
                 $pop = array_pop($item);
                 //$cleanresult[$key] = $item;
                 //if($key==3033) {
-                foreach($item as $it) {
+                foreach ($item as $it) {
                     $fit = $factory->getItem($it);
                     $operation = $factory->getDeleteOperation($fit);
                     $operation
@@ -418,25 +432,28 @@ class FeedPf extends Feed
         }
     }
 
-    public function sendListingDraft($lisId) {
+    public function sendListingDraft($lisId)
+    {
         $filter = [
             'ID' => $lisId,
             '@UF_CRM_5_1752569141' => [1297]
         ];
         $data = static::retrieveDate($filter, 'Pf');
-        if(!$data) {
+        if (!$data) {
             throw new \Exception('No data for export. Please check portals field');
         } else {
             $data = self::prepareListing(current($data));
+            //print_r($data);
             $lisid = self::deliverListing($data);
             return $lisid;
         }
     }
 
-    protected function prepareListing(array $data) {
+    protected function prepareListing(array $data)
+    {
         $reserr = [];
         $resdescr = [];
-        if(!$data['price']['amounts']['sum']) {
+        if (!$data['price']['amounts']['sum']) {
             $reserr[] = 'price in AED';
         } else {
             $sum = $data['price']['amounts']['sum'];
@@ -459,62 +476,72 @@ class FeedPf extends Feed
                     break;
             }
         }
-        if($data['price']['amounts']['type']=='sale') {
-            if(!$data['price']['downpayment']) {
+        if ($data['price']['amounts']['type'] == 'sale') {
+            if (!$data['price']['downpayment']) {
                 $reserr[] = 'downpayment';
             }
         }
-        if(!$data['uaeEmirate']) {
+
+        if (!$data['uaeEmirate']) {
             $reserr[] = 'uaeEmirate';
         } else {
-            if($data['uaeEmirate'] == 'dubai' || $data['uaeEmirate'] == 'abu_dhabi') {
-                if(!$data['compliance']['listingAdvertisementNumber']) {
+            $emirate = $data['uaeEmirate'];
+            $validTypes = [];
+
+            if ($emirate === 'dubai') {
+                $validTypes = ['rera', 'dtcm'];
+            } elseif ($emirate === 'abu_dhabi') {
+                $validTypes = ['adrec'];
+            } elseif ($emirate === 'northen_emirates') {
+                $validTypes = [];
+            }
+
+            if (!empty($validTypes)) {
+                if (empty($data['compliance']['listingAdvertisementNumber'])) {
                     $reserr[] = 'listingAdvertisementNumber';
                 }
-                if(!$data['compliance']['type']) {
+
+                $compType = $data['compliance']['type'] ?? null;
+
+                if (!$compType) {
                     $reserr[] = 'compliance type';
-                } else {
-                    if($data['uaeEmirate'] == 'dubai') {
-                        if(!in_array($data['compliance']['type'], ['rera','dtcm'])) {
-                            $reserr[] = 'compliance type';
-                        }
-                    } elseif ($data['uaeEmirate'] == 'abu_dhabi') {
-                        if(!in_array($data['compliance']['type'], ['adrec'])) {
-                            $reserr[] = 'compliance type';
-                        }
-                    }
+                } elseif (!in_array($compType, $validTypes)) {
+                    unset($data['compliance']);
                 }
+            } else {
+                unset($data['compliance']);
             }
         }
-        if(!$data['type']) {
+
+        if (!$data['type']) {
             $reserr[] = 'type';
         } else {
-            if($data['type'] != 'farm' || $data['type'] != 'land') {
-                if(!$data['bedrooms']) {
+            if ($data['type'] != 'farm' || $data['type'] != 'land') {
+                if (!$data['bedrooms']) {
                     $reserr[] = 'bedrooms';
                 }
-                if(!$data['bathrooms']) {
+                if (!$data['bathrooms']) {
                     $reserr[] = 'bathrooms';
                 }
             }
-            if($data['type'] == 'co-working-space') {
-                if(!$data['hasParkingOnSite']) {
+            if ($data['type'] == 'co-working-space') {
+                if (!$data['hasParkingOnSite']) {
                     $reserr[] = 'hasParkingOnSite';
                 }
             }
         }
-        if($data['location']) {
+        if ($data['location']) {
             $loc = $data['location'];
             unset($data['location']);
             $data['location']['id'] = $loc;
         } else {
             $reserr[] = 'location';
         }
-        if($data['assignedTo']) {
+        if ($data['assignedTo']) {
             $assgn = $data['assignedTo'];
             unset($data['assignedTo']);
             $data['assignedTo']['id'] = $assgn;
-            if(!$data['createdBy']) {
+            if (!$data['createdBy']) {
                 unset($data['createdBy']);
                 $data['createdBy']['id'] = $assgn;
             } else {
@@ -526,21 +553,41 @@ class FeedPf extends Feed
             $reserr[] = 'assignedTo';
             $resdescr[] = 'User not present at PropertyFinder account';
         }
-        if(!empty($reserr)) {
-            throw new \Exception('Errors in fields '.implode(",", $reserr).
-                '!'.implode(".", $resdescr));
+        if (!empty($reserr)) {
+            throw new \Exception('Errors in fields ' . implode(",", $reserr) .
+                '!' . implode(".", $resdescr));
         } else {
             ksort($data);
             return $data;
         }
     }
 
-    protected function deliverListing(array $data) {
+    protected function deliverListing(array $data)
+    {
         $httpClient = self::getHttpClient();
+        //print_r($data);
 
-        //$dataj =  json_encode($data, JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES);
+        //echo __DIR__;
+
+        //$jsonFile = __DIR__.'/UpdatedJSON.json';
+
+        // Check if file exists
+        /*if (!file_exists($jsonFile)) {
+			die("JSON file not found: $jsonFile");
+		}
+		
+		// Read file contents
+		$dataj = file_get_contents($jsonFile);
+		if ($jsonData === false) {
+			die("Failed to read JSON file");
+		}*/
+
+        //$dataj = file_get_contents('UpdatedJSON.json');
+        //print_r($dataj);
+        //print_r('xxxx');
+
         $dataj =  json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        file_put_contents(__DIR__.'/data.json', $dataj);
+        file_put_contents(__DIR__ . '/data.json', $dataj);
         $response = $httpClient->post(
             'https://atlas.propertyfinder.com/v1/listings',
             $dataj
@@ -551,18 +598,19 @@ class FeedPf extends Feed
         if ($status == 200) {
             $responseData = json_decode($response, true);
             print_r($responseData);
-            \Bitrix\Main\Diag\Debug::writeToFile(
-                $responseData, "success exp ".date('Y-m-d H:i:s'), "pfexport.log");
+            \Bitrix\Main\Diag\Debug::writeToFile($responseData, "success exp " . date('Y-m-d H:i:s'), "pfexport.log");
             return $responseData['id'];
         } else {
+            //$contentType = $httpClient->getHeaders();
+            //print_r($contentType);
             echo "❌ HTTP Error: $status\n";
             echo "Response Body: " . $response . "\n";
-            \Bitrix\Main\Diag\Debug::writeToFile(
-                $response, "error exp ".date('Y-m-d H:i:s'), "pfexport.log");
+            \Bitrix\Main\Diag\Debug::writeToFile($response, "error exp " . date('Y-m-d H:i:s'), "pfexport.log");
             $err = json_decode($response, true);
+            print_r($err);
             if (str_contains($response, 'reference already exists')) {
                 throw new \Exception('Error in creating listing - reference is not unique');
-            } elseif(str_contains($response, 'does not match authenticated user')) {
+            } elseif (str_contains($response, 'does not match authenticated user')) {
                 throw new \Exception('Error in creating listing - assigned agent not registered for Pf account');
             } else {
                 throw new \Exception('Error in creating listing - please contact service desk');
@@ -570,7 +618,8 @@ class FeedPf extends Feed
         }
     }
 
-    public function searchLocation($search) {
+    public function searchLocation($search)
+    {
         $httpClient = self::getHttpClient();
 
         $url = 'https://atlas.propertyfinder.com/v1/locations'; // Adjust endpoint as needed
@@ -595,10 +644,10 @@ class FeedPf extends Feed
             $responseData = json_decode($response, true);
             print_r($responseData);
         }
-
     }
 
-    public function getListing($id) {
+    public function getListing($id)
+    {
         $httpClient = self::getHttpClient();
 
         $url = 'https://atlas.propertyfinder.com/v1/listings'; // Adjust endpoint as needed
@@ -621,7 +670,160 @@ class FeedPf extends Feed
             $responseData = json_decode($response, true);
             print_r($responseData);
         }
+    }
 
+    public function updateListing($pfListingId, $bitrixListingId)
+    {
+        if (!$pfListingId || !$bitrixListingId) {
+            throw new \Exception('PF Listing ID and Bitrix Listing ID are required for update');
+        }
+
+        $filter = [
+            'ID' => $bitrixListingId,
+            '@UF_CRM_5_1752569141' => [1297] // Portals field
+        ];
+        $data = static::retrieveDate($filter, 'Pf');
+        if (!$data || empty($data)) {
+            throw new \Exception("No data found for Bitrix listing ID {$bitrixListingId}");
+        }
+        $data = current($data);
+
+        $payload = self::prepareListing($data);
+
+        $httpClient = self::getHttpClient();
+
+        $url = "https://atlas.propertyfinder.com/v1/listings/{$pfListingId}";
+
+        $jsonPayload = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+        file_put_contents(__DIR__ . '/update_data.json', $jsonPayload);
+
+        $response = $httpClient->query(
+            \Bitrix\Main\Web\HttpClient::HTTP_PUT,
+            $url,
+            $jsonPayload
+        );
+
+        $status = $httpClient->getStatus();
+        $responseBody = $httpClient->getResult();
+
+        $logData = [
+            'pfListingId' => $pfListingId,
+            'bitrixId'    => $bitrixListingId,
+            'payload'     => $payload,
+            'response'    => $responseBody ? json_decode($responseBody, true) : null,
+            'status'      => $status
+        ];
+
+        if (in_array($status, [200, 204])) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $logData,
+                "PF Update SUCCESS - PF#{$pfListingId} (Bitrix#{$bitrixListingId}) " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            return true;
+        }
+
+        $error = $responseBody ? json_decode($responseBody, true) : ['detail' => 'Unknown error'];
+        $logData['error'] = $error;
+
+        \Bitrix\Main\Diag\Debug::writeToFile(
+            $logData,
+            "PF Update FAILED - PF#{$pfListingId} " . date('Y-m-d H:i:s'),
+            "pfexport.log"
+        );
+
+        $message = $error['detail'] ?? $error['message'] ?? $responseBody;
+        throw new \Exception("Failed to update listing PF#{$pfListingId}. HTTP {$status}: {$message}");
+    }
+
+    public function publishListing($listingId)
+    {
+        $httpClient = self::getHttpClient();
+
+        $url = "https://atlas.propertyfinder.com/v1/listings/{$listingId}/publish";
+
+        $response = $httpClient->post($url, ''); // Body can be empty
+
+        $status = $httpClient->getStatus();
+
+        if ($status === 200 || $status === 204) {
+            $responseData = $response ? json_decode($response, true) : [];
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'publish', 'response' => $responseData],
+                "PF Publish Success " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            return true;
+        } else {
+            $error = json_decode($response, true);
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'publish', 'error' => $error, 'status' => $status],
+                "PF Publish Failed " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            throw new \Exception("Failed to publish listing {$listingId}. HTTP {$status}: " . ($error['detail'] ?? $response));
+        }
+    }
+
+    public function unpublishListing($listingId)
+    {
+        $httpClient = self::getHttpClient();
+
+        $url = "https://atlas.propertyfinder.com/v1/listings/{$listingId}/unpublish";
+
+        $response = $httpClient->post($url, ''); // Empty body
+
+        $status = $httpClient->getStatus();
+
+        if ($status === 200 || $status === 204) {
+            $responseData = $response ? json_decode($response, true) : [];
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'unpublish', 'response' => $responseData],
+                "PF Unpublish Success " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            return true;
+        } else {
+            $error = json_decode($response, true);
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'unpublish', 'error' => $error, 'status' => $status],
+                "PF Unpublish Failed " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            throw new \Exception("Failed to unpublish listing {$listingId}. HTTP {$status}: " . ($error['detail'] ?? $response));
+        }
+    }
+
+    public function deleteListing($listingId)
+    {
+        $httpClient = self::getHttpClient();
+
+        $url = "https://atlas.propertyfinder.com/v1/listings/{$listingId}";
+
+        $response = $httpClient->query(
+            \Bitrix\Main\Web\HttpClient::HTTP_DELETE,
+            $url
+        );
+
+        $status = $httpClient->getStatus();
+
+        if ($status === 204 || $status === 200) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'delete'],
+                "PF Delete Success " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            return true;
+        } else {
+            $error = json_decode($response, true);
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['listingId' => $listingId, 'action' => 'delete', 'error' => $error, 'status' => $status],
+                "PF Delete Failed " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            throw new \Exception("Failed to delete listing {$listingId}. HTTP {$status}: " . ($error['detail'] ?? $response));
+        }
     }
 
     /*public function setLocations()
@@ -666,6 +868,4 @@ class FeedPf extends Feed
             }
         }
     }*/
-
-
 }

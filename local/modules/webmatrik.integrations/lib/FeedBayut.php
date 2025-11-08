@@ -96,6 +96,149 @@ class FeedBayut extends Feed
         parent::__construct();
     }
 
+    public function importFeed() {
+        $filename = __DIR__.'/BayutListingdetails_2025-8-20.csv';
+        $data = [];
+        $headers = [];
+
+        if (($file = fopen($filename, 'r')) !== false) {
+            
+            // Читаем заголовки (первая строка)
+            $headers = fgetcsv($file, 1000, ',');
+            
+            // Читаем остальные строки
+            while (($row = fgetcsv($file, 1000, ',')) !== false) {
+                // Объединяем заголовки с данными
+                $data[] = array_combine($headers, $row);
+            }
+            
+            fclose($file);
+            
+            // Выводим результат
+            print_r($data);
+        }
+    }
+
+    public function createFeed() {
+        $data = $this->readCSVWithDetection(); 
+        $factory = Service\Container::getInstance()->getFactory(static::$entityTypeId);
+        foreach($data as $val) {
+            $hasref = false; 
+            $params = [
+                'filter' => ['UF_CRM_5_1752571265'=> $val['property_ref_no']]    
+            ];
+
+            // Получаем элементы
+            $items = $factory->getItems($params);
+            foreach ($items as $item) {
+                $data = $item->getData();
+                if($data['ID']) {
+                    $hasref = true; 
+                }
+            }
+            if(!$hasref) {
+                $enterarr = [];
+                $enterarr['TITLE'] = $val['property_title'];
+                $enterarr['STAGE_ID'] = 'DT1036_8:SUCCESS';
+                $enterarr['UF_CRM_5_1752571265'] = $val['property_ref_no'];
+                if($val['permit_number']!='unknown') {
+                    $enterarr['UF_CRM_5_1752508269'] = $val['permit_number']; 
+                }
+                if($val['city']=='Dubai') {
+                    $enterarr['UF_CRM_5_1752509816'] = 1294;
+                } elseif($val['city']=='Abu Dhabi') {
+                    $enterarr['UF_CRM_5_1752509816'] = 1295;
+                } else {
+                    $enterarr['UF_CRM_5_1752509816'] = 1296;
+                }
+                $enterarr['UF_CRM_5_1752508408'] = $val['property_description'];
+                $enterarr['UF_CRM_5_1752755685'] = $val['property_size_unit'];
+                $enterarr['UF_CRM_5_1752571276'] = $val['property_size'];
+                
+
+                $item = $factory->createItem($enterarr);
+                $operation = $factory->getAddOperation($item);
+                $operation
+                    ->disableCheckFields()
+                    ->disableBizProc()
+                    ->disableCheckAccess()
+                ;
+                $addResult = $operation->launch();
+
+                $errorMessages = $addResult->getErrorMessages();
+
+                if ($addResult->isSuccess())
+                {
+                    // получаем ID новой записи СП
+                    $newId = $item->getId();
+                    //echo $newId;
+
+                }
+            }
+
+            break;
+        }
+    }
+
+    public function readCSVWithDetection() {
+		$filename = __DIR__.'/dubizzleListingdetails_2025-10-2_offplan.csv';
+		if (!file_exists($filename)) {
+			throw new Exception("Файл не найден");
+		}
+		
+		// Определяем разделитель
+		$delimiter = static::detectDelimiter($filename);
+		
+		$data = [];
+		if (($file = fopen($filename, 'r')) !== false) {
+			// Читаем BOM (Byte Order Mark) для UTF-8
+			$bom = fread($file, 3);
+			if ($bom != "\xEF\xBB\xBF") {
+				// Если нет BOM, возвращаемся к началу файла
+				fseek($file, 0);
+			}
+			
+			$headers = fgetcsv($file, 0, $delimiter);
+			
+			while (($row = fgetcsv($file, 0, $delimiter)) !== false) {
+				// Обрабатываем каждое поле
+				$processedRow = [];
+				foreach ($row as $index => $value) {
+					$processedRow[$index] = trim($value, " \t\n\r\0\x0B\"'");
+				}
+				
+				if ($headers && count($headers) == count($processedRow)) {
+					$data[] = array_combine($headers, $processedRow);
+				} else {
+					$data[] = $processedRow;
+				}
+			}
+			
+			fclose($file);
+		}
+		print_r($data);
+		return $data;
+	}
+
+
+
+
+	protected function detectDelimiter($filename) {
+		$file = fopen($filename, 'r');
+		$firstLine = fgets($file);
+		fclose($file);
+		
+		$delimiters = [',', ';', "\t", '|'];
+		$counts = [];
+		
+		foreach ($delimiters as $delimiter) {
+			$counts[$delimiter] = count(str_getcsv($firstLine, $delimiter));
+		}
+		
+		return array_search(max($counts), $counts);
+	}
+    
+    
     public function makeNewFeed() {
         self::cleanDir(static::$root);
 

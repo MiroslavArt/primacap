@@ -61,7 +61,7 @@ unset($fileId);
 ?>
 
 <span class='field-wrap'>
-	<span>fff</span>
+	
 	<span id="<?=$containerId?>" class='field-item'>
 	</span>
 </span>

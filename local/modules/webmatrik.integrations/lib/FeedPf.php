@@ -79,7 +79,7 @@ class FeedPf extends Feed
         parent::__construct();
     }
 
-    protected function getHttpClient() {
+    protected static function getHttpClient() {
         $httpClient = new HttpClient([
             "socketTimeout" => 10,
             "streamTimeout" => 15

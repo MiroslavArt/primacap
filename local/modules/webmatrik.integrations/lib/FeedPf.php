@@ -228,67 +228,104 @@ class FeedPf extends Feed
 
     public function getPfUsers()
     {
-        $httpClient = self::getHttpClient();
-        $url = 'https://atlas.propertyfinder.com/v1/users/'; // Adjust endpoint as needed
+        $logFile = 'pf_user_sync.log';
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Started ---', '', $logFile);
 
+        $httpClient = self::getHttpClient();
+        $url = 'https://atlas.propertyfinder.com/v1/users/';
         $queryParams = [
             'status' => 'active',
-            'page' => 1, // Example additional parameter,
+            'page' => 1,
             'perPage' => 100
         ];
-
         $fullUrl = $url . '?' . http_build_query($queryParams);
 
-        $response = $httpClient->get(
-            $fullUrl
-        );
+        \Bitrix\Main\Diag\Debug::writeToFile("Request URL: {$fullUrl}", '', $logFile);
 
+        $response = $httpClient->get($fullUrl);
         $status = $httpClient->getStatus();
+
+        \Bitrix\Main\Diag\Debug::writeToFile("HTTP Status: {$status}", '', $logFile);
 
         if ($status == 200) {
             $responseData = json_decode($response, true);
-            print_r($responseData);
-            $res = [];
-            $data = $responseData['data'];
-
-            foreach ($data as $item) {
-                $res[mb_strtolower($item['email'])] = $item['publicProfile']['id'];
+            if (!isset($responseData['data'])) {
+                \Bitrix\Main\Diag\Debug::writeToFile('No data key found in API response', '', $logFile);
+                return;
             }
 
-            $emails = array_keys($res);
+            // Map PF users: email => PFID
+            $pfUsers = [];
+            foreach ($responseData['data'] as $item) {
+                $email = mb_strtolower($item['email']);
+                $pfUsers[$email] = $item['publicProfile']['id'];
+            }
 
-            print_r($res);
+            \Bitrix\Main\Diag\Debug::writeToFile('Fetched Users from PF API: ' . print_r($pfUsers, true), '', $logFile);
 
-            $user = \Bitrix\Main\UserTable::getList(array(
-                'filter' => array(
-                    '@EMAIL' => $emails,
-                    //'UF_PFID' => false
-                ),
-                'select' => array('ID', 'EMAIL', 'UF_PFID'),
-            ))->fetchAll();
+            // Fetch Bitrix users who have PFID set or match PF emails
+            $bitrixUsers = \Bitrix\Main\UserTable::getList([
+                'filter' => [
+                    [
+                        'LOGIC' => 'OR',
+                        '@EMAIL' => array_keys($pfUsers),
+                        '!UF_PFID' => false // includes users with PFID set
+                    ]
+                ],
+                'select' => ['ID', 'EMAIL', 'UF_PFID']
+            ])->fetchAll();
 
-            print_r($user);
+            \Bitrix\Main\Diag\Debug::writeToFile('Matching Bitrix Users: ' . print_r($bitrixUsers, true), '', $logFile);
 
-            $usero = new \CUser;
-            foreach ($user as $us) {
-                $update = false;
-                $email = mb_strtolower($us['EMAIL']);
-                //echo "<pre>";
-                //print_r($res[$email]);
-                //echo "</pre>";
+            $userObj = new \CUser;
 
-                if ($us['UF_PFID'] != $res[$email]) {
-                    $update = true;
-                }
-                if ($update) {
-                    $fields = array(
-                        "UF_PFID" => $res[$email],
+            foreach ($bitrixUsers as $user) {
+                $email = mb_strtolower($user['EMAIL']);
+                $currentPfId = $user['UF_PFID'];
+                $newPfId = $pfUsers[$email] ?? null;
+
+                // Case 1: User exists in PF but PFID differs → update
+                if ($newPfId && $currentPfId != $newPfId) {
+                    $fields = [
+                        "UF_PFID" => $newPfId,
                         "UF_PFOP" => static::$offplan
+                    ];
+                    $userObj->Update($user['ID'], $fields);
+                    \Bitrix\Main\Diag\Debug::writeToFile(
+                        "Updated user {$email} (ID: {$user['ID']}) with PFID: {$newPfId}",
+                        '',
+                        $logFile
                     );
-                    $usero->Update($us['ID'], $fields);
+                }
+
+                // Case 2: User no longer exists in PF but still has PFID → clear
+                elseif (!$newPfId && $currentPfId) {
+                    $fields = [
+                        "UF_PFID" => null,
+                        "UF_PFOP" => null
+                    ];
+                    $userObj->Update($user['ID'], $fields);
+                    \Bitrix\Main\Diag\Debug::writeToFile(
+                        "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
+                        '',
+                        $logFile
+                    );
+                }
+
+                // Case 3: No change needed
+                else {
+                    \Bitrix\Main\Diag\Debug::writeToFile(
+                        "No update needed for {$email} (PFID: {$currentPfId})",
+                        '',
+                        $logFile
+                    );
                 }
             }
+        } else {
+            \Bitrix\Main\Diag\Debug::writeToFile("API request failed with status: {$status}", '', $logFile);
         }
+
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed ---', '', $logFile);
     }
 
     public function syncLocations($city)

@@ -331,6 +331,77 @@ class FeedPf extends Feed
         }
     }
 
+    public function syncUsers()
+    {
+        $httpClient = self::getHttpClient();
+        $url = 'https://atlas.propertyfinder.com/v1/users/';
+        $queryParams = [
+            'status' => 'active',
+            'page' => 1,
+            'perPage' => 100
+        ];
+        $fullUrl = $url . '?' . http_build_query($queryParams);
+
+        $response = $httpClient->get($fullUrl);
+        $status = $httpClient->getStatus();
+
+        if ($status != 200) {
+            \Bitrix\Main\Diag\Debug::writeToFile("PF Users API error: " . $status, "syncUsers", "/pf_sync.log");
+            return;
+        }
+
+        $responseData = json_decode($response, true);
+        $pfData = $responseData['data'] ?? [];
+
+        // Build a lowercase email → PF ID map
+        $pfUsers = [];
+        foreach ($pfData as $item) {
+            $pfUsers[mb_strtolower($item['email'])] = $item['publicProfile']['id'];
+        }
+
+        $emails = array_keys($pfUsers);
+
+        // Fetch Bitrix users having these emails OR already having PF ID
+        $bitrixUsers = \Bitrix\Main\UserTable::getList([
+            'filter' => [
+                [
+                    'LOGIC' => 'OR',
+                    ['@EMAIL' => $emails],
+                    ['!UF_PFID' => false]
+                ]
+            ],
+            'select' => ['ID', 'EMAIL', 'UF_PFID']
+        ])->fetchAll();
+
+        $userAPI = new \CUser;
+
+        foreach ($bitrixUsers as $user) {
+            $email = mb_strtolower($user['EMAIL']);
+            $bitrixPfId = $user['UF_PFID'] ?? null;
+            $pfId = $pfUsers[$email] ?? null;
+
+            // Case 1: User exists in PF but PF ID missing or different in Bitrix → update
+            if ($pfId && $bitrixPfId != $pfId) {
+                $userAPI->Update($user['ID'], [
+                    'UF_PFID' => $pfId,
+                    'UF_PFOP' => static::$offplan
+                ]);
+                \Bitrix\Main\Diag\Debug::writeToFile("Updated user {$email} with PFID {$pfId}", "syncUsers", "/pf_sync.log");
+            }
+
+            // Case 2: Bitrix user has PF ID but no longer in PF → clear it
+            if ($bitrixPfId && !$pfId) {
+                $userAPI->Update($user['ID'], [
+                    'UF_PFID' => '',
+                    'UF_PFOP' => ''
+                ]);
+                \Bitrix\Main\Diag\Debug::writeToFile("Cleared PFID for {$email}", "syncUsers", "/pf_sync.log");
+            }
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile("Sync completed " . date('Y-m-d H:i:s'), "syncUsers", "/pf_sync.log");
+    }
+
     private static function processLocations($data, $factory)
     {
         foreach ($data as $key => $item) {

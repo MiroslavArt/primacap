@@ -24,4 +24,23 @@ class Agent
         return '\\' . __METHOD__ . '();';
     }
 
+    public static function syncPfLocations()
+    {
+        $obj = new FeedPf();
+        $cities = ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman'];
+
+        foreach ($cities as $city) {
+            $obj->syncLocations($city);
+        }
+
+        return '\\' . __METHOD__ . '();';
+    }
+
+    public static function syncPfUsers()
+    {
+        $obj = new FeedPf();
+        $obj->getPfUsers();
+
+        return '\\' . __METHOD__ . '();';
+    }
 }

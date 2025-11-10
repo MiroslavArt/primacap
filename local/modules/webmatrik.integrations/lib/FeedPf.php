@@ -254,49 +254,68 @@ class FeedPf extends Feed
                 return;
             }
 
-            $res = [];
+            // Map PF users: email => PFID
+            $pfUsers = [];
             foreach ($responseData['data'] as $item) {
                 $email = mb_strtolower($item['email']);
-                $res[$email] = $item['publicProfile']['id'];
+                $pfUsers[$email] = $item['publicProfile']['id'];
             }
 
-            \Bitrix\Main\Diag\Debug::writeToFile('Fetched Users from PF API: ' . print_r($res, true), '', $logFile);
+            \Bitrix\Main\Diag\Debug::writeToFile('Fetched Users from PF API: ' . print_r($pfUsers, true), '', $logFile);
 
-            $emails = array_keys($res);
-
-            $users = \Bitrix\Main\UserTable::getList([
-                'filter' => ['@EMAIL' => $emails],
+            // Fetch Bitrix users who have PFID set or match PF emails
+            $bitrixUsers = \Bitrix\Main\UserTable::getList([
+                'filter' => [
+                    [
+                        'LOGIC' => 'OR',
+                        '@EMAIL' => array_keys($pfUsers),
+                        '!UF_PFID' => false // includes users with PFID set
+                    ]
+                ],
                 'select' => ['ID', 'EMAIL', 'UF_PFID']
             ])->fetchAll();
 
-            \Bitrix\Main\Diag\Debug::writeToFile('Matching Bitrix Users: ' . print_r($users, true), '', $logFile);
+            \Bitrix\Main\Diag\Debug::writeToFile('Matching Bitrix Users: ' . print_r($bitrixUsers, true), '', $logFile);
 
             $userObj = new \CUser;
-            foreach ($users as $user) {
+
+            foreach ($bitrixUsers as $user) {
                 $email = mb_strtolower($user['EMAIL']);
-                $pfId = $res[$email];
-                $update = false;
+                $currentPfId = $user['UF_PFID'];
+                $newPfId = $pfUsers[$email] ?? null;
 
-                if ($user['UF_PFID'] != $pfId) {
-                    $update = true;
-                }
-
-                if ($update) {
+                // Case 1: User exists in PF but PFID differs → update
+                if ($newPfId && $currentPfId != $newPfId) {
                     $fields = [
-                        "UF_PFID" => $pfId,
+                        "UF_PFID" => $newPfId,
                         "UF_PFOP" => static::$offplan
                     ];
-
                     $userObj->Update($user['ID'], $fields);
-
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "Updated user {$user['EMAIL']} (ID: {$user['ID']}) with PFID: {$pfId}",
+                        "Updated user {$email} (ID: {$user['ID']}) with PFID: {$newPfId}",
                         '',
                         $logFile
                     );
-                } else {
+                }
+
+                // Case 2: User no longer exists in PF but still has PFID → clear
+                elseif (!$newPfId && $currentPfId) {
+                    $fields = [
+                        "UF_PFID" => null,
+                        "UF_PFOP" => null
+                    ];
+                    $userObj->Update($user['ID'], $fields);
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "No update needed for user {$user['EMAIL']} (PFID: {$user['UF_PFID']})",
+                        "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
+                        '',
+                        $logFile
+                    );
+                }
+
+                // Case 3: No change needed
+                else {
+                    \Bitrix\Main\Diag\Debug::writeToFile(
+                        "No update needed for {$email} (PFID: {$currentPfId})",
                         '',
                         $logFile
                     );
@@ -308,7 +327,6 @@ class FeedPf extends Feed
 
         \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed ---', '', $logFile);
     }
-
 
     public function syncLocations($city)
     {

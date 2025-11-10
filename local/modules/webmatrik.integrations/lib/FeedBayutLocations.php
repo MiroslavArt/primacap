@@ -278,6 +278,180 @@ class FeedBayutLocations extends Feed
         return $summary;
     }
 
+    public function importLocationsHierarchy($filename = null)
+    {
+        if (!$filename || !file_exists(__DIR__ . '/' . $filename)) {
+            throw new \Exception('CSV file not found: ' . $filename);
+        }
+
+        Loader::includeModule('crm');
+
+        $fullPath = __DIR__ . '/' . $filename;
+        $delimiter = $this->detectDelimiter($fullPath);
+        $handle = fopen($fullPath, 'r');
+
+        if ($handle === false) {
+            throw new \Exception('Unable to open CSV file: ' . $filename);
+        }
+
+        // Handle BOM
+        $firstLine = fgets($handle);
+        if ($firstLine === false) {
+            fclose($handle);
+            throw new \Exception('Empty CSV file');
+        }
+        $hasBom = (strncmp($firstLine, "\xEF\xBB\xBF", 3) === 0);
+        rewind($handle);
+        if ($hasBom) {
+            fread($handle, 3);
+        }
+
+        // Read headers
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            fclose($handle);
+            throw new \Exception('CSV has no headers');
+        }
+
+        $headers = array_map('trim', $headers);
+        $normalize = fn($s) => preg_replace('/[^a-z0-9]+/', '', mb_strtolower(trim($s)));
+
+        $normalizedHeaderMap = [];
+        foreach ($headers as $h) {
+            $normalizedHeaderMap[$normalize($h)] = $h;
+        }
+
+        // Check for required field
+        if (!isset($normalizedHeaderMap['locationhierarchy'])) {
+            fclose($handle);
+            throw new \Exception("Required column 'location_hierarchy' not found in CSV");
+        }
+
+        $locationHierarchyCol = $normalizedHeaderMap['locationhierarchy'];
+
+        $container = Container::getInstance();
+        $factory = $container->getFactory(static::$bayutLocationsEntityTypeId);
+
+        if (!$factory) {
+            fclose($handle);
+            throw new \Exception('Factory for entity type ' . static::$bayutLocationsEntityTypeId . ' not found');
+        }
+
+        $created = 0;
+        $skipped = 0;
+        $failed = 0;
+        $errors = [];
+        $rowNum = 0;
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (count($row) == 1 && trim($row[0]) === '') {
+                continue;
+            }
+
+            $rowNum++;
+            $assoc = array_combine($headers, $row);
+            if ($assoc === false) {
+                continue;
+            }
+
+            $assoc = array_map(fn($v) => is_string($v) ? trim($v) : $v, $assoc);
+            $hierarchy = trim($assoc[$locationHierarchyCol] ?? '');
+
+            if (empty($hierarchy)) {
+                $skipped++;
+                $errors[] = "Row $rowNum: Missing location_hierarchy";
+                continue;
+            }
+
+            // Split hierarchy by ">"
+            $parts = array_map('trim', explode('>', $hierarchy));
+            $parts = array_filter($parts, fn($p) => $p !== '' && mb_strtolower($p) !== 'unknown');
+
+            if (empty($parts)) {
+                $skipped++;
+                $errors[] = "Row $rowNum: No valid parts in hierarchy";
+                continue;
+            }
+
+            // If 5 parts → take 1,2,4,5 (skip 3)
+            if (count($parts) === 5) {
+                $parts = [$parts[0], $parts[1], $parts[3], $parts[4]];
+            }
+
+            $title = implode(', ', $parts);
+
+            try {
+                // Check if item already exists by title
+                $existingItems = $factory->getItems([
+                    'select' => ['ID'],
+                    'filter' => ['=TITLE' => $title],
+                    'limit' => 1
+                ]);
+
+                if (!empty($existingItems)) {
+                    $skipped++;
+                    continue;
+                }
+
+                // Create new item
+                $fields = ['TITLE' => $title];
+                $item = $factory->createItem($fields);
+
+                $addOperation = $factory->getAddOperation($item);
+                $addOperation->disableCheckFields()
+                    ->disableBizProc()
+                    ->disableCheckAccess();
+
+                $result = $addOperation->launch();
+
+                if ($result->isSuccess()) {
+                    $created++;
+                } else {
+                    $failed++;
+                    $errors[] = "Row $rowNum: Creation failed - " . implode(', ', $result->getErrorMessages());
+                }
+
+                // Log first few for sanity check
+                if ($rowNum <= 3) {
+                    \Bitrix\Main\Diag\Debug::writeToFile([
+                        'row_number' => $rowNum,
+                        'raw_data' => $assoc,
+                        'title' => $title,
+                    ], "bayut_location_hierarchy_row_$rowNum " . date('Y-m-d H:i:s'), 'bayut_locations_import.log');
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $errors[] = "Row $rowNum: Exception - " . $e->getMessage();
+            }
+        }
+
+        fclose($handle);
+
+        $summary = [
+            'created' => $created,
+            'skipped' => $skipped,
+            'failed' => $failed,
+            'total_rows' => $rowNum
+        ];
+
+        echo "Import completed:\n";
+        echo "Created: $created\n";
+        echo "Skipped: $skipped\n";
+        echo "Failed: $failed\n";
+        echo "Total rows processed: $rowNum\n";
+
+        if (!empty($errors)) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $errors,
+                'bayut_locations_hierarchy_import_errors ' . date('Y-m-d H:i:s'),
+                'bayut_locations_import.log'
+            );
+            echo "\nErrors logged to bayut_locations_import.log\n";
+        }
+
+        return $summary;
+    }
+
     /**
      * Detect CSV delimiter
      * @param string $filename Full path to CSV file

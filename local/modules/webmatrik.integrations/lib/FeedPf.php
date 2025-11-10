@@ -162,6 +162,27 @@ class FeedPf extends Feed
         return $result;
     }
 
+    private static function getAllCurLocations($factory)
+    {
+        $params = [
+            'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+            'order' => ['ID' => 'ASC'],
+        ];
+
+        $items = $factory->getItemsFilteredByPermissions($params);
+
+        $result = [];
+        foreach ($items as $item) {
+            $data = $item->getData();
+            $pfId = $data['UF_CRM_9_1753773914'];
+            if ($pfId) {
+                $result[$pfId][] = $data['ID'];
+            }
+        }
+
+        return $result;
+    }
+
     private static function getPfLocations($city)
     {
         $httpClient = self::getHttpClient();
@@ -331,38 +352,49 @@ class FeedPf extends Feed
     public function syncLocations($city)
     {
         $factory = Service\Container::getInstance()->getFactory(static::$locentityTypeId);
-        $curloc = static::getCurLocations($factory, $city);
+
+        // Get all current locations once (cached for multiple city calls)
+        static $allCurLocations = null;
+        if ($allCurLocations === null) {
+            $allCurLocations = static::getAllCurLocations($factory);
+        }
+
         $pfloc = static::getPfLocations($city);
-        //print_r($pfloc);
-        //print_r(count($pfloc));
+
         foreach ($pfloc as $key => $item) {
-            if (!array_key_exists($key, $curloc)) {
+            // if this PF location doesn't exist in Bitrix, create it
+            if (!array_key_exists($key, $allCurLocations)) {
                 $newtree = array_reverse($item, true);
                 $titles = [];
-                foreach ($newtree as $item) {
-                    $titles[] = $item['name'];
+
+                foreach ($newtree as $locPart) {
+                    $titles[] = $locPart['name'];
                 }
-                $title = implode(',', $titles);
-                $item = $factory->createItem([
+
+                $title = implode(', ', $titles);
+
+                $newItem = $factory->createItem([
                     'TITLE' => $title,
                     'ASSIGNED_BY_ID' => 1013,
                     'UF_CRM_9_1753773914' => $key
                 ]);
-                $operation = $factory->getAddOperation($item);
+
+                $operation = $factory->getAddOperation($newItem);
                 $operation
                     ->disableCheckFields()
                     ->disableBizProc()
-                    ->disableCheckAccess()
-                ;
+                    ->disableCheckAccess();
+
                 $addResult = $operation->launch();
 
-                $errorMessages = $addResult->getErrorMessages();
-
                 if ($addResult->isSuccess()) {
-                    // получаем ID новой записи СП
-                    $newId = $item->getId();
-                    //echo $newId;
-
+                    $newId = $newItem->getId();
+                    \Bitrix\Main\Diag\Debug::writeToFile("Added new location {$title} (ID: {$newId})", '', 'pf_location_sync.log');
+                    // Update the cached array so we don’t add again if repeated
+                    $allCurLocations[$key][] = $newId;
+                } else {
+                    $errors = implode('; ', $addResult->getErrorMessages());
+                    \Bitrix\Main\Diag\Debug::writeToFile("Failed to add location {$title}: {$errors}", '', 'pf_location_sync.log');
                 }
             }
         }

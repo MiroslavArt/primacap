@@ -203,12 +203,28 @@ abstract class Feed
             foreach ($locobj as $item) {
                 $data = $item->getData();
                 if ($mode == 'bayut') {
-                    $titles = array_reverse(explode(",", $data['TITLE']));
+                    $titles = array_reverse(array_map('trim', explode(',', $data['TITLE'])));
+                    $count = count($titles);
+
+                    $city = $titles[0] ?? '';
+                    $locality = $titles[1] ?? '';
+                    $subLocality = '';
+                    $tower = '';
+
+                    if ($count === 3) {
+                        // 3 parts: city, locality, tower
+                        $tower = $titles[2];
+                    } elseif ($count >= 4) {
+                        // 4 or more parts: city, locality, sub-locality, tower
+                        $subLocality = $titles[2];
+                        $tower = $titles[3];
+                    }
+
                     $locresult[$data['ID']] = [
-                        'City' => $titles[0],
-                        'Locality' => $titles[1],
-                        'Sub_Locality' => $titles[2],
-                        'Tower_Name' => $titles[3]
+                        'City' => $city,
+                        'Locality' => $locality,
+                        'Sub_Locality' => $subLocality,
+                        'Tower_Name' => $tower
                     ];
                 } elseif ($mode == 'Pf') {
                     $locresult[$data['ID']] = (int)$data['UF_CRM_9_1753773914'];

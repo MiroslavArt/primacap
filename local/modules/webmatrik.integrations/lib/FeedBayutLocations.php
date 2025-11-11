@@ -84,10 +84,10 @@ class FeedBayutLocations extends Feed
 
         // Expected CSV columns
         $requiredFields = [
-            'city' => 'city',
-            'locality' => 'locality',
-            'sub_locality' => 'sub_locality',
             'tower_name' => 'tower_name',
+            'sub_locality' => 'sub_locality',
+            'locality' => 'locality',
+            'city' => 'city',
             'location_id' => 'location_id'
         ];
 
@@ -140,10 +140,10 @@ class FeedBayutLocations extends Feed
 
             try {
                 // Extract data using field map
-                $city = trim($assoc[$fieldMap['city']] ?? '');
-                $locality = trim($assoc[$fieldMap['locality']] ?? '');
-                $subLocality = trim($assoc[$fieldMap['sub_locality']] ?? '');
                 $towerName = trim($assoc[$fieldMap['tower_name']] ?? '');
+                $subLocality = trim($assoc[$fieldMap['sub_locality']] ?? '');
+                $locality = trim($assoc[$fieldMap['locality']] ?? '');
+                $city = trim($assoc[$fieldMap['city']] ?? '');
                 $locationId = trim($assoc[$fieldMap['location_id']] ?? '');
 
                 // Validate location_id
@@ -156,20 +156,20 @@ class FeedBayutLocations extends Feed
                 // Build location parts (remove "Unknown" entries)
                 $locationParts = [];
 
-                if (!empty($city) && mb_strtolower($city) !== 'unknown') {
-                    $locationParts[] = $city;
-                }
-
-                if (!empty($locality) && mb_strtolower($locality) !== 'unknown') {
-                    $locationParts[] = $locality;
+                if (!empty($towerName) && mb_strtolower($towerName) !== 'unknown') {
+                    $locationParts[] = $towerName;
                 }
 
                 if (!empty($subLocality) && mb_strtolower($subLocality) !== 'unknown') {
                     $locationParts[] = $subLocality;
                 }
 
-                if (!empty($towerName) && mb_strtolower($towerName) !== 'unknown') {
-                    $locationParts[] = $towerName;
+                if (!empty($locality) && mb_strtolower($locality) !== 'unknown') {
+                    $locationParts[] = $locality;
+                }
+
+                if (!empty($city) && mb_strtolower($city) !== 'unknown') {
+                    $locationParts[] = $city;
                 }
 
                 // Skip if no valid location parts
@@ -373,11 +373,16 @@ class FeedBayutLocations extends Feed
                 continue;
             }
 
-            // If 5 parts → take 1,2,4,5 (skip 3)
+            // If 5 parts → remove the 4th one (sub sub community)
             if (count($parts) === 5) {
-                $parts = [$parts[0], $parts[1], $parts[3], $parts[4]];
+                unset($parts[3]);
+                $parts = array_values($parts); // reindex
             }
 
+            // Reverse to have tower first, city last
+            $parts = array_reverse($parts);
+
+            // Join with commas
             $title = implode(', ', $parts);
 
             try {

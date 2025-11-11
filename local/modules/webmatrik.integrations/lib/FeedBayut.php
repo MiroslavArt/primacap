@@ -958,20 +958,30 @@ class FeedBayut extends Feed
     {
         self::cleanDir(static::$root);
 
-        $filter = [
+        $filterOffplan = [
             'STAGE_ID' => 'DT1036_8:SUCCESS',
-            '@UF_CRM_5_1752569141' => [1298, 1299],
-            //'ID' => 8
+            '@UF_CRM_5_1752569141' => [1298, 1299], // bayut_offplan, dubizzle_offplan
+        ];
+        $filterSec = [
+            'STAGE_ID' => 'DT1036_8:SUCCESS',
+            '@UF_CRM_5_1752569141' => [1486, 1487], // bayut_sec, dubizzle_sec
         ];
 
-        $data = static::retrieveDate($filter, 'bayut');
+        $dataOffplan = static::retrieveDate($filterOffplan, 'bayut');
+        $dataSec = static::retrieveDate($filterSec, 'bayut');
 
-        $data = self::prepareData($data);
-        print_r($data);
+        $dataOffplan = self::prepareData($dataOffplan);
+        $dataSec = self::prepareData($dataSec);
 
-        if ($data) {
-            self::packtoXML($data, 'No');
-            self::packtoXML($data, 'Yes');
+        print_r("Total Offplan: " . count($dataOffplan) . "\n");
+        print_r("Total Secondary: " . count($dataSec) . "\n");
+
+        if ($dataOffplan) {
+            self::packtoXML($dataOffplan, 'Yes');
+        }
+
+        if ($dataSec) {
+            self::packtoXML($dataSec, 'No');
         }
     }
 

@@ -27,12 +27,10 @@ class FeedBayutLocations extends Feed
             throw new \Exception('CSV file not found: ' . $filename);
         }
 
-        // Ensure CRM module is loaded
         \Bitrix\Main\Loader::includeModule('crm');
 
         $fullPath = __DIR__ . '/' . $filename;
 
-        // Detect delimiter and open file
         $delimiter = $this->detectDelimiter($fullPath);
         $handle = fopen($fullPath, 'r');
 
@@ -40,7 +38,6 @@ class FeedBayutLocations extends Feed
             throw new \Exception('Unable to open CSV file: ' . $filename);
         }
 
-        // Handle BOM if present
         $firstLine = fgets($handle);
         if ($firstLine === false) {
             fclose($handle);
@@ -49,14 +46,11 @@ class FeedBayutLocations extends Feed
 
         $hasBom = (strncmp($firstLine, "\xEF\xBB\xBF", 3) === 0);
         rewind($handle);
-
         if ($hasBom) {
             fread($handle, 3);
         }
 
-        // Read headers
         $headers = fgetcsv($handle, 0, $delimiter);
-
         if (!$headers) {
             fclose($handle);
             throw new \Exception('CSV has no headers');
@@ -64,14 +58,12 @@ class FeedBayutLocations extends Feed
 
         $headers = array_map('trim', $headers);
 
-        // Log headers for debugging
         \Bitrix\Main\Diag\Debug::writeToFile(
             $headers,
             'bayut_locations_csv_headers ' . date('Y-m-d H:i:s'),
             'bayut_locations_import.log'
         );
 
-        // Normalize header names for flexible matching
         $normalize = function ($s) {
             $s = mb_strtolower(trim($s));
             return preg_replace('/[^a-z0-9]+/', '', $s);
@@ -82,7 +74,6 @@ class FeedBayutLocations extends Feed
             $normalizedHeaderMap[$normalize($h)] = $h;
         }
 
-        // Expected CSV columns
         $requiredFields = [
             'tower_name' => 'tower_name',
             'sub_locality' => 'sub_locality',
@@ -91,7 +82,6 @@ class FeedBayutLocations extends Feed
             'location_id' => 'location_id'
         ];
 
-        // Map normalized names to actual header names
         $fieldMap = [];
         foreach ($requiredFields as $key => $csvName) {
             $normalized = $normalize($csvName);
@@ -103,7 +93,6 @@ class FeedBayutLocations extends Feed
             }
         }
 
-        // Get factory for Bayut Locations SPA
         $container = Container::getInstance();
         $factory = $container->getFactory(static::$bayutLocationsEntityTypeId);
 
@@ -112,6 +101,32 @@ class FeedBayutLocations extends Feed
             throw new \Exception('Factory for entity type ' . static::$bayutLocationsEntityTypeId . ' not found');
         }
 
+        // --- Fetch all existing locations at once ---
+        $existingById = [];
+        $existingByTitle = [];
+
+        $allItems = $factory->getItems([
+            'select' => ['ID', 'TITLE', 'UF_CRM_13_1762325631'],
+        ]);
+
+        foreach ($allItems as $item) {
+            $locId = trim($item->get('UF_CRM_13_1762325631') ?? '');
+            $title = trim($item->getTitle());
+
+            if (!empty($locId)) {
+                $existingById[$locId] = $item;
+            }
+            if (!empty($title)) {
+                $existingByTitle[mb_strtolower($title)] = $item;
+            }
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile(
+            ['count' => count($existingById), 'titles' => count($existingByTitle)],
+            'Preloaded existing Bayut locations ' . date('Y-m-d H:i:s'),
+            'bayut_locations_import.log'
+        );
+
         $created = 0;
         $updated = 0;
         $skipped = 0;
@@ -119,94 +134,97 @@ class FeedBayutLocations extends Feed
         $errors = [];
         $rowNum = 0;
 
-        // Process each row
         while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
-            // Skip empty rows
             if (count($row) == 1 && trim($row[0]) === '') {
                 continue;
             }
 
             $rowNum++;
-
-            // Create associative array
             $assoc = array_combine($headers, $row);
             if ($assoc === false) {
                 continue;
             }
 
-            $assoc = array_map(function ($v) {
-                return is_string($v) ? trim($v) : $v;
-            }, $assoc);
+            $assoc = array_map(fn($v) => is_string($v) ? trim($v) : $v, $assoc);
 
             try {
-                // Extract data using field map
                 $towerName = trim($assoc[$fieldMap['tower_name']] ?? '');
                 $subLocality = trim($assoc[$fieldMap['sub_locality']] ?? '');
                 $locality = trim($assoc[$fieldMap['locality']] ?? '');
                 $city = trim($assoc[$fieldMap['city']] ?? '');
                 $locationId = trim($assoc[$fieldMap['location_id']] ?? '');
 
-                // Validate location_id
                 if (empty($locationId)) {
                     $skipped++;
                     $errors[] = "Row $rowNum: Missing location_id";
                     continue;
                 }
 
-                // Build location parts (remove "Unknown" entries)
                 $locationParts = [];
 
                 if (!empty($towerName) && mb_strtolower($towerName) !== 'unknown') {
                     $locationParts[] = $towerName;
                 }
-
                 if (!empty($subLocality) && mb_strtolower($subLocality) !== 'unknown') {
                     $locationParts[] = $subLocality;
                 }
-
                 if (!empty($locality) && mb_strtolower($locality) !== 'unknown') {
                     $locationParts[] = $locality;
                 }
-
                 if (!empty($city) && mb_strtolower($city) !== 'unknown') {
                     $locationParts[] = $city;
                 }
 
-                // Skip if no valid location parts
                 if (empty($locationParts)) {
                     $skipped++;
                     $errors[] = "Row $rowNum: No valid location data (all fields are empty or 'Unknown')";
                     continue;
                 }
 
-                // Create TITLE: "City, Locality, SubLocality, TowerName"
                 $title = implode(', ', $locationParts);
+                $normalizedTitle = mb_strtolower($title);
 
-                // Check if location already exists by location_id
-                $existingItems = $factory->getItems([
-                    'select' => ['ID', 'TITLE'],
-                    'filter' => ['=UF_CRM_13_1762325631' => $locationId],
-                    'limit' => 1
-                ]);
-
-                $existingItem = $existingItems ? reset($existingItems) : null;
+                // --- Optimized Lookup ---
+                $existingItem = $existingById[$locationId] ?? $existingByTitle[$normalizedTitle] ?? null;
 
                 if ($existingItem) {
-                    // Update existing item
-                    $existingItem->setTitle($title);
+                    $needsUpdate = false;
 
-                    $updateOperation = $factory->getUpdateOperation($existingItem);
-                    $updateOperation->disableCheckFields()
-                        ->disableBizProc()
-                        ->disableCheckAccess();
+                    // Update title if changed
+                    if ($existingItem->getTitle() !== $title) {
+                        $existingItem->setTitle($title);
+                        $needsUpdate = true;
+                    }
 
-                    $result = $updateOperation->launch();
+                    // Add missing location_id if empty
+                    $existingLocId = $existingItem->get('UF_CRM_13_1762325631');
+                    if (empty($existingLocId) && !empty($locationId)) {
+                        $existingItem->set('UF_CRM_13_1762325631', $locationId);
+                        $needsUpdate = true;
 
-                    if ($result->isSuccess()) {
-                        $updated++;
+                        \Bitrix\Main\Diag\Debug::writeToFile(
+                            ['row' => $rowNum, 'title' => $title, 'added_location_id' => $locationId],
+                            'Added missing location_id ' . date('Y-m-d H:i:s'),
+                            'bayut_locations_import.log'
+                        );
+                    }
+
+                    if ($needsUpdate) {
+                        $updateOperation = $factory->getUpdateOperation($existingItem);
+                        $updateOperation->disableCheckFields()
+                            ->disableBizProc()
+                            ->disableCheckAccess();
+
+                        $result = $updateOperation->launch();
+
+                        if ($result->isSuccess()) {
+                            $updated++;
+                        } else {
+                            $failed++;
+                            $errors[] = "Row $rowNum: Update failed - " . implode(', ', $result->getErrorMessages());
+                        }
                     } else {
-                        $failed++;
-                        $errors[] = "Row $rowNum: Update failed - " . implode(', ', $result->getErrorMessages());
+                        $skipped++;
                     }
                 } else {
                     // Create new item
@@ -225,13 +243,15 @@ class FeedBayutLocations extends Feed
 
                     if ($result->isSuccess()) {
                         $created++;
+                        // Add to memory for later lookups
+                        $existingById[$locationId] = $item;
+                        $existingByTitle[$normalizedTitle] = $item;
                     } else {
                         $failed++;
                         $errors[] = "Row $rowNum: Creation failed - " . implode(', ', $result->getErrorMessages());
                     }
                 }
 
-                // Log first few rows for debugging
                 if ($rowNum <= 3) {
                     \Bitrix\Main\Diag\Debug::writeToFile([
                         'row_number' => $rowNum,
@@ -248,7 +268,6 @@ class FeedBayutLocations extends Feed
 
         fclose($handle);
 
-        // Prepare result summary
         $summary = [
             'created' => $created,
             'updated' => $updated,
@@ -257,7 +276,6 @@ class FeedBayutLocations extends Feed
             'total_rows' => $rowNum
         ];
 
-        // Output summary
         echo "Import completed:\n";
         echo "Created: $created\n";
         echo "Updated: $updated\n";
@@ -265,7 +283,6 @@ class FeedBayutLocations extends Feed
         echo "Failed: $failed\n";
         echo "Total rows processed: $rowNum\n";
 
-        // Log errors if any
         if (!empty($errors)) {
             \Bitrix\Main\Diag\Debug::writeToFile(
                 $errors,
@@ -277,6 +294,7 @@ class FeedBayutLocations extends Feed
 
         return $summary;
     }
+
 
     public function importLocationsHierarchy($filename = null)
     {

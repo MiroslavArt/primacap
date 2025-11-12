@@ -351,53 +351,117 @@ class FeedPf extends Feed
 
     public function syncLocations($city)
     {
-        $factory = Service\Container::getInstance()->getFactory(static::$locentityTypeId);
+        $logFile = 'pf_location_sync.log';
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync started for city: {$city} ---", '', $logFile);
 
-        // Get all current locations once (cached for multiple city calls)
+        $factory = \Bitrix\Crm\Service\Container::getInstance()->getFactory(static::$locentityTypeId);
+
+        if (!$factory) {
+            throw new \Exception('Factory not found for entity type ID: ' . static::$locentityTypeId);
+        }
+
+        // Cache all current locations once for all calls
         static $allCurLocations = null;
         if ($allCurLocations === null) {
-            $allCurLocations = static::getAllCurLocations($factory);
+            $params = [
+                'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+                'order'  => ['ID' => 'ASC'],
+            ];
+
+            $items = $factory->getItemsFilteredByPermissions($params);
+
+            $allCurLocations = [
+                'byPf' => [],
+                'byTitle' => []
+            ];
+
+            foreach ($items as $item) {
+                $data = $item->getData();
+                $titleNorm = mb_strtolower(trim(preg_replace('/\s+/', ' ', $data['TITLE'])));
+                if (!empty($data['UF_CRM_9_1753773914'])) {
+                    $allCurLocations['byPf'][$data['UF_CRM_9_1753773914']] = $data['ID'];
+                }
+                $allCurLocations['byTitle'][$titleNorm] = $data['ID'];
+            }
+
+            \Bitrix\Main\Diag\Debug::writeToFile('Cached existing locations: ' . count($allCurLocations['byTitle']), '', $logFile);
         }
 
-        $pfloc = static::getPfLocations($city);
+        // Fetch locations from Property Finder
+        $pfLocations = static::getPfLocations($city);
+        if (empty($pfLocations)) {
+            \Bitrix\Main\Diag\Debug::writeToFile("No PF locations found for {$city}", '', $logFile);
+            return;
+        }
 
-        foreach ($pfloc as $key => $item) {
-            // if this PF location doesn't exist in Bitrix, create it
-            if (!array_key_exists($key, $allCurLocations)) {
-                $newtree = array_reverse($item, true);
-                $titles = [];
+        foreach ($pfLocations as $pfId => $tree) {
+            // Skip if PF ID already exists in Bitrix
+            if (isset($allCurLocations['byPf'][$pfId])) {
+                continue;
+            }
 
-                foreach ($newtree as $locPart) {
-                    $titles[] = $locPart['name'];
+            // Build and normalize title
+            $reversedTree = array_reverse($tree, true);
+            $titles = [];
+            foreach ($reversedTree as $locPart) {
+                $titles[] = $locPart['name'];
+            }
+
+            $title = implode(', ', $titles);
+            $titleNorm = mb_strtolower(trim(preg_replace('/\s+/', ' ', $title)));
+
+            // Check if location with same title already exists
+            if (isset($allCurLocations['byTitle'][$titleNorm])) {
+                $existingId = $allCurLocations['byTitle'][$titleNorm];
+                $existingItem = $factory->getItem($existingId);
+
+                if ($existingItem) {
+                    $existingItem->set('UF_CRM_9_1753773914', $pfId);
+                    $updateOp = $factory->getUpdateOperation($existingItem)
+                        ->disableCheckFields()
+                        ->disableBizProc()
+                        ->disableCheckAccess();
+                    $updateRes = $updateOp->launch();
+
+                    if ($updateRes->isSuccess()) {
+                        \Bitrix\Main\Diag\Debug::writeToFile("Updated existing location '{$title}' (ID: {$existingId}) with PFID: {$pfId}", '', $logFile);
+                        $allCurLocations['byPf'][$pfId] = $existingId; // update cache
+                    } else {
+                        $errors = implode('; ', $updateRes->getErrorMessages());
+                        \Bitrix\Main\Diag\Debug::writeToFile("Failed to update location '{$title}': {$errors}", '', $logFile);
+                    }
                 }
+                continue;
+            }
 
-                $title = implode(', ', $titles);
+            // Create new location if not found by PF ID or Title
+            $newItem = $factory->createItem([
+                'TITLE' => $title,
+                'ASSIGNED_BY_ID' => 1013,
+                'UF_CRM_9_1753773914' => $pfId
+            ]);
 
-                $newItem = $factory->createItem([
-                    'TITLE' => $title,
-                    'ASSIGNED_BY_ID' => 1013,
-                    'UF_CRM_9_1753773914' => $key
-                ]);
+            $operation = $factory->getAddOperation($newItem)
+                ->disableCheckFields()
+                ->disableBizProc()
+                ->disableCheckAccess();
 
-                $operation = $factory->getAddOperation($newItem);
-                $operation
-                    ->disableCheckFields()
-                    ->disableBizProc()
-                    ->disableCheckAccess();
+            $addResult = $operation->launch();
 
-                $addResult = $operation->launch();
+            if ($addResult->isSuccess()) {
+                $newId = $newItem->getId();
+                \Bitrix\Main\Diag\Debug::writeToFile("Added new location '{$title}' (ID: {$newId}, PFID: {$pfId})", '', $logFile);
 
-                if ($addResult->isSuccess()) {
-                    $newId = $newItem->getId();
-                    \Bitrix\Main\Diag\Debug::writeToFile("Added new location {$title} (ID: {$newId})", '', 'pf_location_sync.log');
-                    // Update the cached array so we don’t add again if repeated
-                    $allCurLocations[$key][] = $newId;
-                } else {
-                    $errors = implode('; ', $addResult->getErrorMessages());
-                    \Bitrix\Main\Diag\Debug::writeToFile("Failed to add location {$title}: {$errors}", '', 'pf_location_sync.log');
-                }
+                // Update cache
+                $allCurLocations['byPf'][$pfId] = $newId;
+                $allCurLocations['byTitle'][$titleNorm] = $newId;
+            } else {
+                $errors = implode('; ', $addResult->getErrorMessages());
+                \Bitrix\Main\Diag\Debug::writeToFile("Failed to add location '{$title}': {$errors}", '', $logFile);
             }
         }
+
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync completed for city: {$city} ---", '', $logFile);
     }
 
     private static function processLocations($data, $factory)
@@ -440,65 +504,86 @@ class FeedPf extends Feed
 
     public static function delDupl()
     {
+        $logFile = 'pf_location_cleanup.log';
         $entityTypeId = static::$locentityTypeId;
-        // Получаем фабрику для работы с сущностью videos
         $container = Container::getInstance();
-        $relationManager = $container->getRelationManager();
         $factory = $container->getFactory($entityTypeId);
 
         if (!$factory) {
-            throw new \Exception('Factory not found');
+            throw new \Exception('Factory not found for entity type ID: ' . $entityTypeId);
         }
 
+        $limit = 2000; // process 2k records at a time
+        $offset = 0;
+        $deletedCount = 0;
 
-        $params = [
-            'select' => ['ID', 'UF_CRM_9_1753773914'], // Все поля, включая пользовательские
-            'filter' => [],
-            'order' => ['ID' => 'ASC'],
-            //'limit' => 100,
-        ];
+        $pfGroups = []; // we'll group PF IDs across batches
 
-        // Получаем элементы
-        $items = $factory->getItemsFilteredByPermissions($params);
+        do {
+            $params = [
+                'select' => ['ID', 'TITLE', 'UF_CRM_9_1753773914'],
+                'filter' => [],
+                'order'  => ['ID' => 'ASC'],
+                'limit'  => $limit,
+                'offset' => $offset,
+            ];
 
-        // Обработка результатов
+            $items = $factory->getItemsFilteredByPermissions($params);
+            $count = count($items);
+            if ($count === 0) break;
 
-        $result = [];
-
-        foreach ($items as $item) {
-            $data = $item->getData();
-            $result[$data['UF_CRM_9_1753773914']][] = $data['ID'];
-        }
-
-        $cleanresult = [];
-
-        foreach ($result as $item) {
-            if (count($item) > 1) {
-                $cleanresult[] = $item;
+            foreach ($items as $item) {
+                $data = $item->getData();
+                $pfId = $data['UF_CRM_9_1753773914'] ?: 'NO_PFID';
+                $pfGroups[$pfId][] = $data;
             }
-        }
 
+            $offset += $limit;
+            unset($items);
+            gc_collect_cycles(); // free memory manually
 
-        $cleanresult = [];
+        } while ($count === $limit);
 
-        foreach ($result as $key => $item) {
-            if (count($item) > 1) {
-                $pop = array_pop($item);
-                //$cleanresult[$key] = $item;
-                //if($key==3033) {
-                foreach ($item as $it) {
-                    $fit = $factory->getItem($it);
-                    $operation = $factory->getDeleteOperation($fit);
-                    $operation
+        // Now that we have all PF IDs grouped, delete duplicates per group
+        foreach ($pfGroups as $pfId => $group) {
+            if ($pfId === 'NO_PFID' || count($group) <= 1) continue;
+
+            usort($group, fn($a, $b) => $a['ID'] <=> $b['ID']);
+            array_shift($group); // keep the first one
+
+            foreach ($group as $dup) {
+                $fit = $factory->getItem($dup['ID']);
+                if ($fit) {
+                    $operation = $factory->getDeleteOperation($fit)
                         ->disableCheckFields()
                         ->disableBizProc()
-                        ->disableCheckAccess()
-                    ;
-                    $addResult = $operation->launch();
+                        ->disableCheckAccess();
+
+                    $res = $operation->launch();
+                    if ($res->isSuccess()) {
+                        $deletedCount++;
+                        \Bitrix\Main\Diag\Debug::writeToFile(
+                            "Deleted duplicate '{$dup['TITLE']}' (ID: {$dup['ID']}, PFID: {$pfId})",
+                            '',
+                            $logFile
+                        );
+                    } else {
+                        $errors = implode('; ', $res->getErrorMessages());
+                        \Bitrix\Main\Diag\Debug::writeToFile(
+                            "Failed to delete '{$dup['TITLE']}' (ID: {$dup['ID']}): {$errors}",
+                            '',
+                            $logFile
+                        );
+                    }
                 }
-                //}
             }
+
+            // Free memory for this group
+            unset($pfGroups[$pfId]);
+            gc_collect_cycles();
         }
+
+        \Bitrix\Main\Diag\Debug::writeToFile("✅ Cleanup completed. Deleted {$deletedCount} duplicates.", '', $logFile);
     }
 
     public function sendListingDraft($lisId)

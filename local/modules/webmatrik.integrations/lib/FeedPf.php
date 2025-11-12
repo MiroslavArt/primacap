@@ -505,7 +505,7 @@ class FeedPf extends Feed
     {
         $filter = [
             'ID' => $lisId,
-            '@UF_CRM_5_1752569141' => [1297]
+            '@UF_CRM_5_1752569141' => [1297, 1485]
         ];
         $data = static::retrieveDate($filter, 'Pf');
         if (!$data) {
@@ -749,7 +749,7 @@ class FeedPf extends Feed
 
         $filter = [
             'ID' => $bitrixListingId,
-            '@UF_CRM_5_1752569141' => [1297] // Portals field
+            '@UF_CRM_5_1752569141' => [1297, 1485] // Portals field
         ];
         $data = static::retrieveDate($filter, 'Pf');
         if (!$data || empty($data)) {

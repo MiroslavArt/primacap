@@ -1211,6 +1211,166 @@ class FeedBayut extends Feed
         }
     }
 
+    public function updatePortalsByFilename($filename)
+    {
+        if (!$filename || !file_exists(__DIR__ . '/' . $filename)) {
+            throw new \Exception('CSV file not found: ' . $filename);
+        }
+
+        \Bitrix\Main\Loader::includeModule('crm');
+
+        $filename = __DIR__ . '/' . $filename;
+        $isPrimary = stripos($filename, 'primary') !== false;
+        $isSecondary = stripos($filename, 'secondary') !== false;
+
+        if (!$isPrimary && !$isSecondary) {
+            throw new \Exception('Filename must contain either "primary" or "secondary"');
+        }
+
+        $container = \Bitrix\Crm\Service\Container::getInstance();
+        $factory = $container->getFactory(static::$entityTypeId);
+        if (!$factory) {
+            throw new \Exception('Factory not found');
+        }
+
+        $portalField = 'UF_CRM_5_1752569141'; // Portals
+        $refField = 'UF_CRM_5_1752571265';   // Property Ref No
+
+        // Get enum values
+        $ufMeta = self::getEnumVal();
+        $enumValues = $ufMeta['enum'];
+        $enumLookup = [];
+        foreach ($enumValues as $fieldName => $idToValue) {
+            $enumLookup[$fieldName] = array_change_key_case(array_flip($idToValue), CASE_LOWER);
+        }
+
+        // Portal enum IDs
+        $bayutOffplanId   = $enumLookup[$portalField]['bayut_offplan']   ?? null;
+        $dubizzleOffplanId = $enumLookup[$portalField]['dubizzle_offplan'] ?? null;
+        $bayutSecId       = $enumLookup[$portalField]['bayut_sec']       ?? null;
+        $dubizzleSecId    = $enumLookup[$portalField]['dubizzle_sec']    ?? null;
+
+        if (!$bayutOffplanId || !$dubizzleOffplanId || !$bayutSecId || !$dubizzleSecId) {
+            throw new \Exception('Missing portal enum IDs for UF_CRM_5_1752569141');
+        }
+
+        // Step 1: Read CSV
+        $delimiter = static::detectDelimiter($filename);
+        $handle = fopen($filename, 'r');
+        if (!$handle) {
+            throw new \Exception('Unable to open file');
+        }
+
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            fclose($handle);
+            throw new \Exception('Empty or invalid CSV file');
+        }
+
+        // Normalize header lookup
+        $normalize = fn($s) => preg_replace('/[^a-z0-9]+/i', '', mb_strtolower(trim($s)));
+        $normalizedHeaderMap = [];
+        foreach ($headers as $h) {
+            $normalizedHeaderMap[$normalize($h)] = $h;
+        }
+
+        // Step 2: Fetch all existing items to match by reference
+        $existingItems = [];
+        $items = $factory->getItems([
+            'select' => ['ID', $refField],
+            'filter' => [],
+            'order'  => ['ID' => 'ASC'],
+        ]);
+        foreach ($items as $item) {
+            $ref = trim((string)$item->get($refField));
+            if ($ref !== '') {
+                $existingItems[$ref] = (int)$item->getId();
+            }
+        }
+
+        $updated = 0;
+        $skipped = 0;
+        $failed = 0;
+        $errors = [];
+
+        // Step 3: Iterate CSV rows
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (count($row) == 1 && trim((string)$row[0]) === '') continue;
+
+            $assoc = array_combine($headers, $row);
+            if ($assoc === false) continue;
+
+            // Try to find Property Ref No
+            $refNo = $assoc['property_ref_no'] ?? null;
+            if (!$refNo) {
+                foreach ($normalizedHeaderMap as $norm => $orig) {
+                    if ($norm === 'propertyrefno') {
+                        $refNo = $assoc[$orig] ?? null;
+                        break;
+                    }
+                }
+            }
+
+            if (!$refNo) {
+                $skipped++;
+                continue;
+            }
+
+            $refNo = trim($refNo);
+            if (!isset($existingItems[$refNo])) {
+                $skipped++;
+                continue;
+            }
+
+            $id = $existingItems[$refNo];
+
+            // Determine target portals
+            if ($isPrimary) {
+                $newPortals = [$bayutOffplanId, $dubizzleOffplanId];
+            } elseif ($isSecondary) {
+                $newPortals = [$bayutSecId, $dubizzleSecId];
+            } else {
+                continue;
+            }
+
+            try {
+                $item = $factory->getItem($id);
+                if ($item) {
+                    $item->set($portalField, $newPortals);
+                    $operation = $factory->getUpdateOperation($item);
+                    $operation->disableCheckFields()->disableBizProc()->disableCheckAccess();
+                    $result = $operation->launch();
+
+                    if ($result->isSuccess()) {
+                        $updated++;
+                    } else {
+                        $failed++;
+                        $errors[] = [
+                            'ref' => $refNo,
+                            'errors' => $result->getErrorMessages(),
+                        ];
+                    }
+                } else {
+                    $failed++;
+                    $errors[] = ['ref' => $refNo, 'error' => 'Item fetch failed'];
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $errors[] = ['ref' => $refNo, 'error' => $e->getMessage()];
+            }
+        }
+
+        fclose($handle);
+
+        echo "✅ Updated portals: {$updated}\n";
+        echo "⏭ Skipped: {$skipped}\n";
+        echo "❌ Failed: {$failed}\n";
+
+        if ($failed) {
+            \Bitrix\Main\Diag\Debug::writeToFile($errors, 'updatePortalsByFilename_errors ' . date('Y-m-d H:i:s'), 'bayut_import.log');
+        }
+    }
+
     protected static function cleanDir($dir)
     {
         $files = glob($dir . "/*");

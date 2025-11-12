@@ -155,10 +155,10 @@ class FeedBayut extends Feed
         return array_search(max($counts), $counts);
     }
 
-    private static function determinePortal($filename, $listingAgency = null)
+    private static function determinePortal($filename, $listingAgency = null, $projectStatus = null)
     {
         $basename   = basename($filename);
-        $portalName = null;
+        $portalName = 'bayut';
 
         if (stripos($basename, 'bayut') !== false) {
             $portalName = 'bayut';
@@ -180,9 +180,9 @@ class FeedBayut extends Feed
         }
 
         if ($listingAgency === null) {
-            if (stripos($basename, 'offplan') !== false || stripos($basename, 'off_plan') !== false) {
+            if (stripos($basename, 'offplan') !== false || stripos($basename, 'off_plan') !== false || stripos($projectStatus, 'off_plan') !== false) {
                 $isOffplan = true;
-            } elseif (stripos($basename, 'sec') !== false || stripos($basename, 'secondary') !== false) {
+            } elseif (stripos($basename, 'sec') !== false || stripos($basename, 'secondary') !== false || stripos($projectStatus, 'ready') !== false) {
                 $isSecondary = true;
             }
         }
@@ -554,12 +554,18 @@ class FeedBayut extends Feed
             $fields = [
                 'ASSIGNED_BY_ID' => $assignedUserId,
             ];
+
+            // Always add existing listings to 'Published' stage
+            $fields['STAGE_ID'] = 'DT1036_8:SUCCESS';
+
             if (!empty($assoc['property_title'])) {
                 $fields['TITLE'] = $assoc['property_title'];
             }
 
             $listingAgency = $assoc['listing_agency'] ?? null;
-            $portal = self::determinePortal($filename, $listingAgency);
+            $projectStatus = $assoc['completion_status'] ?? null;
+
+            $portal = self::determinePortal($filename, $listingAgency, $projectStatus);
 
             if ($portal) {
                 // Normalize portal value for lookup
@@ -858,61 +864,38 @@ class FeedBayut extends Feed
                 $newPortalId = $fields[$portalField] ?? null;
 
                 if ($refValue && isset($existingCache[$refValue])) {
-                    // Existing listing: update portals and images (if empty)
                     $cached = $existingCache[$refValue];
-                    $merged = $cached['portals'];
-                    $shouldUpdate = false;
-                    $updateFields = [];
 
-                    // Merge portal if new portal ID is provided
-                    if ($newPortalId) {
-                        if (!in_array((int)$newPortalId, $merged, true)) {
-                            $merged[] = (int)$newPortalId;
-                            $shouldUpdate = true;
-                            $updateFields[$portalField] = $merged;
-                        }
-                    }
-
-                    // Check if images field is empty and we have images in current row
-                    $imagesField = 'UF_CRM_5_1755322696';
+                    // Fetch the existing item
                     $found = $factory->getItems([
-                        'select' => ['ID', $portalField, $imagesField],
+                        'select' => ['ID'],
                         'filter' => ['=ID' => $cached['id']],
                         'limit' => 1,
                     ]);
+
                     $existingItem = $found ? reset($found) : null;
 
                     if ($existingItem) {
-                        $existingImages = $existingItem->get($imagesField);
-                        $hasExistingImages = !empty($existingImages) && (is_array($existingImages) ? count($existingImages) > 0 : true);
-
-                        // If no existing images and we have images in current row, add them
-                        if (!$hasExistingImages && isset($fields[$imagesField]) && !empty($fields[$imagesField])) {
-                            $updateFields[$imagesField] = $fields[$imagesField];
-                            $shouldUpdate = true;
+                        // Apply all new fields to the existing item
+                        foreach ($fields as $fieldName => $fieldValue) {
+                            $existingItem->set($fieldName, $fieldValue);
                         }
 
-                        // Only proceed with update if something changed
-                        if ($shouldUpdate) {
-                            foreach ($updateFields as $fieldName => $fieldValue) {
-                                $existingItem->set($fieldName, $fieldValue);
-                            }
-                            $operation = $factory->getUpdateOperation($existingItem);
-                            $operation->disableCheckFields()->disableBizProc()->disableCheckAccess();
-                            $result = $operation->launch();
-                            if ($result->isSuccess()) {
-                                $updated++;
-                                // update cache
-                                if (isset($updateFields[$portalField])) {
-                                    $existingCache[$refValue]['portals'] = $merged;
-                                }
-                            } else {
-                                $failed++;
-                                $errors[] = $result->getErrorMessages();
-                            }
+                        // Update operation
+                        $operation = $factory->getUpdateOperation($existingItem);
+                        $operation->disableCheckFields()->disableBizProc()->disableCheckAccess();
+                        $result = $operation->launch();
+
+                        if ($result->isSuccess()) {
+                            $updated++;
+                            $existingCache[$refValue]['portals'] = $fields[$portalField]
+                                ? (array)$fields[$portalField]
+                                : $existingCache[$refValue]['portals'];
+                        } else {
+                            $failed++;
+                            $errors[] = $result->getErrorMessages();
                         }
                     }
-                    // Skip creating or updating other fields
                 } else {
                     $item = $factory->createItem($fields);
                     $operation = $factory->getAddOperation($item);
@@ -958,20 +941,30 @@ class FeedBayut extends Feed
     {
         self::cleanDir(static::$root);
 
-        $filter = [
+        $filterOffplan = [
             'STAGE_ID' => 'DT1036_8:SUCCESS',
-            '@UF_CRM_5_1752569141' => [1298, 1299],
-            //'ID' => 8
+            '@UF_CRM_5_1752569141' => [1298, 1299], // bayut_offplan, dubizzle_offplan
+        ];
+        $filterSec = [
+            'STAGE_ID' => 'DT1036_8:SUCCESS',
+            '@UF_CRM_5_1752569141' => [1486, 1487], // bayut_sec, dubizzle_sec
         ];
 
-        $data = static::retrieveDate($filter, 'bayut');
+        $dataOffplan = static::retrieveDate($filterOffplan, 'bayut');
+        $dataSec = static::retrieveDate($filterSec, 'bayut');
 
-        $data = self::prepareData($data);
-        print_r($data);
+        $dataOffplan = self::prepareData($dataOffplan);
+        $dataSec = self::prepareData($dataSec);
 
-        if ($data) {
-            self::packtoXML($data, 'No');
-            self::packtoXML($data, 'Yes');
+        print_r("Total Offplan: " . count($dataOffplan) . "\n");
+        print_r("Total Secondary: " . count($dataSec) . "\n");
+
+        if ($dataOffplan) {
+            self::packtoXML($dataOffplan, 'Yes');
+        }
+
+        if ($dataSec) {
+            self::packtoXML($dataSec, 'No');
         }
     }
 
@@ -1012,61 +1005,370 @@ class FeedBayut extends Feed
             INPUT;
         $root = simplexml_load_string($inputUTF8);
         foreach ($data as $key => $item) {
-            if ($item['Off_plan'] == $offPlan) {
-                $property = $root->addChild('Property');
-                $property->Property_Ref_No = '<![CDATA[' . $item['Property_Ref_No'] . ']]>';
-                $property->Property_purpose = '<![CDATA[' . $item['Property_purpose'] . ']]>';
-                $property->Property_Type = '<![CDATA[' . $item['Property_Type'] . ']]>';
-                $property->Property_Status = '<![CDATA[' . $item['Property_Status'] . ']]>';
-                $property->City = '<![CDATA[' . $item['location']['City'] . ']]>';
-                $property->Locality = '<![CDATA[' . $item['location']['Locality'] . ']]>';
-                $property->Sub_Locality = '<![CDATA[' . $item['location']['Sub_Locality'] . ']]>';
-                $property->Tower_Name = '<![CDATA[' . $item['location']['Tower_Name'] . ']]>';
-                $property->Property_Title = '<![CDATA[' . $item['Property_Title'] . ']]>';
-                $property->Property_Title_AR = '<![CDATA[' . $item['Property_Title_AR'] . ']]>';
-                $property->Property_Description = '<![CDATA[' . $item['Property_Description'] . ']]>';
-                $property->Property_Description_AR = '<![CDATA[' . $item['Property_Description_AR'] . ']]>';
-                $property->Property_Size = '<![CDATA[' . $item['Property_Size'] . ']]>';
-                $property->Property_Size_Unit = $item['Property_Size_Unit'] ?
-                    '<![CDATA[' . $item['Property_Size_Unit'] . ']]>' : '<![CDATA[SQFT]]>';
-                $property->Bedrooms = '<![CDATA[' . $item['Bedrooms'] . ']]>';
-                $property->Bathroom = '<![CDATA[' . $item['Bathrooms'] . ']]>';
-                $property->Price = '<![CDATA[' . $item['Price'] . ']]>';
-                $property->Listing_Agent = '<![CDATA[' . $item['assignedTo']['Listing_Agent'] . ']]>';
-                $property->Listing_Agent_Phone = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Phone'] . ']]>';
-                $property->Listing_Agent_Email = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Email'] . ']]>';
-                $features = $property->addChild('Features');
-                foreach ($item['Features'] as $key => $val) {
-                    $features->Feature[$key] = '<![CDATA[' . $val . ']]>';
-                }
-                $images = $property->addChild('Images');
-                foreach ($item['Photos'] as $key => $val) {
-                    $images->Image[$key] = '<![CDATA[' . $val . ']]>';
-                }
-                $videos = $property->addChild('Videos');
-                foreach ($item['Videos'] as $key => $val) {
-                    $videos->Video[$key] = '<![CDATA[' . $val . ']]>';
-                }
-                $property->Last_Updated = '<![CDATA[' . $item['Last_Updated'] . ']]>';
-                $property->Permit_Number = '<![CDATA[' . $item['Permit_Number'] . ']]>';
-                if ($item['Property_purpose'] == 'Rent') {
-                    $property->Rent_Frequency = '<![CDATA[' . $item['Rent_Frequency'] . ']]>';
-                }
-                $property->Off_plan = '<![CDATA[' . $item['Off_plan'] . ']]>';
-                if ($item['Off_plan'] == 'Yes') {
-                    $property->offplanDetails_saleType = '<![CDATA[' . $item['offplanDetails_saleType'] . ']]>';
-                    $property->offplanDetails_dldWaiver = '<![CDATA[' . $item['offplanDetails_dldWaiver'] . ']]>';
-                    $property->offplanDetails_originalPrice = '<![CDATA[' . $item['offplanDetails_originalPrice'] . ']]>';
-                    $property->offplanDetails_amountPaid = '<![CDATA[' . $item['offplanDetails_amountPaid'] . ']]>';
-                }
-                $property->Furnished = '<![CDATA[' . static::$furnmap[$item['Furnished']] . ']]>';
-                $portals = $property->addChild('Portals');
-                foreach ($item['Portals'] as $key => $val) {
-                    $portals->Portal[$key] = '<![CDATA[' . $val . ']]>';
-                }
+            // if ($item['Off_plan'] == $offPlan) {
+            $property = $root->addChild('Property');
+            $property->Property_Ref_No = '<![CDATA[' . $item['Property_Ref_No'] . ']]>';
+            $property->Property_purpose = '<![CDATA[' . $item['Property_purpose'] . ']]>';
+            $property->Property_Type = '<![CDATA[' . $item['Property_Type'] . ']]>';
+            $property->Property_Status = '<![CDATA[' . $item['Property_Status'] . ']]>';
+            $property->City = '<![CDATA[' . $item['location']['City'] . ']]>';
+            $property->Locality = '<![CDATA[' . $item['location']['Locality'] . ']]>';
+            $property->Sub_Locality = '<![CDATA[' . $item['location']['Sub_Locality'] . ']]>';
+            $property->Tower_Name = '<![CDATA[' . $item['location']['Tower_Name'] . ']]>';
+            $property->Property_Title = '<![CDATA[' . $item['Property_Title'] . ']]>';
+            $property->Property_Title_AR = '<![CDATA[' . $item['Property_Title_AR'] . ']]>';
+            $property->Property_Description = '<![CDATA[' . $item['Property_Description'] . ']]>';
+            $property->Property_Description_AR = '<![CDATA[' . $item['Property_Description_AR'] . ']]>';
+            $property->Property_Size = '<![CDATA[' . $item['Property_Size'] . ']]>';
+            $property->Property_Size_Unit = $item['Property_Size_Unit'] ?
+                '<![CDATA[' . $item['Property_Size_Unit'] . ']]>' : '<![CDATA[SQFT]]>';
+            $property->Bedrooms = '<![CDATA[' . $item['Bedrooms'] . ']]>';
+            $property->Bathroom = '<![CDATA[' . $item['Bathrooms'] . ']]>';
+            $property->Price = '<![CDATA[' . $item['Price'] . ']]>';
+            $property->Listing_Agent = '<![CDATA[' . $item['assignedTo']['Listing_Agent'] . ']]>';
+            $property->Listing_Agent_Phone = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Phone'] . ']]>';
+            $property->Listing_Agent_Email = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Email'] . ']]>';
+            $features = $property->addChild('Features');
+            foreach ($item['Features'] as $key => $val) {
+                $features->Feature[$key] = '<![CDATA[' . $val . ']]>';
             }
+            $images = $property->addChild('Images');
+            foreach ($item['Photos'] as $key => $val) {
+                $images->Image[$key] = '<![CDATA[' . $val . ']]>';
+            }
+            $videos = $property->addChild('Videos');
+            foreach ($item['Videos'] as $key => $val) {
+                $videos->Video[$key] = '<![CDATA[' . $val . ']]>';
+            }
+            $property->Last_Updated = '<![CDATA[' . $item['Last_Updated'] . ']]>';
+            $property->Permit_Number = '<![CDATA[' . $item['Permit_Number'] . ']]>';
+            if ($item['Property_purpose'] == 'Rent') {
+                $property->Rent_Frequency = '<![CDATA[' . $item['Rent_Frequency'] . ']]>';
+            }
+            $property->Off_plan = '<![CDATA[' . $item['Off_plan'] . ']]>';
+            if ($item['Off_plan'] == 'Yes') {
+                $property->offplanDetails_saleType = '<![CDATA[' . $item['offplanDetails_saleType'] . ']]>';
+                $property->offplanDetails_dldWaiver = '<![CDATA[' . $item['offplanDetails_dldWaiver'] . ']]>';
+                $property->offplanDetails_originalPrice = '<![CDATA[' . $item['offplanDetails_originalPrice'] . ']]>';
+                $property->offplanDetails_amountPaid = '<![CDATA[' . $item['offplanDetails_amountPaid'] . ']]>';
+            }
+            $property->Furnished = '<![CDATA[' . static::$furnmap[$item['Furnished']] . ']]>';
+            $portals = $property->addChild('Portals');
+            foreach ($item['Portals'] as $key => $val) {
+                $portals->Portal[$key] = '<![CDATA[' . $val . ']]>';
+            }
+            // }
         }
         $root->asXML(static::$root . "/" . $fileName);
+    }
+
+    public function moveToPublished($filename = null)
+    {
+        if (!$filename || !file_exists(__DIR__ . '/' . $filename)) {
+            throw new \Exception('CSV file not found: ' . $filename);
+        }
+
+        \Bitrix\Main\Loader::includeModule('crm');
+
+        $filename = __DIR__ . '/' . $filename;
+        $delimiter = static::detectDelimiter($filename);
+        $handle = fopen($filename, 'r');
+        if ($handle === false) {
+            throw new \Exception('Unable to open CSV file: ' . $filename);
+        }
+
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            fclose($handle);
+            throw new \Exception('Empty CSV or no headers');
+        }
+
+        // Normalize headers for easy lookup
+        $normalize = function ($s) {
+            return preg_replace('/[^a-z0-9]+/i', '', mb_strtolower(trim($s)));
+        };
+        $normalizedHeaderMap = [];
+        foreach ($headers as $h) {
+            $normalizedHeaderMap[$normalize($h)] = $h;
+        }
+
+        $factory = \Bitrix\Crm\Service\Container::getInstance()->getFactory(static::$entityTypeId);
+        if (!$factory) {
+            fclose($handle);
+            throw new \Exception('Factory not found');
+        }
+
+        // ✅ Step 1: Fetch all existing items in one call
+        $existingItems = [];
+        try {
+            $items = $factory->getItems([
+                'select' => ['ID', 'UF_CRM_5_1752571265', 'STAGE_ID'],
+                'filter' => [],
+                'order' => ['ID' => 'ASC'],
+            ]);
+
+            foreach ($items as $item) {
+                $ref = trim((string)$item->get('UF_CRM_5_1752571265'));
+                if ($ref !== '') {
+                    $existingItems[$ref] = [
+                        'id' => (int)$item->getId(),
+                        'stage' => $item->get('STAGE_ID'),
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            fclose($handle);
+            throw new \Exception('Failed to fetch existing items: ' . $e->getMessage());
+        }
+
+        $updated = 0;
+        $skipped = 0;
+        $failed = 0;
+        $errors = [];
+        $rowNum = 0;
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            $rowNum++;
+            if (count($row) == 1 && trim((string)$row[0]) === '') {
+                continue;
+            }
+
+            $assoc = array_combine($headers, $row);
+            if ($assoc === false) {
+                continue;
+            }
+
+            $refNo = $assoc['property_ref_no'] ?? null;
+            if (!$refNo) {
+                // Try normalized match if header name differs
+                $normalizedRefHeader = null;
+                foreach ($normalizedHeaderMap as $norm => $orig) {
+                    if ($norm === 'propertyrefno') {
+                        $normalizedRefHeader = $orig;
+                        break;
+                    }
+                }
+                if ($normalizedRefHeader && isset($assoc[$normalizedRefHeader])) {
+                    $refNo = trim($assoc[$normalizedRefHeader]);
+                }
+            }
+
+            if (!$refNo) {
+                $skipped++;
+                continue;
+            }
+
+            $refNo = trim($refNo);
+            if (!isset($existingItems[$refNo])) {
+                $skipped++;
+                continue; // not found in CRM
+            }
+
+            $itemData = $existingItems[$refNo];
+            if ($itemData['stage'] === 'DT1036_8:SUCCESS') {
+                $skipped++;
+                continue; // already in target stage
+            }
+
+            try {
+                $item = $factory->getItem($itemData['id']);
+                if ($item) {
+                    $item->set('STAGE_ID', 'DT1036_8:SUCCESS');
+                    $operation = $factory->getUpdateOperation($item);
+                    $operation->disableCheckFields()->disableBizProc()->disableCheckAccess();
+                    $result = $operation->launch();
+
+                    if ($result->isSuccess()) {
+                        $updated++;
+                    } else {
+                        $failed++;
+                        $errors[] = [
+                            'ref' => $refNo,
+                            'errors' => $result->getErrorMessages(),
+                        ];
+                    }
+                } else {
+                    $failed++;
+                    $errors[] = ['ref' => $refNo, 'error' => 'Item fetch failed'];
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $errors[] = [
+                    'ref' => $refNo,
+                    'error' => $e->getMessage(),
+                ];
+            }
+        }
+
+        fclose($handle);
+
+        echo "Updated: $updated\n";
+        echo "Skipped: $skipped\n";
+        echo "Failed: $failed\n";
+
+        if ($failed) {
+            \Bitrix\Main\Diag\Debug::writeToFile($errors, 'moveToPublished_errors ' . date('Y-m-d H:i:s'), 'bayut_import.log');
+        }
+    }
+
+    public function updatePortalsByFilename($filename)
+    {
+        if (!$filename || !file_exists(__DIR__ . '/' . $filename)) {
+            throw new \Exception('CSV file not found: ' . $filename);
+        }
+
+        \Bitrix\Main\Loader::includeModule('crm');
+
+        $filename = __DIR__ . '/' . $filename;
+        $isPrimary = stripos($filename, 'primary') !== false;
+        $isSecondary = stripos($filename, 'secondary') !== false;
+
+        if (!$isPrimary && !$isSecondary) {
+            throw new \Exception('Filename must contain either "primary" or "secondary"');
+        }
+
+        $container = \Bitrix\Crm\Service\Container::getInstance();
+        $factory = $container->getFactory(static::$entityTypeId);
+        if (!$factory) {
+            throw new \Exception('Factory not found');
+        }
+
+        $portalField = 'UF_CRM_5_1752569141'; // Portals
+        $refField = 'UF_CRM_5_1752571265';   // Property Ref No
+
+        // Get enum values
+        $ufMeta = self::getEnumVal();
+        $enumValues = $ufMeta['enum'];
+        $enumLookup = [];
+        foreach ($enumValues as $fieldName => $idToValue) {
+            $enumLookup[$fieldName] = array_change_key_case(array_flip($idToValue), CASE_LOWER);
+        }
+
+        // Portal enum IDs
+        $bayutOffplanId   = $enumLookup[$portalField]['bayut_offplan']   ?? null;
+        $dubizzleOffplanId = $enumLookup[$portalField]['dubizzle_offplan'] ?? null;
+        $bayutSecId       = $enumLookup[$portalField]['bayut_sec']       ?? null;
+        $dubizzleSecId    = $enumLookup[$portalField]['dubizzle_sec']    ?? null;
+
+        if (!$bayutOffplanId || !$dubizzleOffplanId || !$bayutSecId || !$dubizzleSecId) {
+            throw new \Exception('Missing portal enum IDs for UF_CRM_5_1752569141');
+        }
+
+        // Step 1: Read CSV
+        $delimiter = static::detectDelimiter($filename);
+        $handle = fopen($filename, 'r');
+        if (!$handle) {
+            throw new \Exception('Unable to open file');
+        }
+
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            fclose($handle);
+            throw new \Exception('Empty or invalid CSV file');
+        }
+
+        // Normalize header lookup
+        $normalize = fn($s) => preg_replace('/[^a-z0-9]+/i', '', mb_strtolower(trim($s)));
+        $normalizedHeaderMap = [];
+        foreach ($headers as $h) {
+            $normalizedHeaderMap[$normalize($h)] = $h;
+        }
+
+        // Step 2: Fetch all existing items to match by reference
+        $existingItems = [];
+        $items = $factory->getItems([
+            'select' => ['ID', $refField],
+            'filter' => [],
+            'order'  => ['ID' => 'ASC'],
+        ]);
+        foreach ($items as $item) {
+            $ref = trim((string)$item->get($refField));
+            if ($ref !== '') {
+                $existingItems[$ref] = (int)$item->getId();
+            }
+        }
+
+        $updated = 0;
+        $skipped = 0;
+        $failed = 0;
+        $errors = [];
+
+        // Step 3: Iterate CSV rows
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            if (count($row) == 1 && trim((string)$row[0]) === '') continue;
+
+            $assoc = array_combine($headers, $row);
+            if ($assoc === false) continue;
+
+            // Try to find Property Ref No
+            $refNo = $assoc['property_ref_no'] ?? null;
+            if (!$refNo) {
+                foreach ($normalizedHeaderMap as $norm => $orig) {
+                    if ($norm === 'propertyrefno') {
+                        $refNo = $assoc[$orig] ?? null;
+                        break;
+                    }
+                }
+            }
+
+            if (!$refNo) {
+                $skipped++;
+                continue;
+            }
+
+            $refNo = trim($refNo);
+            if (!isset($existingItems[$refNo])) {
+                $skipped++;
+                continue;
+            }
+
+            $id = $existingItems[$refNo];
+
+            // Determine target portals
+            if ($isPrimary) {
+                $newPortals = [$bayutOffplanId, $dubizzleOffplanId];
+            } elseif ($isSecondary) {
+                $newPortals = [$bayutSecId, $dubizzleSecId];
+            } else {
+                continue;
+            }
+
+            try {
+                $item = $factory->getItem($id);
+                if ($item) {
+                    $item->set($portalField, $newPortals);
+                    $operation = $factory->getUpdateOperation($item);
+                    $operation->disableCheckFields()->disableBizProc()->disableCheckAccess();
+                    $result = $operation->launch();
+
+                    if ($result->isSuccess()) {
+                        $updated++;
+                    } else {
+                        $failed++;
+                        $errors[] = [
+                            'ref' => $refNo,
+                            'errors' => $result->getErrorMessages(),
+                        ];
+                    }
+                } else {
+                    $failed++;
+                    $errors[] = ['ref' => $refNo, 'error' => 'Item fetch failed'];
+                }
+            } catch (\Throwable $e) {
+                $failed++;
+                $errors[] = ['ref' => $refNo, 'error' => $e->getMessage()];
+            }
+        }
+
+        fclose($handle);
+
+        echo "✅ Updated portals: {$updated}\n";
+        echo "⏭ Skipped: {$skipped}\n";
+        echo "❌ Failed: {$failed}\n";
+
+        if ($failed) {
+            \Bitrix\Main\Diag\Debug::writeToFile($errors, 'updatePortalsByFilename_errors ' . date('Y-m-d H:i:s'), 'bayut_import.log');
+        }
     }
 
     protected static function cleanDir($dir)

@@ -980,6 +980,155 @@ class FeedPf extends Feed
         }
     }
 
+    public function addPfId()
+    {
+        $logFile = 'pf_add_pfid.log';
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PFID Backfill Started ---', '', $logFile);
+
+        $factory = \Bitrix\Crm\Service\Container::getInstance()->getFactory(static::$entityTypeId);
+        if (!$factory) {
+            throw new \Exception('Factory not found for listing entity');
+        }
+
+        // ---------------------------------------------
+        // 1. Get all Bitrix listings (ID + reference + PFID)
+        // ---------------------------------------------
+        $items = $factory->getItems([
+            'select' => ['ID', 'UF_CRM_5_1752571265', 'UF_CRM_5_1754838287'], // reference + PFID
+            'order'  => ['ID' => 'ASC']
+        ]);
+
+        $bitrixListings = [];
+        foreach ($items as $item) {
+            $data = $item->getData();
+            if (empty($data['UF_CRM_5_1754838287'])) {
+                $bitrixListings[$data['ID']] = [
+                    'ID'        => $data['ID'],
+                    'REFERENCE' => $data['UF_CRM_5_1752571265']
+                ];
+            }
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile('Bitrix listings without PFID: ' . count($bitrixListings), '', $logFile);
+
+        if (empty($bitrixListings)) {
+            \Bitrix\Main\Diag\Debug::writeToFile('No listings to process.', '', $logFile);
+            return;
+        }
+
+        // ---------------------------------------------
+        // 2. Pull PF live and draft listings (paginated)
+        // ---------------------------------------------
+        $pfLive  = $this->fetchPfListings(false); // published
+        $pfDraft = $this->fetchPfListings(true);  // draft
+
+        // Index PF listings by reference
+        $pfLiveByRef  = [];
+        foreach ($pfLive as $l) {
+            $pfLiveByRef[$l['reference']] = $l['id'];
+        }
+
+        $pfDraftByRef = [];
+        foreach ($pfDraft as $l) {
+            $pfDraftByRef[$l['reference']] = $l['id'];
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile(
+            'PF Live: ' . count($pfLive) . ' | PF Draft: ' . count($pfDraft),
+            '',
+            $logFile
+        );
+
+
+        // ---------------------------------------------
+        // 3. Loop Bitrix and update matches
+        // ---------------------------------------------
+        foreach ($bitrixListings as $row) {
+
+            $bitrixId  = $row['ID'];
+            $reference = $row['REFERENCE'];
+
+            if (!$reference) {
+                \Bitrix\Main\Diag\Debug::writeToFile("Skipping $bitrixId – no reference", '', $logFile);
+                continue;
+            }
+
+            $pfId = $pfLiveByRef[$reference] ?? $pfDraftByRef[$reference] ?? null;
+
+            if (!$pfId) {
+                \Bitrix\Main\Diag\Debug::writeToFile("Not found at PF: $reference", '', $logFile);
+                continue;
+            }
+
+            // Update Bitrix
+            $item = $factory->getItem($bitrixId);
+            $item->set('UF_CRM_5_1754838287', $pfId);
+
+            $op = $factory->getUpdateOperation($item)
+                ->disableCheckFields()
+                ->disableBizProc()
+                ->disableCheckAccess();
+
+            $res = $op->launch();
+
+            if ($res->isSuccess()) {
+                \Bitrix\Main\Diag\Debug::writeToFile("Updated Bitrix#$bitrixId with PFID $pfId", '', $logFile);
+            } else {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    "Failed updating $bitrixId: " . implode('; ', $res->getErrorMessages()),
+                    '',
+                    $logFile
+                );
+            }
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PFID Backfill Completed ---', '', $logFile);
+    }
+
+    private function fetchPfListings($draft = false)
+    {
+        $httpClient = self::getHttpClient();
+
+        $url = "https://atlas.propertyfinder.com/v1/listings";
+
+        $list = [];
+        $page = 1;
+
+        do {
+            $query = http_build_query([
+                'draft' => $draft ? 'true' : 'false',
+                'page'  => $page,
+                'perPage' => 100,
+            ]);
+
+            $response = $httpClient->get($url . '?' . $query);
+            $status = $httpClient->getStatus();
+
+            if ($status !== 200) {
+                break;
+            }
+
+            $json = json_decode($response, true);
+
+            if (!empty($json['results'])) {
+                foreach ($json['results'] as $item) {
+                    if (!empty($item['reference'])) {
+                        $list[] = [
+                            'id'        => $item['id'],
+                            'reference' => $item['reference']
+                        ];
+                    }
+                }
+            }
+
+            // check pagination
+            $next = $json['pagination']['nextPage'] ?? null;
+            $page = $next ? $next : null;
+        } while ($page);
+
+        return $list;
+    }
+
     /*public function setLocations()
     {
         //$token = self::makeAuth();

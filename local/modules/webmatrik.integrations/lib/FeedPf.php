@@ -368,7 +368,7 @@ class FeedPf extends Feed
                 'order'  => ['ID' => 'ASC'],
             ];
 
-            $items = $factory->getItemsFilteredByPermissions($params);
+            $items = $factory->getItems($params);
 
             $allCurLocations = [
                 'byPf' => [],
@@ -528,7 +528,7 @@ class FeedPf extends Feed
                 'offset' => $offset,
             ];
 
-            $items = $factory->getItemsFilteredByPermissions($params);
+            $items = $factory->getItems($params);
             $count = count($items);
             if ($count === 0) break;
 

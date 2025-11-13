@@ -671,9 +671,9 @@ class FeedPf extends Feed
             $reserr[] = 'type';
         } else {
             if ($data['type'] != 'farm' || $data['type'] != 'land') {
-                if (!$data['bedrooms']) {
-                    $reserr[] = 'bedrooms';
-                }
+                // if (!$data['bedrooms']) {
+                //     $reserr[] = 'bedrooms';
+                // }
                 if (!$data['bathrooms']) {
                     $reserr[] = 'bathrooms';
                 }

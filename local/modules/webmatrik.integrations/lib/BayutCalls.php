@@ -5,10 +5,7 @@ namespace Webmatrik\Integrations;
 class BayutCalls extends AbstractIntegration
 {
     protected $title;
-    // protected $name;
-    // protected $email;
     protected $phone;
-    // protected $proprefufval;
     protected $comment;
     protected $url;
     protected $method;
@@ -23,19 +20,50 @@ class BayutCalls extends AbstractIntegration
 
     public function fetchPhoneLeads()
     {
-        $data = $this->sendCurlRequest($this->method, $this->url);
-        if($data) {
-            \Bitrix\Main\Diag\Debug::writeToFile($data, "bayutcall ".date('Y-m-d H:i:s'), "bayutdubizzlepull.log");
+        try {
+            $data = $this->sendCurlRequest($this->method, $this->url);
+        } catch (\Throwable $e) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $e->getMessage(),
+                'BayutCalls API Error ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+            return;
         }
-        //print_r($data);
+
+        if (empty($data) || !is_array($data)) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $data,
+                'BayutCalls Empty/Invalid Response ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+            return;
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile(
+            $data,
+            'BayutCalls Response ' . date('Y-m-d H:i:s'),
+            'bayutdubizzlepull.log'
+        );
+
         foreach ($data as $value) {
-            // $this->proprefufval = $value['property_reference'];
-            // $this->email = $value['client_email'];
-            // $this->name = $value['client_name'];
-            $this->phone = $value['caller_number'];
-            $this->comment = $value['call_recordingurl]'];
-            $this->title = 'BayutCall_'.$this->name.'_'.$this->email;
-            $this->createDeal('phone');
+            try {
+                $this->phone   = $value['caller_number'] ?? '';
+                $this->comment = $value['call_recordingurl'] ?? '';
+                $this->title   = 'BayutCall_' . ($this->phone ?: 'Unknown');
+
+                $this->createDeal('phone');
+            } catch (\Throwable $e) {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    [
+                        'error'     => $e->getMessage(),
+                        'call_data' => $value
+                    ],
+                    'BayutCalls Deal Create Error ' . date('Y-m-d H:i:s'),
+                    'bayutdubizzlepull.log'
+                );
+                continue;
+            }
         }
     }
 }

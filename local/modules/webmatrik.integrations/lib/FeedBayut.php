@@ -806,10 +806,21 @@ class FeedBayut extends Feed
                 return trim($url) !== '';
             }));
 
-            if (!empty($photoUrls)) {
+            // Remove query parameters from URLs to avoid watermarks
+            $cleanUrls = [];
+            foreach ($photoUrls as $u) {
+                $u = trim($u);
+                if ($u === '') continue;
+
+                // strip query params
+                $stripped = explode('?', $u)[0];
+                $cleanUrls[] = $stripped;
+            }
+
+            if (!empty($cleanUrls)) {
                 $files = [];
 
-                foreach ($photoUrls as $url) {
+                foreach ($cleanUrls as $url) {
                     $url = trim($url);
                     if ($url === '') continue;
 
@@ -1369,6 +1380,156 @@ class FeedBayut extends Feed
         if ($failed) {
             \Bitrix\Main\Diag\Debug::writeToFile($errors, 'updatePortalsByFilename_errors ' . date('Y-m-d H:i:s'), 'bayut_import.log');
         }
+    }
+
+    public function fixWatermarkedImages($csvFile)
+    {
+        if (!$csvFile || !file_exists(__DIR__ . '/' . $csvFile)) {
+            throw new \Exception("CSV file not found");
+        }
+
+        \Bitrix\Main\Loader::includeModule('crm');
+
+        // Load factories
+        $container = \Bitrix\Crm\Service\Container::getInstance();
+        $factory = $container->getFactory(static::$entityTypeId);
+        if (!$factory) {
+            throw new \Exception("SPA factory not found");
+        }
+
+        // 1. Fetch all SPA listings into memory (ref_no => ID)
+        $refMap = [];
+        $allItems = $factory->getItems([
+            'select' => ['ID', 'UF_CRM_5_1752571265'],
+            'filter' => [],
+        ]);
+
+        foreach ($allItems as $item) {
+            $ref = trim((string)$item->get('UF_CRM_5_1752571265'));
+            if ($ref !== '') {
+                $refMap[$ref] = (int)$item->getId();
+            }
+        }
+
+        // 2. Open CSV + detect delimiter
+        $filename = __DIR__ . '/' . $csvFile;
+        $delimiter = static::detectDelimiter($filename);
+
+        $handle = fopen($filename, 'r');
+        if (!$handle) {
+            throw new \Exception("Unable to open CSV");
+        }
+
+        $headers = fgetcsv($handle, 0, $delimiter);
+        if (!$headers) {
+            throw new \Exception("CSV has no headers");
+        }
+        $headers = array_map('trim', $headers);
+
+        // Common image column names
+        $imageColumns = ['images', 'Images', 'Photos', 'ImageURLs', 'Image Urls', 'Photo Urls', 'PhotoURLs'];
+
+        $countUpdated = 0;
+        $countSkipped = 0;
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+            $assoc = array_combine($headers, $row);
+            if (!$assoc) continue;
+
+            $refNo = trim($assoc['property_ref_no'] ?? '');
+            if ($refNo === '') {
+                $countSkipped++;
+                continue;
+            }
+
+            if (!isset($refMap[$refNo])) {
+                $countSkipped++;
+                continue;
+            }
+
+            $spaId = $refMap[$refNo];
+
+            // 3. Collect image URLs
+            $urls = [];
+
+            // Standard image headers
+            foreach ($imageColumns as $col) {
+                if (!empty($assoc[$col])) {
+                    $urls = array_merge($urls, preg_split('/[;,|]/', $assoc[$col]));
+                }
+            }
+
+            // Pattern: images_1, images_2, images 3 etc.
+            foreach ($headers as $h) {
+                if (preg_match('/^images[_ ]?\d+$/i', $h)) {
+                    if (!empty($assoc[$h])) {
+                        $urls = array_merge($urls, preg_split('/[;,|]/', $assoc[$h]));
+                    }
+                }
+            }
+
+            // Cleanup
+            $urls = array_unique(array_filter(array_map('trim', $urls)));
+            if (empty($urls)) {
+                $countSkipped++;
+                continue;
+            }
+
+            // 4. Remove watermark params (anything after ?)
+            $cleanUrls = [];
+            foreach ($urls as $u) {
+                $u = trim($u);
+                if ($u === '') continue;
+
+                // strip query params
+                $stripped = explode('?', $u)[0];
+                $cleanUrls[] = $stripped;
+            }
+
+            // 5. Download images as Bitrix file arrays
+            $files = [];
+            foreach ($cleanUrls as $u) {
+                $file = \CFile::MakeFileArray($u);
+                if (is_array($file) && !empty($file['size'])) {
+                    $ext = pathinfo(parse_url($u, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+                    $file['name'] = 'clean_' . uniqid() . '.' . $ext;
+                    $files[] = $file;
+                }
+            }
+
+            if (empty($files)) {
+                $countSkipped++;
+                continue;
+            }
+
+            // 6. Update SPA record with clean photos
+            $item = $factory->getItem($spaId);
+            if (!$item) {
+                $countSkipped++;
+                continue;
+            }
+
+            $photoField = 'UF_CRM_5_1755322696'; // your photos UF
+            $item->set($photoField, $files);
+
+            $op = $factory->getUpdateOperation($item);
+            $op->disableCheckFields()->disableBizProc()->disableCheckAccess();
+            $res = $op->launch();
+
+            if ($res->isSuccess()) {
+                $countUpdated++;
+            } else {
+                \Bitrix\Main\Diag\Debug::writeToFile([
+                    'ref' => $refNo,
+                    'errors' => $res->getErrorMessages(),
+                ], 'watermark_fix_errors', 'bayut_images_fix.log');
+            }
+        }
+
+        fclose($handle);
+
+        echo "Images updated: {$countUpdated}\n";
+        echo "Skipped: {$countSkipped}\n";
     }
 
     protected static function cleanDir($dir)

@@ -320,18 +320,18 @@ class FeedPf extends Feed
                 }
 
                 // Case 2: User no longer exists in PF but still has PFID → clear
-                elseif (!$newPfId && $currentPfId) {
-                    $fields = [
-                        "UF_PFID" => null,
-                        "UF_PFOP" => null
-                    ];
-                    $userObj->Update($user['ID'], $fields);
-                    \Bitrix\Main\Diag\Debug::writeToFile(
-                        "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
-                        '',
-                        $logFile
-                    );
-                }
+                // elseif (!$newPfId && $currentPfId) {
+                //     $fields = [
+                //         "UF_PFID" => null,
+                //         "UF_PFOP" => null
+                //     ];
+                //     $userObj->Update($user['ID'], $fields);
+                //     \Bitrix\Main\Diag\Debug::writeToFile(
+                //         "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
+                //         '',
+                //         $logFile
+                //     );
+                // }
 
                 // Case 3: No change needed
                 else {

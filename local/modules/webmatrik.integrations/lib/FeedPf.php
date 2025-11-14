@@ -250,7 +250,8 @@ class FeedPf extends Feed
     public function getPfUsers()
     {
         $logFile = 'pf_user_sync.log';
-        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Started ---', '', $logFile);
+        $timestamp = date('Y-m-d H:i:s');
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Started --- ' . $timestamp, '', $logFile);
 
         $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/users/';
@@ -300,10 +301,20 @@ class FeedPf extends Feed
 
             $userObj = new \CUser;
 
+            $manualEmailMap = [
+                // bitrix email => pf email
+                'pouya@primocapital.ae' => 'admin@primocapital.ae',
+                'joach@primocapital.ae' => 'jhela@primocapital.ae'
+            ];
+
             foreach ($bitrixUsers as $user) {
                 $email = mb_strtolower($user['EMAIL']);
+
+                // Use mapped email if it exists
+                $pfLookupEmail = $manualEmailMap[$email] ?? $email;
+
                 $currentPfId = $user['UF_PFID'];
-                $newPfId = $pfUsers[$email] ?? null;
+                $newPfId = $pfUsers[$pfLookupEmail] ?? null;
 
                 // Case 1: User exists in PF but PFID differs → update
                 if ($newPfId && $currentPfId != $newPfId) {
@@ -313,30 +324,30 @@ class FeedPf extends Feed
                     ];
                     $userObj->Update($user['ID'], $fields);
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "Updated user {$email} (ID: {$user['ID']}) with PFID: {$newPfId}",
+                        "Updated user {$email} using lookup {$pfLookupEmail} (ID: {$user['ID']}) with PFID: {$newPfId}",
                         '',
                         $logFile
                     );
                 }
 
                 // Case 2: User no longer exists in PF but still has PFID → clear
-                elseif (!$newPfId && $currentPfId) {
-                    $fields = [
-                        "UF_PFID" => null,
-                        "UF_PFOP" => null
-                    ];
-                    $userObj->Update($user['ID'], $fields);
-                    \Bitrix\Main\Diag\Debug::writeToFile(
-                        "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
-                        '',
-                        $logFile
-                    );
-                }
+                // elseif (!$newPfId && $currentPfId) {
+                //     $fields = [
+                //         "UF_PFID" => null,
+                //         "UF_PFOP" => null
+                //     ];
+                //     $userObj->Update($user['ID'], $fields);
+                //     \Bitrix\Main\Diag\Debug::writeToFile(
+                //         "Cleared PFID for {$email} (ID: {$user['ID']}) — not found in PF API",
+                //         '',
+                //         $logFile
+                //     );
+                // }
 
                 // Case 3: No change needed
                 else {
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "No update needed for {$email} (PFID: {$currentPfId})",
+                        "No update needed for {$email} (PFID: {$currentPfId} PF Lookup: {$pfLookupEmail})",
                         '',
                         $logFile
                     );
@@ -346,13 +357,14 @@ class FeedPf extends Feed
             \Bitrix\Main\Diag\Debug::writeToFile("API request failed with status: {$status}", '', $logFile);
         }
 
-        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed ---', '', $logFile);
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed --- ' . $timestamp, '', $logFile);
     }
 
     public function syncLocations($city)
     {
         $logFile = 'pf_location_sync.log';
-        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync started for city: {$city} ---", '', $logFile);
+        $timestamp = date('Y-m-d H:i:s');
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync started for city: {$city} --- {$timestamp}", '', $logFile);
 
         $factory = \Bitrix\Crm\Service\Container::getInstance()->getFactory(static::$locentityTypeId);
 
@@ -461,7 +473,7 @@ class FeedPf extends Feed
             }
         }
 
-        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync completed for city: {$city} ---", '', $logFile);
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync completed for city: {$city} --- {$timestamp}", '', $logFile);
     }
 
     private static function processLocations($data, $factory)

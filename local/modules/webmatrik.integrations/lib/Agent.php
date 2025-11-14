@@ -38,8 +38,11 @@ class Agent
 
     public static function syncPfUsers()
     {
-        $obj = new FeedPf();
-        $obj->getPfUsers();
+        $offplan = new FeedPf(true, true);
+        $offplan->getPfUsers();
+
+        $secondary = new FeedPf(true, false);
+        $secondary->getPfUsers();
 
         return '\\' . __METHOD__ . '();';
     }

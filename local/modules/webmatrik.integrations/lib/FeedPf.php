@@ -250,7 +250,8 @@ class FeedPf extends Feed
     public function getPfUsers()
     {
         $logFile = 'pf_user_sync.log';
-        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Started ---', '', $logFile);
+        $timestamp = date('Y-m-d H:i:s');
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Started --- ' . $timestamp, '', $logFile);
 
         $httpClient = self::getHttpClient();
         $url = 'https://atlas.propertyfinder.com/v1/users/';
@@ -346,13 +347,14 @@ class FeedPf extends Feed
             \Bitrix\Main\Diag\Debug::writeToFile("API request failed with status: {$status}", '', $logFile);
         }
 
-        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed ---', '', $logFile);
+        \Bitrix\Main\Diag\Debug::writeToFile('--- PF User Sync Completed --- ' . $timestamp, '', $logFile);
     }
 
     public function syncLocations($city)
     {
         $logFile = 'pf_location_sync.log';
-        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync started for city: {$city} ---", '', $logFile);
+        $timestamp = date('Y-m-d H:i:s');
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync started for city: {$city} --- {$timestamp}", '', $logFile);
 
         $factory = \Bitrix\Crm\Service\Container::getInstance()->getFactory(static::$locentityTypeId);
 
@@ -461,7 +463,7 @@ class FeedPf extends Feed
             }
         }
 
-        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync completed for city: {$city} ---", '', $logFile);
+        \Bitrix\Main\Diag\Debug::writeToFile("--- Sync completed for city: {$city} --- {$timestamp}", '', $logFile);
     }
 
     private static function processLocations($data, $factory)

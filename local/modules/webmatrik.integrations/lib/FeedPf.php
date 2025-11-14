@@ -301,10 +301,20 @@ class FeedPf extends Feed
 
             $userObj = new \CUser;
 
+            $manualEmailMap = [
+                // bitrix email => pf email
+                'pouya@primocapital.ae' => 'admin@primocapital.ae',
+                'joach@primocapital.ae' => 'jhela@primocapital.ae'
+            ];
+
             foreach ($bitrixUsers as $user) {
                 $email = mb_strtolower($user['EMAIL']);
+
+                // Use mapped email if it exists
+                $pfLookupEmail = $manualEmailMap[$email] ?? $email;
+
                 $currentPfId = $user['UF_PFID'];
-                $newPfId = $pfUsers[$email] ?? null;
+                $newPfId = $pfUsers[$pfLookupEmail] ?? null;
 
                 // Case 1: User exists in PF but PFID differs → update
                 if ($newPfId && $currentPfId != $newPfId) {
@@ -314,7 +324,7 @@ class FeedPf extends Feed
                     ];
                     $userObj->Update($user['ID'], $fields);
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "Updated user {$email} (ID: {$user['ID']}) with PFID: {$newPfId}",
+                        "Updated user {$email} using lookup {$pfLookupEmail} (ID: {$user['ID']}) with PFID: {$newPfId}",
                         '',
                         $logFile
                     );
@@ -337,7 +347,7 @@ class FeedPf extends Feed
                 // Case 3: No change needed
                 else {
                     \Bitrix\Main\Diag\Debug::writeToFile(
-                        "No update needed for {$email} (PFID: {$currentPfId})",
+                        "No update needed for {$email} (PFID: {$currentPfId} PF Lookup: {$pfLookupEmail})",
                         '',
                         $logFile
                     );

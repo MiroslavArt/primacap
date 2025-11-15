@@ -23,19 +23,53 @@ class BayutEmail extends AbstractIntegration
 
     public function fetchEmailLeads()
     {
-        $data = $this->sendCurlRequest($this->method, $this->url);
-        if($data) {
-            \Bitrix\Main\Diag\Debug::writeToFile($data, "bayutemail ".date('Y-m-d H:i:s'), "bayutdubizzlepull.log");
+        try {
+            $data = $this->sendCurlRequest($this->method, $this->url);
+        } catch (\Throwable $e) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $e->getMessage(),
+                'BayutEmail API Error ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+            return;
         }
-        //print_r($data);
+
+        if (empty($data) || !is_array($data)) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                $data,
+                'BayutEmail Empty/Invalid Response ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+            return;
+        }
+
+        \Bitrix\Main\Diag\Debug::writeToFile(
+            $data,
+            'BayutEmail Response ' . date('Y-m-d H:i:s'),
+            'bayutdubizzlepull.log'
+        );
+
         foreach ($data as $value) {
-            $this->proprefufval = $value['property_reference'];
-            $this->email = $value['client_email'];
-            $this->name = $value['client_name'];
-            $this->phone = $value['client_phone'];
-            $this->comment = $value['message'];
-            $this->title = 'BayutEmail_'.$this->name.'_'.$this->email;
-            $this->createDeal('email');
+            try {
+                $this->proprefufval = $value['property_reference'] ?? '';
+                $this->email        = $value['client_email'] ?? '';
+                $this->name         = $value['client_name'] ?? '';
+                $this->phone        = $value['client_phone'] ?? '';
+                $this->comment      = $value['message'] ?? '';
+                $this->title        = 'BayutEmail_' . $this->name . '_' . $this->email;
+
+                $this->createDeal('email');
+            } catch (\Throwable $e) {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    [
+                        'error' => $e->getMessage(),
+                        'lead_data' => $value
+                    ],
+                    'BayutEmail Deal Create Error ' . date('Y-m-d H:i:s'),
+                    'bayutdubizzlepull.log'
+                );
+                continue;
+            }
         }
     }
 }

@@ -54,15 +54,13 @@ abstract class AbstractIntegration implements Integration
      */
     protected function getDateFromString($dateStr)
     {
-        if(empty($dateStr))
-        {
+        if (empty($dateStr)) {
             return null;
         }
         $dateArr = explode('.', $dateStr);
 
         $tmstmp = strtotime($dateArr[0]);
-        if($this->gmt > 0)
-        {
+        if ($this->gmt > 0) {
             $tmstmp += 3600 * $this->gmt;
         }
 
@@ -70,7 +68,6 @@ abstract class AbstractIntegration implements Integration
         $this->isWinter($date);
 
         return $date;
-
     }
 
     /**
@@ -89,41 +86,43 @@ abstract class AbstractIntegration implements Integration
             $this->proplinkuf => $this->proplinkufval,
             $this->proprefuf => $this->proprefufval,
             $this->contactlinkuf => $this->contactlinkval,
-            "FM" => Array(
+            "FM" => array(
                 'PHONE' => array(
                     'n0' => array(
                         'VALUE' => $this->phone,
                         'VALUE_TYPE' => 'WORK'
                     )
-                ) ,
-            ) ,
+                ),
+            ),
         );
 
         $newlead_id = $oLead->Add($arFields, true);
-        if($newlead_id>0) {
+        if ($newlead_id > 0) {
             echo $newlead_id;
         }
     }
 
 
-    public function createDeal(string $type = 'WA') {
-        if($type == 'WA' || $type == 'phone') {
+    public function createDeal(string $type = 'WA')
+    {
+        if ($type == 'WA' || $type == 'phone') {
             $search = 'phone';
         } else {
             $search = 'email';
         }
-        if($contacts = $this->returnContact($search)) {
+        if ($contacts = $this->returnContact($search)) {
             $targetcontact = $contacts[0]['ID'];
         } else {
             $targetcontact = $this->addContact($search);
         }
-        if($type == 'WA') {
+        if ($type == 'WA') {
             $entityFields = [
                 'TITLE'    => $this->title,
                 'STAGE_ID' => "C2:NEW",
                 'CATEGORY_ID' => 2,
                 'CLOSED' => 'N',
                 'TYPE_ID' => 'SALE',
+                'CONTACT_ID' => $targetcontact,
                 'CONTACT_IDS' => [
                     $targetcontact
                 ],
@@ -134,13 +133,14 @@ abstract class AbstractIntegration implements Integration
                 $this->proprefuf => $this->proprefufval,
                 $this->contactlinkuf => $this->contactlinkval,
             ];
-        } elseif($type == 'email') {
+        } elseif ($type == 'email') {
             $entityFields = [
                 'TITLE'    => $this->title,
                 'STAGE_ID' => "C2:NEW",
                 'CATEGORY_ID' => 2,
                 'CLOSED' => 'N',
                 'TYPE_ID' => 'SALE',
+                'CONTACT_ID' => $targetcontact,
                 'CONTACT_IDS' => [
                     $targetcontact
                 ],
@@ -149,13 +149,14 @@ abstract class AbstractIntegration implements Integration
                 'SOURCE_ID' =>  $this->source,
                 $this->proprefuf => $this->proprefufval,
             ];
-        } elseif($type == 'phone') {
+        } elseif ($type == 'phone') {
             $entityFields = [
                 'TITLE'    => $this->title,
                 'STAGE_ID' => "C2:NEW",
                 'CATEGORY_ID' => 2,
                 'CLOSED' => 'N',
                 'TYPE_ID' => 'SALE',
+                'CONTACT_ID' => $targetcontact,
                 'CONTACT_IDS' => [
                     $targetcontact
                 ],
@@ -171,20 +172,20 @@ abstract class AbstractIntegration implements Integration
             $entityFields
         );
 
-        if($entityId) {
-            if($this->startwf == 'Y' and $this->wfid) {
-                $deal = 'DEAL_'.$entityId;
+        if ($entityId) {
+            if ($this->startwf == 'Y' and $this->wfid) {
+                $deal = 'DEAL_' . $entityId;
                 $arWorkflowParameters = [];
                 $arErrorsTmp = [];
                 $wfId = \CBPDocument::StartWorkflow(
                     $this->wfid, // константа шаблона БП
-                    array("crm","CCrmDocumentDeal", $deal),
+                    array("crm", "CCrmDocumentDeal", $deal),
                     $arWorkflowParameters,
                     $arErrorsTmp
                 );
             }
-            if($type == 'email' || $type == 'phone') {
-                if($this->comment) {
+            if ($type == 'email' || $type == 'phone') {
+                if ($this->comment) {
                     $entryId = \Bitrix\Crm\Timeline\CommentEntry::create([
                         'TEXT' => $this->comment,
                         'SETTINGS' => ['HAS_FILES' => 'N'],
@@ -200,9 +201,10 @@ abstract class AbstractIntegration implements Integration
         //print_r($targetcontact);
     }
 
-    protected function returnContact($type) {
+    protected function returnContact($type)
+    {
         $searchCondition = '%VALUE';
-        if($type=='phone') {
+        if ($type == 'phone') {
             $arFilter = array(
                 'FM' => array(
                     array(
@@ -232,15 +234,16 @@ abstract class AbstractIntegration implements Integration
             array('ID')
         );
         $arResult = [];
-        while($arCompany = $obCompany->Fetch()){
+        while ($arCompany = $obCompany->Fetch()) {
             $arResult[] = $arCompany;
         }
         return $arResult;
     }
 
 
-    protected function addContact($type) {
-        if($type = 'email') {
+    protected function addContact($type)
+    {
+        if ($type = 'email') {
             $fm = [
                 "PHONE" => [
                     "n0" => [
@@ -266,7 +269,7 @@ abstract class AbstractIntegration implements Integration
             ];
         }
         $contactFields = [
-            'NAME'=> $this->name,
+            'NAME' => $this->name,
             "FM"  => $fm,
             "OPENED" => "Y", // "Доступен для всех" = Да
             "ASSIGNED_BY_ID" => $this->assigned,
@@ -293,14 +296,13 @@ abstract class AbstractIntegration implements Integration
 
         $winter = false;
 
-        if(($day >= 25 && $month >= 10 && $year==$cy) || ($day <= 29 && $month <= 3 && $year<$cy)) {
+        if (($day >= 25 && $month >= 10 && $year == $cy) || ($day <= 29 && $month <= 3 && $year < $cy)) {
             $winter = true;
         }
 
-        if($winter) {
-            $yourdate->modify( "-1 hour"); // 1 hour back
+        if ($winter) {
+            $yourdate->modify("-1 hour"); // 1 hour back
         }
-
     }
 
     /**
@@ -308,35 +310,80 @@ abstract class AbstractIntegration implements Integration
      * @param $url
      * @return array
      */
-    protected function sendCurlRequest(
-        $type,
-        $url
-    )
+    protected function sendCurlRequest($type, $url)
     {
-        $date = date('Y-m-d H:i:s', strtotime('-1 minute'));
-        $url = $url.'?'.http_build_query([
-                'type' =>  $type,
-                'timestamp' => $date
-            ]);
-        $curl = curl_init();
-        $options = [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer " . $this->apikey,
-            ],
-        ];
-        curl_setopt_array($curl, $options);
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        $response = json_decode($response, true);
+        try {
+            // Bayut requires raw timestamp, no URL encoding
+            $date = date('Y-m-d H:i:s', strtotime('-1 minutes'));
 
-        return $response;
+            // Build query manually
+            $url = $url . '?type=' . $type . '&timestamp=' . $date;
+
+            $curl = curl_init();
+            $options = [
+                CURLOPT_URL            => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING       => "",
+                CURLOPT_MAXREDIRS      => 10,
+                CURLOPT_TIMEOUT        => 30,
+                CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST  => 'GET',
+                CURLOPT_HTTPHEADER     => [
+                    "Authorization: Bearer " . $this->apikey,
+                ],
+            ];
+
+            curl_setopt_array($curl, $options);
+
+            $rawResponse = curl_exec($curl);
+            $curlErr     = curl_error($curl);
+            $httpCode    = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            curl_close($curl);
+
+            if ($curlErr) {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    ['url' => $url, 'error' => $curlErr],
+                    'BayutCurl Error ' . date('Y-m-d H:i:s'),
+                    'bayutdubizzlepull.log'
+                );
+                return null;
+            }
+
+            if ($httpCode !== 200) {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    ['url' => $url, 'http_code' => $httpCode, 'response' => $rawResponse],
+                    'BayutCurl HTTP Error ' . date('Y-m-d H:i:s'),
+                    'bayutdubizzlepull.log'
+                );
+            }
+
+            $response = json_decode($rawResponse, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Bitrix\Main\Diag\Debug::writeToFile(
+                    ['url' => $url, 'rawResponse' => $rawResponse, 'json_error' => json_last_error_msg()],
+                    'BayutCurl JSON Decode Error ' . date('Y-m-d H:i:s'),
+                    'bayutdubizzlepull.log'
+                );
+                return null;
+            }
+
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['requested_url' => $url, 'response' => $response],
+                'Bayut Debug ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+
+            return $response;
+        } catch (\Throwable $e) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['url' => $url, 'error' => $e->getMessage()],
+                'BayutCurl Exception ' . date('Y-m-d H:i:s'),
+                'bayutdubizzlepull.log'
+            );
+            return null;
+        }
     }
 
     /**
@@ -346,11 +393,12 @@ abstract class AbstractIntegration implements Integration
      * @param $sFilePath
      * @return void
      */
-    public static function dump($data, $sHeader = null, $sFilePath = "__mylog_integrations.log") {
+    public static function dump($data, $sHeader = null, $sFilePath = "__mylog_integrations.log")
+    {
 
         $sHeader = ($sHeader != null ? $sHeader . '   ' : '') . date('l jS \of F Y h:i:s A');
 
-        \Bitrix\Main\Diag\Debug::dumpToFile($data  , $sHeader, $sFilePath  );
+        \Bitrix\Main\Diag\Debug::dumpToFile($data, $sHeader, $sFilePath);
     }
 
     /**
@@ -359,24 +407,81 @@ abstract class AbstractIntegration implements Integration
     protected static function translateToEnglish($str)
     {
         $tr = array(
-            "А"=>"A","Б"=>"B","В"=>"V","Г"=>"G",
-            "Д"=>"D","Е"=>"E","Ж"=>"J","З"=>"Z","И"=>"I",
-            "Й"=>"Y","К"=>"K","Л"=>"L","М"=>"M","Н"=>"N",
-            "О"=>"O","П"=>"P","Р"=>"R","С"=>"S","Т"=>"T",
-            "У"=>"U","Ф"=>"F","Х"=>"H","Ц"=>"TS","Ч"=>"CH",
-            "Ш"=>"SH","Щ"=>"SCH","Ъ"=>"","Ы"=>"YI","Ь"=>"",
-            "Э"=>"E","Ю"=>"YU","Я"=>"YA","а"=>"a","б"=>"b",
-            "в"=>"v","г"=>"g","д"=>"d","е"=>"e","ж"=>"j",
-            "з"=>"z","и"=>"i","й"=>"y","к"=>"k","л"=>"l",
-            "м"=>"m","н"=>"n","о"=>"o","п"=>"p","р"=>"r",
-            "с"=>"s","т"=>"t","у"=>"u","ф"=>"f","х"=>"h",
-            "ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch","ъ"=>"y",
-            "ы"=>"yi","ь"=>"","э"=>"e","ю"=>"yu","я"=>"ya",
-            "Ё"=>"E","Є"=>"E","Ї"=>"YI","ё"=>"e","є"=>"e","ї"=>"yi",
-            " "=> "_", "/"=> "_"
+            "А" => "A",
+            "Б" => "B",
+            "В" => "V",
+            "Г" => "G",
+            "Д" => "D",
+            "Е" => "E",
+            "Ж" => "J",
+            "З" => "Z",
+            "И" => "I",
+            "Й" => "Y",
+            "К" => "K",
+            "Л" => "L",
+            "М" => "M",
+            "Н" => "N",
+            "О" => "O",
+            "П" => "P",
+            "Р" => "R",
+            "С" => "S",
+            "Т" => "T",
+            "У" => "U",
+            "Ф" => "F",
+            "Х" => "H",
+            "Ц" => "TS",
+            "Ч" => "CH",
+            "Ш" => "SH",
+            "Щ" => "SCH",
+            "Ъ" => "",
+            "Ы" => "YI",
+            "Ь" => "",
+            "Э" => "E",
+            "Ю" => "YU",
+            "Я" => "YA",
+            "а" => "a",
+            "б" => "b",
+            "в" => "v",
+            "г" => "g",
+            "д" => "d",
+            "е" => "e",
+            "ж" => "j",
+            "з" => "z",
+            "и" => "i",
+            "й" => "y",
+            "к" => "k",
+            "л" => "l",
+            "м" => "m",
+            "н" => "n",
+            "о" => "o",
+            "п" => "p",
+            "р" => "r",
+            "с" => "s",
+            "т" => "t",
+            "у" => "u",
+            "ф" => "f",
+            "х" => "h",
+            "ц" => "ts",
+            "ч" => "ch",
+            "ш" => "sh",
+            "щ" => "sch",
+            "ъ" => "y",
+            "ы" => "yi",
+            "ь" => "",
+            "э" => "e",
+            "ю" => "yu",
+            "я" => "ya",
+            "Ё" => "E",
+            "Є" => "E",
+            "Ї" => "YI",
+            "ё" => "e",
+            "є" => "e",
+            "ї" => "yi",
+            " " => "_",
+            "/" => "_"
         );
         if (preg_match('/[^A-Za-z0-9_\-]/', $str)) {
-            $str = strtr($str,$tr);
+            $str = strtr($str, $tr);
             $str = preg_replace('/[^A-Za-z0-9_\-.]/', '', $str);
         }
         return $str;
@@ -409,5 +514,4 @@ abstract class AbstractIntegration implements Integration
     {
         return Option::set(static::getModuleId(), $optionName, $optionValue);
     }
-
 }

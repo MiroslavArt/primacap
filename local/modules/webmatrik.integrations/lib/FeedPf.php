@@ -615,6 +615,46 @@ class FeedPf extends Feed
         }
     }
 
+    private $allowedAmenities = [
+        'commercial' => [
+            'farm' => [],
+            'land' => [],
+            'bulk-rent-unit' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'bulk-sale-unit' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'business-center' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'co-working-space' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'factory' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'full-floor' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'half-floor' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'labor-camp' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'office-space' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'retail' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'shop' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'show-room' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'staff-accommodation' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'villa' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'warehouse' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+            'whole-building' => ['shared-gym', 'covered-parking', 'networked', 'shared-pool', 'dining-in-building', 'conference-room', 'lobby-in-building', 'vastu-compliant'],
+        ],
+
+        'residential' => [
+            'land' => [],
+            'apartment' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'bulk-rent-unit' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'bulk-sale-unit' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'bungalow' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'compound' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'duplex' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'full-floor' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'half-floor' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'hotel-apartment' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'penthouse' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'townhouse' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'villa' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+            'whole-building' => ['central-ac', 'built-in-wardrobes', 'kitchen-appliances', 'security', 'concierge', 'maid-service', 'balcony', 'private-gym', 'shared-gym', 'private-jacuzzi', 'shared-spa', 'covered-parking', 'maids-room', 'study', 'childrens-play-area', 'pets-allowed', 'barbecue-area', 'shared-pool', 'childrens-pool', 'private-garden', 'private-pool', 'view-of-water', 'view-of-landmark', 'walk-in-closet', 'lobby-in-building', 'vastu-compliant'],
+        ],
+    ];
+
     protected function prepareListing(array $data)
     {
         $reserr = [];
@@ -724,6 +764,21 @@ class FeedPf extends Feed
                 '!' . implode(".", $resdescr));
         } else {
             ksort($data);
+
+            // Filter invalid amenities
+            if (!empty($data['amenities']) && !empty($data['category']) && !empty($data['type'])) {
+                $category = $data['category'];
+                $type     = $data['type'];
+
+                if (isset($this->allowedAmenities[$category][$type])) {
+                    $allowed = $this->allowedAmenities[$category][$type];
+                    $data['amenities'] = array_values(array_intersect($data['amenities'], $allowed));
+                } else {
+                    // No amenities allowed for this type
+                    $data['amenities'] = [];
+                }
+            }
+
             return $data;
         }
     }

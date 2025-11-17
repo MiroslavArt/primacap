@@ -1018,55 +1018,55 @@ class FeedBayut extends Feed
         foreach ($data as $key => $item) {
             // if ($item['Off_plan'] == $offPlan) {
             $property = $root->addChild('Property');
-            $property->Property_Ref_No = '<![CDATA[' . $item['Property_Ref_No'] . ']]>';
-            $property->Property_purpose = '<![CDATA[' . $item['Property_purpose'] . ']]>';
-            $property->Property_Type = '<![CDATA[' . $item['Property_Type'] . ']]>';
-            $property->Property_Status = '<![CDATA[' . $item['Property_Status'] . ']]>';
-            $property->City = '<![CDATA[' . $item['location']['City'] . ']]>';
-            $property->Locality = '<![CDATA[' . $item['location']['Locality'] . ']]>';
-            $property->Sub_Locality = '<![CDATA[' . $item['location']['Sub_Locality'] . ']]>';
-            $property->Tower_Name = '<![CDATA[' . $item['location']['Tower_Name'] . ']]>';
-            $property->Property_Title = '<![CDATA[' . $item['Property_Title'] . ']]>';
-            $property->Property_Title_AR = '<![CDATA[' . $item['Property_Title_AR'] . ']]>';
-            $property->Property_Description = '<![CDATA[' . $item['Property_Description'] . ']]>';
-            $property->Property_Description_AR = '<![CDATA[' . $item['Property_Description_AR'] . ']]>';
-            $property->Property_Size = '<![CDATA[' . $item['Property_Size'] . ']]>';
+            $property->Property_Ref_No = $item['Property_Ref_No'];
+            $property->Property_purpose = $item['Property_purpose'];
+            $property->Property_Type = $item['Property_Type'];
+            $property->Property_Status = $item['Property_Status'];
+            $property->City = $item['location']['City'];
+            $property->Locality = $item['location']['Locality'];
+            $property->Sub_Locality = $item['location']['Sub_Locality'];
+            $property->Tower_Name = $item['location']['Tower_Name'];
+            $property->Property_Title = $item['Property_Title'];
+            $property->Property_Title_AR = $item['Property_Title_AR'];
+            $property->Property_Description = $item['Property_Description'];
+            $property->Property_Description_AR = $item['Property_Description_AR'];
+            $property->Property_Size = $item['Property_Size'];
             $property->Property_Size_Unit = $item['Property_Size_Unit'] ?
-                '<![CDATA[' . $item['Property_Size_Unit'] . ']]>' : '<![CDATA[SQFT]]>';
-            $property->Bedrooms = '<![CDATA[' . $item['Bedrooms'] . ']]>';
-            $property->Bathroom = '<![CDATA[' . $item['Bathrooms'] . ']]>';
-            $property->Price = '<![CDATA[' . $item['Price'] . ']]>';
-            $property->Listing_Agent = '<![CDATA[' . $item['assignedTo']['Listing_Agent'] . ']]>';
-            $property->Listing_Agent_Phone = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Phone'] . ']]>';
-            $property->Listing_Agent_Email = '<![CDATA[' . $item['assignedTo']['Listing_Agent_Email'] . ']]>';
+                $item['Property_Size_Unit'] : '<![CDATA[ SQFT ]]>';
+            $property->Bedrooms = $item['Bedrooms'];
+            $property->Bathroom = $item['Bathrooms'];
+            $property->Price = $item['Price'];
+            $property->Listing_Agent = $item['assignedTo']['Listing_Agent'];
+            $property->Listing_Agent_Phone = $item['assignedTo']['Listing_Agent_Phone'];
+            $property->Listing_Agent_Email = $item['assignedTo']['Listing_Agent_Email'];
             $features = $property->addChild('Features');
             foreach ($item['Features'] as $key => $val) {
-                $features->Feature[$key] = '<![CDATA[' . $val . ']]>';
+                $features->Feature[$key] = $val;
             }
             $images = $property->addChild('Images');
             foreach ($item['Photos'] as $key => $val) {
-                $images->Image[$key] = '<![CDATA[' . $val . ']]>';
+                $images->Image[$key] = $val;
             }
             $videos = $property->addChild('Videos');
             foreach ($item['Videos'] as $key => $val) {
-                $videos->Video[$key] = '<![CDATA[' . $val . ']]>';
+                $videos->Video[$key] = $val;
             }
-            $property->Last_Updated = '<![CDATA[' . $item['Last_Updated'] . ']]>';
-            $property->Permit_Number = '<![CDATA[' . $item['Permit_Number'] . ']]>';
+            $property->Last_Updated = $item['Last_Updated'];
+            $property->Permit_Number = $item['Permit_Number'];
             if ($item['Property_purpose'] == 'Rent') {
-                $property->Rent_Frequency = '<![CDATA[' . $item['Rent_Frequency'] . ']]>';
+                $property->Rent_Frequency = $item['Rent_Frequency'];
             }
-            $property->Off_plan = '<![CDATA[' . $item['Off_plan'] . ']]>';
+            $property->Off_plan = $item['Off_plan'];
             if ($item['Off_plan'] == 'Yes') {
-                $property->offplanDetails_saleType = '<![CDATA[' . $item['offplanDetails_saleType'] . ']]>';
-                $property->offplanDetails_dldWaiver = '<![CDATA[' . $item['offplanDetails_dldWaiver'] . ']]>';
-                $property->offplanDetails_originalPrice = '<![CDATA[' . $item['offplanDetails_originalPrice'] . ']]>';
-                $property->offplanDetails_amountPaid = '<![CDATA[' . $item['offplanDetails_amountPaid'] . ']]>';
+                $property->offplanDetails_saleType = $item['offplanDetails_saleType'];
+                $property->offplanDetails_dldWaiver = $item['offplanDetails_dldWaiver'];
+                $property->offplanDetails_originalPrice = $item['offplanDetails_originalPrice'];
+                $property->offplanDetails_amountPaid = $item['offplanDetails_amountPaid'];
             }
-            $property->Furnished = '<![CDATA[' . static::$furnmap[$item['Furnished']] . ']]>';
+            $property->Furnished = static::$furnmap[$item['Furnished']];
             $portals = $property->addChild('Portals');
             foreach ($item['Portals'] as $key => $val) {
-                $portals->Portal[$key] = '<![CDATA[' . $val . ']]>';
+                $portals->Portal[$key] = $val;
             }
             // }
         }

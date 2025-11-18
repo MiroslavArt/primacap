@@ -899,64 +899,91 @@ class FeedPf extends Feed
             throw new \Exception('PF Listing ID and Bitrix Listing ID are required for update');
         }
 
+        // Step 1: Load data from Bitrix
         $filter = [
             'ID' => $bitrixListingId,
-            '@UF_CRM_5_1752569141' => [1297, 1485] // Portals field
+            '@UF_CRM_5_1752569141' => [1297, 1485]
         ];
         $data = static::retrieveDate($filter, 'Pf');
-        if (!$data || empty($data)) {
+        if (!$data) {
             throw new \Exception("No data found for Bitrix listing ID {$bitrixListingId}");
         }
-        $data = current($data);
+        $crmPayload = self::prepareListing(current($data));
 
-        $payload = self::prepareListing($data);
-
+        // Step 2: Fetch existing PF listing payload (try LIVE first)
         $httpClient = self::getHttpClient();
 
-        $url = "https://atlas.propertyfinder.com/v1/listings/{$pfListingId}";
+        // 2A. Try LIVE listing
+        $existingJson = $httpClient->get("https://atlas.propertyfinder.com/v1/listings/{$pfListingId}");
+        $status = $httpClient->getStatus();
 
-        $jsonPayload = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $pfPayload = null;
 
+        if ($status === 200) {
+            $decoded = json_decode($existingJson, true);
+
+            if (!empty($decoded['results'][0])) {
+                $pfPayload = $decoded['results'][0];
+            }
+        }
+
+        // 2B. If not found in LIVE, try DRAFT
+        if (!$pfPayload) {
+
+            $draftUrl = "https://atlas.propertyfinder.com/v1/listings?" . http_build_query([
+                'draft' => 'true',
+                'filter' => ['ids' => $pfListingId]
+            ]);
+
+            $draftJson = $httpClient->get($draftUrl);
+            $draftStatus = $httpClient->getStatus();
+
+            if ($draftStatus === 200) {
+                $draftDecoded = json_decode($draftJson, true);
+
+                // PF returns draft listings under "results"
+                if (!empty($draftDecoded['results'][0])) {
+                    $pfPayload = $draftDecoded['results'][0];
+                }
+            }
+        }
+
+        // If STILL empty → fail
+        if (!$pfPayload) {
+            throw new \Exception("Unable to retrieve PF listing {$pfListingId} in live or draft");
+        }
+
+        // Step 3: Merge CRM payload into PF payload
+        $mergedPayload = $this->deepMerge($pfPayload, $crmPayload);
+
+        // Step 4: Send update (PUT)
+        $jsonPayload = json_encode($mergedPayload, JSON_UNESCAPED_SLASHES);
+
+        file_put_contents(__DIR__ . '/pf_existing.json', json_encode($pfPayload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        file_put_contents(__DIR__ . '/crm_payload.json', json_encode($crmPayload, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         file_put_contents(__DIR__ . '/update_data.json', $jsonPayload);
 
         $response = $httpClient->query(
             \Bitrix\Main\Web\HttpClient::HTTP_PUT,
-            $url,
+            "https://atlas.propertyfinder.com/v1/listings/{$pfListingId}",
             $jsonPayload
         );
 
         $status = $httpClient->getStatus();
         $responseBody = $httpClient->getResult();
 
-        $logData = [
-            'pfListingId' => $pfListingId,
-            'bitrixId'    => $bitrixListingId,
-            'payload'     => $payload,
-            'response'    => $responseBody ? json_decode($responseBody, true) : null,
-            'status'      => $status
-        ];
-
-        if (in_array($status, [200, 204])) {
+        if ($status == 200 || $status == 204) {
             \Bitrix\Main\Diag\Debug::writeToFile(
-                $logData,
-                "PF Update SUCCESS - PF#{$pfListingId} (Bitrix#{$bitrixListingId}) " . date('Y-m-d H:i:s'),
+                ['pfListingId' => $pfListingId, 'bitrixId' => $bitrixListingId],
+                "PF Update SUCCESS " . date('Y-m-d H:i:s'),
                 "pfexport.log"
             );
             return true;
         }
 
-        $error = $responseBody ? json_decode($responseBody, true) : ['detail' => 'Unknown error'];
-        $logData['error'] = $error;
-
-        \Bitrix\Main\Diag\Debug::writeToFile(
-            $logData,
-            "PF Update FAILED - PF#{$pfListingId} " . date('Y-m-d H:i:s'),
-            "pfexport.log"
-        );
-
-        $message = $error['detail'] ?? $error['message'] ?? $responseBody;
-        throw new \Exception("Failed to update listing PF#{$pfListingId}. HTTP {$status}: {$message}");
+        throw new \Exception("Failed to update listing. HTTP {$status}: {$responseBody}");
     }
+
 
     public function publishListing($listingId)
     {
@@ -1194,6 +1221,19 @@ class FeedPf extends Feed
         } while ($page);
 
         return $list;
+    }
+
+    private function deepMerge(array $pfPayload, array $crmPayload)
+    {
+        foreach ($crmPayload as $key => $value) {
+            if (is_array($value) && isset($pfPayload[$key]) && is_array($pfPayload[$key])) {
+                $pfPayload[$key] = $this->deepMerge($pfPayload[$key], $value);
+            } else {
+                // CRM overrides PF
+                $pfPayload[$key] = $value;
+            }
+        }
+        return $pfPayload;
     }
 
     /*public function setLocations()

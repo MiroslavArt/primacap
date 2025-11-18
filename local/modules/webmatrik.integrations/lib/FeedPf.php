@@ -914,7 +914,9 @@ class FeedPf extends Feed
         $httpClient = self::getHttpClient();
 
         // 2A. Try LIVE listing
-        $existingJson = $httpClient->get("https://atlas.propertyfinder.com/v1/listings/{$pfListingId}");
+        $existingJson = $httpClient->get("https://atlas.propertyfinder.com/v1/listings?" . http_build_query([
+            'filter' => ['ids' => $pfListingId]
+        ]));
         $status = $httpClient->getStatus();
 
         $pfPayload = null;

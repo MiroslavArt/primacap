@@ -974,7 +974,7 @@ class FeedPf extends Feed
         $status = $httpClient->getStatus();
         $responseBody = $httpClient->getResult();
 
-        if ($status == 200 || $status == 204) {
+        if ($status == 200 || $status == 204 || $status == 201) {
             \Bitrix\Main\Diag\Debug::writeToFile(
                 ['pfListingId' => $pfListingId, 'bitrixId' => $bitrixListingId],
                 "PF Update SUCCESS " . date('Y-m-d H:i:s'),
@@ -986,6 +986,110 @@ class FeedPf extends Feed
         throw new \Exception("Failed to update listing. HTTP {$status}: {$responseBody}");
     }
 
+    public function submitListingVerification($pfListingId)
+    {
+        if (!$pfListingId) {
+            throw new \Exception('PF Listing is required for verification submission');
+        }
+
+        // Step 1: Fetch existing PF listing payload (try LIVE first)
+        $httpClient = self::getHttpClient();
+
+        // 1A. Try LIVE listing
+        $existingJson = $httpClient->get("https://atlas.propertyfinder.com/v1/listings?" . http_build_query([
+            'filter' => ['ids' => $pfListingId]
+        ]));
+        $status = $httpClient->getStatus();
+
+        $pfPayload = null;
+
+        if ($status === 200) {
+            $decoded = json_decode($existingJson, true);
+
+            if (!empty($decoded['results'][0])) {
+                $pfPayload = $decoded['results'][0];
+            }
+        }
+
+        // 1B. If not found in LIVE, try DRAFT
+        if (!$pfPayload) {
+
+            $draftUrl = "https://atlas.propertyfinder.com/v1/listings?" . http_build_query([
+                'draft' => 'true',
+                'filter' => ['ids' => $pfListingId]
+            ]);
+
+            $draftJson = $httpClient->get($draftUrl);
+            $draftStatus = $httpClient->getStatus();
+
+            if ($draftStatus === 200) {
+                $draftDecoded = json_decode($draftJson, true);
+
+                // PF returns draft listings under "results"
+                if (!empty($draftDecoded['results'][0])) {
+                    $pfPayload = $draftDecoded['results'][0];
+                }
+            }
+        }
+
+        // If STILL empty → fail
+        if (!$pfPayload) {
+            throw new \Exception("Unable to retrieve PF listing {$pfListingId} in live or draft");
+        }
+
+        $publicProfileId = $pfPayload['assignedTo']['id'] ?? null;
+
+        if (!$publicProfileId) {
+            throw new \Exception("Unable to retrieve public profile ID for listing {$pfListingId}");
+        }
+
+        // Step 2: Prepare verification payload
+        $verificationPayload = [
+            'listingId' => $pfListingId,
+            'publicProfileId' => $publicProfileId,
+            // 'documents' => []
+        ];
+        $jsonPayload = json_encode($verificationPayload, JSON_UNESCAPED_SLASHES);
+
+        $response = $httpClient->query(
+            \Bitrix\Main\Web\HttpClient::HTTP_POST,
+            "https://atlas.propertyfinder.com/v1/listing-verifications",
+            $jsonPayload
+        );
+
+        $status = $httpClient->getStatus();
+        $responseBody = $httpClient->getResult();
+
+        if ($status == 200 || $status == 204 || $status == 201) {
+            \Bitrix\Main\Diag\Debug::writeToFile(
+                ['pfListingId' => $pfListingId],
+                "PF verification submission SUCCESS " . date('Y-m-d H:i:s'),
+                "pfexport.log"
+            );
+            $response = json_decode($responseBody, true);
+            return $response;
+        }
+
+        throw new \Exception("Failed to submit listing for verification. HTTP {$status}: {$responseBody}");
+    }
+
+    public function getCreditBalance()
+    {
+        $httpClient = self::getHttpClient();
+
+        $url = 'https://atlas.propertyfinder.com/v1/credits/balance';
+
+        $response = $httpClient->get(
+            $url
+        );
+
+        $status = $httpClient->getStatus();
+
+        if ($status == 200) {
+            $responseData = json_decode($response, true);
+            return $responseData;
+        }
+    }
 
     public function publishListing($listingId)
     {

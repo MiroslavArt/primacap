@@ -958,6 +958,9 @@ class FeedPf extends Feed
         // Step 3: Merge CRM payload into PF payload
         $mergedPayload = $this->deepMerge($pfPayload, $crmPayload);
 
+        // Clean invalid structures expected as objects
+        $this->cleanPfPayload($mergedPayload);
+
         // Step 4: Send update (PUT)
         $jsonPayload = json_encode($mergedPayload, JSON_UNESCAPED_SLASHES);
 
@@ -1340,6 +1343,13 @@ class FeedPf extends Feed
             }
         }
         return $pfPayload;
+    }
+
+    private function cleanPfPayload(array &$payload)
+    {
+        if (isset($payload['media']['videos']) && is_array($payload['media']['videos']) && empty($payload['media']['videos'])) {
+            unset($payload['media']['videos']);
+        }
     }
 
     /*public function setLocations()
